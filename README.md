@@ -15,6 +15,9 @@ Code Files
 ----------------------------------------------
 <script type="text/javascript" src="dv.js">
 </script>
+<script type="text/javascript" src="https://raw.githubusercontent.com/justdark/dvisual/master/dv.js
+">
+</script>
 Examples（TODO）
 ===
 <canvas id="PieCanvas" height="300px" width ="400px"></canvas>
