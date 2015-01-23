@@ -1,2 +1,0 @@
-#coding = gbk
-print "sasasas"
