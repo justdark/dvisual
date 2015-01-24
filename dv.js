@@ -4,6 +4,25 @@ return Math.max.apply({},this)
 Array.prototype.min = function(){ 
 return Math.min.apply({},this) 
 } 
+// arcFilltext = function(ctx,text,x,y,arc)
+// {
+
+// 	metrics = ctx.measureText(text);
+// 	ctx.translate(x,y);
+// 	NewX = 14;
+// 	NewY = -10;
+// 	if ((arc+Math.PI/2)%(Math.PI*2) > Math.PI)
+// 	{
+// 		arc = arc + Math.PI; 
+// 		NewX = -14;
+// 	}
+// 	ctx.rotate(arc);
+
+// 	ctx.textAlign = "center";
+// 	ctx.fillText(text,NewX,NewY);
+// 	ctx.rotate(-arc);
+// 	ctx.translate(-x,-y);
+// }
 //绘制扇形
 CanvasRenderingContext2D.prototype.sector = function (x, y, radius, sDeg, eDeg) {
 	// 初始保存
@@ -124,7 +143,7 @@ DVcanvas.prototype.drawAxes = function(X_shift,Y_shift,xName,yName) {
 	this.ctx.moveTo(X_axis_X, X_axis_Y);
 	this.ctx.lineTo(X_axis_X - 5, X_axis_Y - 5);
 
-	this.ctx.moveTo(this.originX+1, height - 40);
+	this.ctx.moveTo(this.originX, height - 40);
 	this.ctx.lineTo(Y_axis_X, Y_axis_Y);
 
 	this.ctx.moveTo(Y_axis_X, Y_axis_Y);
@@ -152,7 +171,9 @@ DVcanvas.prototype.drawAxes = function(X_shift,Y_shift,xName,yName) {
 
 DVcanvas.prototype.xyTrans = function(x,y) {
 	resultX = (x*1.0 - this.Xinc)/this.XZoom/this.ratio + this.originX ;
+	
 	resultY = this.originY - (y*1.0 - this.Yinc)/this.YZoom/this.ratio;
+
 	return [resultX,resultY];
 }
 
@@ -166,7 +187,7 @@ DVcanvas.prototype.yLenTrans = function(len) {
 DVcanvas.prototype.Dot = function(x,y,color,flag)
 {
 	result = this.xyTrans(x,y)
-	oldStyle = [this.ctx.fillStyle,this.ctx.strokeStyle];
+	this.ctx.save();
 	bak_color = color;
 	if (arguments.length==4)
 	{
@@ -197,27 +218,65 @@ DVcanvas.prototype.Dot = function(x,y,color,flag)
 	if (arguments.length!=4)
 	this.ctx.arc(result[0],result[1],2,0,2*Math.PI,true);
 	else
-	this.ctx.arc(result[0],result[1],3,0,2*Math.PI,true);
+	this.ctx.arc(result[0],result[1],Math.min(this.canvas.width,this.canvas.height)/800*4,0,2*Math.PI,true);
 	this.ctx.closePath();
 	this.ctx.fill();
 	if (arguments.length==4)
 	{
 		this.ctx.strokeStyle = bak_color;
 		this.ctx.beginPath();
-		this.ctx.arc(result[0],result[1],4,0,2*Math.PI,true);
+		this.ctx.arc(result[0],result[1],Math.min(this.canvas.width,this.canvas.height)/800*5,0,2*Math.PI,true);
 		this.ctx.closePath();
 		this.ctx.stroke();
 	}
 
 
-	this.ctx.lineWidth = 2; 
-	//this.ctx.stroke();
 	
-	this.ctx.fillStyle = oldStyle[0];
-	this.ctx.strokeStyle  = oldStyle[1];
+	this.ctx.restore();
 	
 }
 
+DVcanvas.prototype.fillPoly = function(X,Y,flag,color)
+{
+	if (arguments.length<4)
+		color = this.getrandomCoLOR(1)[0];
+	if (arguments.length<3)
+		flag = 1;                //默认是首尾相连的多边形， 如果flag为0，则是到X轴的面积图
+	if (flag==0)
+	{
+		sort = this.sortXY(X,Y);
+		X = sort[0];
+		Y = sort[1];
+		//alert(X[0]+" "+this.originX)
+		X.push(Math.max(X[X.length-1],this.originX));
+		X.push(Math.max(X[0],this.originX-1));
+		X.push(Math.max(X[0],this.originX-1));
+		Y.push(this.originY-1);
+		Y.push(this.originY-1);
+		Y.push(Y[0]);
+
+	}
+	this.ctx.save()
+	this.ctx.beginPath()
+	this.ctx.moveTo(X[0]+1,Y[0]+2);
+	this.ctx.fillStyle = "rgba(100,100,100,0.3)";
+	for (var i=0;i<X.length;i++)
+	{
+		this.ctx.lineTo(X[i]+2,Y[i]+2);
+	}
+	this.ctx.closePath();
+	this.ctx.fill();
+	this.ctx.beginPath();
+	this.ctx.fillStyle = color;
+	this.ctx.moveTo(X[0],Y[0]);
+	for (var i=0;i<X.length;i++)
+	{
+		this.ctx.lineTo(X[i],Y[i]);
+	}
+	this.ctx.closePath();
+	this.ctx.fill();
+	this.ctx.restore();
+}
 
 DVcanvas.prototype.rect = function(x1,y1,height,width,color)
 {
@@ -225,12 +284,12 @@ DVcanvas.prototype.rect = function(x1,y1,height,width,color)
 	if (y1==-1)
 	{
 		flag = true;
-		y1 = 0;
+		y1 = this.Yinc;
 	}
 	result1 = this.xyTrans(x1,y1);
-	result2 = [height*1.0/this.YZoom/this.ratio,width*1.0/this.XZoom/this.ratio];
+	result2 = [(height)*1.0/this.YZoom/this.ratio,width*1.0/this.XZoom/this.ratio];
 	result1[1] = result1[1] - result2[0]; 
-	oldStyle = [this.ctx.fillStyle,this.ctx.strokeStyle];
+	this.ctx.save();
 	this.ctx.beginPath();
 	if(arguments.length==4){
 		this.ctx.fillStyle = 'rgb(0,0,0)';
@@ -246,9 +305,7 @@ DVcanvas.prototype.rect = function(x1,y1,height,width,color)
 
 	this.ctx.closePath();
 	this.ctx.stroke();
-	
-	this.ctx.fillStyle = oldStyle[0];
-	this.ctx.strokeStyle  = oldStyle[1];
+	this.ctx.restore();
 }
 
 DVcanvas.prototype.fillRect = function(x1,y1,height,width,color)
@@ -257,15 +314,15 @@ DVcanvas.prototype.fillRect = function(x1,y1,height,width,color)
 	if (y1==-1)
 	{
 		flag = true;
-		y1 = 0;
+		y1 = this.Yinc;
 	}
 	result1 = this.xyTrans(x1,y1);
-	result2 = [height*1.0/this.YZoom/this.ratio,width*1.0/this.XZoom/this.ratio];
+	result2 = [(height)*1.0/this.YZoom/this.ratio,width*1.0/this.XZoom/this.ratio];
 	result1[1] = result1[1] - result2[0]; 
 	this.ctx.beginPath();
-	oldStyle = [this.ctx.fillStyle,this.ctx.strokeStyle];
+	this.ctx.save();
 	this.ctx.fillStyle = "rgba(100,100,100,0.3)";
-	this.ctx.rect(result1[0]+3,result1[1]+3,result2[1],result2[0]-2);
+	this.ctx.rect(result1[0]+3,result1[1]+2,result2[1],result2[0]-2);
 	this.ctx.closePath();
 	this.ctx.fill();
 
@@ -284,10 +341,7 @@ DVcanvas.prototype.fillRect = function(x1,y1,height,width,color)
 	this.ctx.closePath();
 	//this.ctx.stroke();
 	this.ctx.fill();
-
-
-	this.ctx.fillStyle = oldStyle[0];
-	this.ctx.strokeStyle  = oldStyle[1];
+	this.ctx.restore();
 }
 DVcanvas.prototype.initial = function(X,Y)
 {
@@ -301,15 +355,15 @@ DVcanvas.prototype.initial = function(X,Y)
 	ym = Y.max();
 
 	xm = (X.max()-X.min())*1.0;
-	if ((xm/X.max())<0.1)
-		incX = X.min();
+	if ((xm/X.max())<0.3)
+		incX = Math.floor(X.min())-1;
 
 	ym = (Y.max()-Y.min());
-	if ((ym/Y.max())<0.1)
-		incY = Y.min();
+	if ((ym/Y.max())<0.3)
+		incY = Math.floor(Y.min())-1;
 
 	this.setinc(incX,incY);
-	this.setmargin(xm,ym);
+	this.setmargin(X.max()-incX,Y.max()-incY);
 
 	this.Drawed = true;
 
@@ -321,7 +375,45 @@ DVcanvas.prototype.getShadow = function(X,Y,i)
 		return [1,0]
 	return[1,0]
 }
-DVcanvas.prototype.linePath = function(X,Y,color)
+DVcanvas.prototype.sortXY = function(X,Y)
+{
+	mysort = function(i,j)
+		{
+			return X[i]-X[j];
+		}
+	sort_index = new Array();
+	for (var k=0;k<X.length;k++)
+		sort_index.push(k);
+	sort_index.sort(mysort);
+	newX = new Array();
+	newY = new Array();
+	for (var k=0;k<X.length;k++)
+	{
+		newY.push(Y[sort_index[k]]);
+		newX.push(X[sort_index[k]]);
+	}
+	return [newX,newY];
+}
+
+DVcanvas.prototype.formatColor =function(color)
+{
+	this.ctx.save()
+
+	this.ctx.fillStyle = color;
+	this.ctx.strokeStyle = color;
+	this.ctx.rect(0,0,1,1);
+	this.ctx.fill();
+	this.ctx.stroke();
+	this.ctx.restore();
+	imageData = this.ctx.getImageData(0,0,10,10);
+	r = imageData.data[0];  // red   color
+	g = imageData.data[1];  // green color
+	b = imageData.data[2];  // blue  color
+	a = imageData.data[3];
+	return [r,g,b,a]
+}
+
+DVcanvas.prototype.linePath = function(X,Y,color,flag)
 {
 
 	if (X.length!=Y.length || X.length<=0)
@@ -331,14 +423,18 @@ DVcanvas.prototype.linePath = function(X,Y,color)
 	}
 	if (this.Drawed==false)
 	{
-		this.initial(X,Y);
+		this.initial([X.min(),X.max()*1.1],[Y.min(),Y.max()*1.1]);
 		this.drawGrid();
 		this.drawGrad();
 	}
-	oldStyle = [this.ctx.fillStyle,this.ctx.strokeStyle];
+	sort = this.sortXY(X,Y);
+	X = sort[0];
+	Y = sort[1];
+	this.ctx.save();
 	this.ctx.beginPath();
 	shadow = this.getShadow(X,Y,0);
 	result = this.xyTrans(X[0],Y[0]);
+
 	this.ctx.moveTo(result[0]+shadow[0],result[1]+shadow[1]);
 
 	this.ctx.strokeStyle = "rgba(100,100,100,0.5)";
@@ -352,29 +448,34 @@ DVcanvas.prototype.linePath = function(X,Y,color)
 	this.ctx.closePath();
 	this.ctx.stroke();
 
-
-	if(arguments.length==2){
+	if(arguments.length<3)
 		color = 'rgb(0,0,0)';
-	} 
+
+	if (arguments.length<4)
+		flag = 0; // 默认不是与X面积形式 
 	this.ctx.fillStyle = color;
 	this.ctx.strokeStyle = color;
 	result = this.xyTrans(X[0],Y[0]);
-
+	tmpX = [result[0]]
+	tmpY = [result[1]]
 	this.ctx.beginPath();
 	this.ctx.moveTo(result[0],result[1]);
 	for (var i = 1; i < X.length; i++) {
 		result = this.xyTrans(X[i],Y[i]);
 		this.ctx.lineTo(result[0],result[1]);
 		this.ctx.moveTo(result[0],result[1]);
-
+		tmpX.push(result[0]);
+		tmpY.push(result[1]);
 	};
 	this.ctx.closePath();
 	this.ctx.stroke();
-
-	this.ctx.fillStyle = oldStyle[0];
-	this.ctx.strokeStyle  = oldStyle[1];
+	this.ctx.restore();
+	color_Format = this.formatColor(color);
+	color = "rgba("+color_Format[0]+","+color_Format[1]+","+color_Format[2]+",0.3)"
+	if (flag==0)
+		this.fillPoly(tmpX,tmpY,0,color);
 }
-DVcanvas.prototype.MulLinePath = function(X,Y,Z,colors,style)
+DVcanvas.prototype.MulLinePath = function(X,Y,Z,colors,style,flag)
 {
 
 	if (X.length!=Y.length || X.length<=0)
@@ -393,6 +494,10 @@ DVcanvas.prototype.MulLinePath = function(X,Y,Z,colors,style)
 	{
 		style = 0;
 	}
+	if (arguments.length<=5)
+	{
+		flag = 1;
+	}
 	for (var i=0;i<Z.length;i++)
 	{
 		for (var j=0;j<X[i].length;j++)
@@ -402,23 +507,23 @@ DVcanvas.prototype.MulLinePath = function(X,Y,Z,colors,style)
 		}
 	}
 	
-	this.initial([0,maxX],[0,maxY]);
+	this.initial([0,maxX*1.1],[0,maxY*1.1]);
 
 	this.drawGrid();
 	this.drawGrad();
 
 	for (var i=0;i<Z.length;i++)
-		this.linePath(X[i],Y[i],colors[i]);
+		this.linePath(X[i],Y[i],colors[i],flag);
 	this.DrawLineLegend(Z,colors,style);
 }
 DVcanvas.prototype.DrawLineLegend = function(Z,colors,flag)
 {
-	oldStyle = [this.ctx.fillStyle,this.ctx.strokeStyle,this.ctx.font];
+	this.ctx.save();
 	H = this.yLenTrans(this.Ymargin*1.0/20); //绘图高度
 	if (flag==0)
 	{
 		this.fillRect(this.Xmargin+this.Xinc-this.Xmargin*1.0/4,this.Ymargin+this.Yinc-this.Ymargin*1.0/20*Z.length,this.Ymargin*1.0/20*Z.length,this.Xmargin*1.0/4,"rgbA(142,214,249,0.6)");
-		Increment = [0,this.Ymargin*1.0/20]
+		Increment = [0,this.Ymargin*1.0/25]
 		Oxy = this.xyTrans(this.Xmargin+this.Xinc-this.Xmargin*1.0/4,this.Ymargin+this.Yinc-this.Ymargin*1.0/20*Z.length);
 		W = this.Xmargin*1.0/4*2/4;
 	}
@@ -431,7 +536,7 @@ DVcanvas.prototype.DrawLineLegend = function(Z,colors,flag)
 	}
 	Increment = [this.xLenTrans(Increment[0]),this.yLenTrans(Increment[1])];
 	W = this.xLenTrans(W);
-	this.ctx.lineWidth = 3;
+	this.ctx.lineWidth = 2;
 	this.ctx.font = H/30*20+"px Arial";
 	for (var i=0;i<Z.length;i++)
 	{
@@ -451,9 +556,7 @@ DVcanvas.prototype.DrawLineLegend = function(Z,colors,flag)
 		Oxy[0] -= Increment[0];
 		Oxy[1] -= Increment[1];
 	}
-	this.ctx.fillStyle = oldStyle[0];
-	this.ctx.strokeStyle = oldStyle[1];
-	this.ctx.font = oldStyle[2]
+	this.ctx.restore();
 } 
 
 DVcanvas.prototype.drawGradX = function(X,margin)
@@ -479,9 +582,10 @@ DVcanvas.prototype.drawGradX = function(X,margin)
 	//alert(this.Xmargin+"  "+this.Xinc);
 	while (now<this.Xmargin*1.1+this.Xinc)
 	{
-		result = this.xyTrans(now,0);
+		result = this.xyTrans(now,this.Yinc);
 		
-		
+		if (result[0]>this.canvas.width/this.ratio-20)
+			break;
 		this.ctx.lineWidth = 1; 
 
 		if (arguments.length==0  || X.length==0)
@@ -495,7 +599,9 @@ DVcanvas.prototype.drawGradX = function(X,margin)
 		else if (count>=1 && count<=X.length)
 		{
 			this.ctx.lineWidth = 1; 
-			this.ctx.fillText(X[count-1],result[0]-Math.min(X[count-1].length,5)*4,result[1]+15,0.8/this.XZoom/this.ratio);
+			str = X[count-1];
+			var metrics = this.ctx.measureText(str);
+			this.ctx.fillText(str,result[0]-Math.min(metrics.width/2,this.xLenTrans(0.35)),result[1]+15,0.8/this.XZoom/this.ratio);
 		}
 		this.ctx.lineWidth = 2;
 		now = now + margin; 
@@ -526,6 +632,8 @@ DVcanvas.prototype.drawGradY = function(X,margin)
 	while (now<this.Ymargin*1.1+this.Yinc)
 	{
 		result = this.xyTrans(0,now);
+		if (result[1]<15)
+			break;
 		this.ctx.moveTo(result[0],result[1]);
 		this.ctx.lineTo(result[0]+5*this.ratio,result[1]);
 		
@@ -563,7 +671,7 @@ DVcanvas.prototype.drawGrad = function(X,margin) //X can be some text
 DVcanvas.prototype.drawGridX = function()
 {
 	this.ctx.lineWidth = 1; 
-	oldStyle = [this.ctx.fillStyle,this.ctx.strokeStyle];
+	this.ctx.save();
 	this.ctx.strokeStyle = "rgba(96,96,96,0.5)"
 	margin = 1;
 	if (this.Xmargin<15)
@@ -579,19 +687,21 @@ DVcanvas.prototype.drawGridX = function()
 	while (now<this.Xmargin*1.1+this.Xinc)
 	{
 		result = this.xyTrans(now,0);
+		if (result[0]>this.canvas.width/this.ratio-13)
+			break;
 		this.ctx.moveTo(result[0],result[1]);
 		this.ctx.lineTo(result[0],result[1]-this.Ymargin*1.1/this.YZoom/this.ratio);
 		now = now + margin; 
 	}
 	this.ctx.closePath();
 	this.ctx.stroke();
-	this.ctx.strokeStyle = oldStyle[1];
+	this.ctx.restore();
 	this.ctx.lineWidth = 2;
 }
 DVcanvas.prototype.drawGridY = function()
 {	
 	this.ctx.lineWidth = 1; 
-	oldStyle = [this.ctx.fillStyle,this.ctx.strokeStyle];
+	this.ctx.save();
 	this.ctx.strokeStyle = "rgba(96,96,96,0.5)"
 	margin = 1;
 	if (this.Ymargin<15)
@@ -608,13 +718,15 @@ DVcanvas.prototype.drawGridY = function()
 	while (now<this.Ymargin*1.1+this.Yinc)
 	{
 		result = this.xyTrans(0,now);
+		if(result[1]<12)
+			break;
 		this.ctx.moveTo(result[0],result[1]);
 		this.ctx.lineTo(result[0]+this.Xmargin*1.1/this.XZoom/this.ratio,result[1]);
 		now = now + margin; 
 	}
 	this.ctx.closePath();
 	this.ctx.stroke();
-	this.ctx.strokeStyle = oldStyle[1];
+	this.ctx.restore();
 	this.ctx.lineWidth = 2;
 }
 DVcanvas.prototype.drawGrid = function()  
@@ -629,7 +741,8 @@ DVcanvas.prototype.DotPath = function(X,Y,color)
 		console.log("WRONG DATA LENGTH");
 		return 0;
 	}
-	this.initial(X,Y);
+
+	this.initial([X.min(),X.max()*1.2],[Y.min(),Y.max()*1.2]);
 	this.drawGrid();
 	this.drawGrad();
 	if(arguments.length==2)
@@ -658,27 +771,27 @@ DVcanvas.prototype.DrawBar = function(X,Y,index,all,color)
 	}
 	if (!this.Drawed)
 	{
-		this.initial([0,X.length+1],[0,Y.max()]);
+		this.initial([0,X.length*1.3],[Y.min(),Y.max()*1.2]);
 		this.drawGrad(X);
 		this.drawGridY();
 	}
 	for (var i=0;i<X.length;i++)
 	{
 		result = this.xyTrans(i+1,Y[i]);
-		this.fillRect(i+0.7+0.7/all*(index-1),-1,Y[i],(0.7/all),color);
+		this.fillRect(i+0.7+0.7/all*(index-1),-1,Y[i]-this.Yinc,(0.7/all),color);
 		//this.rect(i+0.2,-1,Y[i],0.6,color);
-		this.rect(i+0.7+0.7/all*(index-1),-1,Y[i],(0.7/all),color);
+		this.rect(i+0.7+0.7/all*(index-1),-1,Y[i]-this.Yinc,(0.7/all),color);
 	}
 	this.ctx.lineWidth = 1; 
 	oldfont = this.ctx.font;
-	this.ctx.font= this.canvas.style.width/400*15+ "px Arial";
+	this.ctx.font= Math.min(this.canvas.width,this.canvas.height)/this.ratio/400*15+ "px Arial";
 	for (var i=0;i<X.length;i++)
 	{
 		this.ctx.beginPath();
 		result = this.xyTrans(i+0.7+0.7/all*(index-1)+(0.7/all)/2,Y[i]);
 		str = "" + Y[i];
 		var metrics = this.ctx.measureText(str);
-		this.ctx.fillText(""+Y[i],result[0]-metrics.width/2,result[1]-7);
+		this.ctx.fillText(str,result[0]- Math.min(metrics.width/2,this.xLenTrans((0.7/all)/2)),result[1]-4,Math.min(metrics.width,this.xLenTrans((0.7/all))));
 		this.ctx.closePath();
 		this.ctx.stroke();
 	}
@@ -714,13 +827,16 @@ DVcanvas.prototype.DrawMulBar = function(X,Y,Z,colors)
 		colors = this.getrandomCoLOR(Z.length);
 	}
 	ymax = 0;
+	ymin = 100000;
 	for (var i=0;i<Y.length;i++)
 		for (var j=0;j<Y[i].length;j++)
-			if (ymax<Y[i][j])
-				ymax = Y[i][j];
+			{
+				ymax = Math.max(ymax,Y[i][j]);
+				ymin = Math.min(ymin,Y[i][j]);
+			}
 	if (!this.Drawed)
 	{
-		this.initial([0,X.length+1],[0,ymax]);
+		this.initial([0,X.length+1],[ymin,ymax*1.1]);
 		this.drawGrad(X);
 		this.drawGridY();
 	}
@@ -731,7 +847,7 @@ DVcanvas.prototype.DrawMulBar = function(X,Y,Z,colors)
 			TmpY.push(Y[j][i]);
 		this.DrawBar(X,TmpY,i+1,Z.length,colors[i]);
 	}
-	this.DrawLegend(X.length+1,0,Z,colors);
+	this.DrawLegend(X.length+1,this.Yinc,Z,colors);
 }
 
 DVcanvas.prototype.DrawLegend = function(x,y,Z,colors,pie)
@@ -739,24 +855,24 @@ DVcanvas.prototype.DrawLegend = function(x,y,Z,colors,pie)
 	color = 'rgbA(142,214,249,0.5)';
 	if (arguments.length==4)
 	{
-		this.fillRect(x-0.5,this.Ymargin/25,this.Ymargin/5.5,0.7,color);
-		y = this.Ymargin/20;
+		this.fillRect(x-0.5,this.Ymargin/25+y,this.Ymargin/5.5,0.7,color);
+		y = this.Ymargin/20+this.Yinc;
 	}
 	else
 	{
 		this.fillRect(x-0.5,y,this.Ymargin/5.5,this.Xmargin/7.1,color);
 	}
-	oldfont = this.ctx.font;
-	this.ctx.font = this.canvas.width/800*10+ "px Arial";
+	this.ctx.save();
 
 	for (var i=0;i<Z.length;i++)
 	{
 		result = this.xyTrans(x-0.12,this.Ymargin/6/Z.length*(i)+y+this.Ymargin/6/Z.length*0.2);
+		this.ctx.font = Math.min(this.canvas.width,this.canvas.height)/this.ratio/200*5+ "px Arial";
 		if (arguments.length==4)
 		{
 			this.ctx.fillText(Z[i],result[0],result[1],this.xLenTrans(0.31));
-			this.rect(x-0.45,this.Ymargin/6/Z.length*(i)+this.Ymargin/20,this.Ymargin/6/Z.length*0.8,0.3,color);
-			this.fillRect(x-0.45,this.Ymargin/6/Z.length*(i)+this.Ymargin/20,this.Ymargin/6/Z.length*0.8,0.3,colors[i]);
+			this.rect(x-0.45,this.Ymargin/6/Z.length*(i)+this.Ymargin/20+this.Yinc,this.Ymargin/6/Z.length*0.8,0.3,color);
+			this.fillRect(x-0.45,this.Ymargin/6/Z.length*(i)+this.Ymargin/20+this.Yinc,this.Ymargin/6/Z.length*0.8,0.3,colors[i]);
 		} else
 		{
 			this.ctx.fillStyle = "#000";
@@ -765,7 +881,7 @@ DVcanvas.prototype.DrawLegend = function(x,y,Z,colors,pie)
 			this.fillRect(x+4*this.ratio,this.Ymargin/6/Z.length*(i)+y+this.Ymargin*0.008,this.Ymargin/6/Z.length*0.8,this.Xmargin/14-1,colors[i]);
 		}
 	}
-	this.ctx.font = oldfont;
+	this.ctx.restore();
 }
 
 DVcanvas.prototype.DrawHist = function(X,inc,margin,color)
@@ -795,10 +911,10 @@ DVcanvas.prototype.DrawHist = function(X,inc,margin,color)
 	}
 	
 
-	this.initial([0,Math.floor( (X.max()-inc)*1.0+2 )],TmpY);
+	this.initial([0,Math.floor( (X.max()-inc)*1.0+2 )],[TmpY.min(),TmpY.max()*1.3]);
 	this.drawGradX([],margin);
 	this.drawGradY();
-	this.drawGridY();
+	this.ctx.font = Math.min(this.canvas.height,this.canvas.width)/400*6+ "px Arial";
 	for (var i=0;i<TmpY.length;i++)
 	{
 		result = this.xyTrans(i*margin+margin/2,TmpY[i]);
@@ -807,7 +923,7 @@ DVcanvas.prototype.DrawHist = function(X,inc,margin,color)
 		str = TmpY[i]+"";
 		var metrics = this.ctx.measureText(str);
 		if (TmpY[i]>0)
-			this.ctx.fillText(TmpY[i]+"",result[0]-metrics.width/2,result[1]-4,this.xLenTrans(0.31));
+			this.ctx.fillText(TmpY[i]+"",result[0]-metrics.width/2,result[1]-4);
 	}
 }
 
@@ -828,7 +944,8 @@ DVcanvas.prototype.DrawPie = function(X,Y,colors)
 		sum += Y[i];
 	}
 
-	oldStyle = [this.ctx.fillStyle,this.ctx.strokeStyle];
+	//oldStyle = [this.ctx.fillStyle,this.ctx.strokeStyle];
+	this.ctx.save();
 	nowAng = 0;
 	CircleDia = Math.min(this.canvas.width,this.canvas.height)/this.ratio;
 	oldfont = this.ctx.font;
@@ -840,7 +957,7 @@ DVcanvas.prototype.DrawPie = function(X,Y,colors)
 
 		this.ctx.fillStyle = "rgba(100,100,100,0.3)";
 		this.ctx.sector(CircleDia/2+Math.cos((destAng+nowAng)*1.0/2)*CircleDia/2*0.01,
-						CircleDia/2+Math.sin((destAng+nowAng)*1.0/2)*CircleDia/2*0.01,CircleDia/2- 4*this.ratio,nowAng+0.005,destAng-0.005);
+						CircleDia/2+Math.sin((destAng+nowAng)*1.0/2)*CircleDia/2*0.01,CircleDia/2-20 + CircleDia/30,nowAng+0.005,destAng-0.005);
 		this.ctx.fill();
 
 		this.ctx.fillStyle = colors[i];
@@ -864,9 +981,7 @@ DVcanvas.prototype.DrawPie = function(X,Y,colors)
 		nowAng = destAng;
 		
 	}
-	this.ctx.font = oldfont;
-	this.ctx.strokeStyle = oldStyle[1];
-	this.ctx.fillStyle = oldStyle[0];
+	this.ctx.restore();
 	//根据canvas的大小调整Legend的位置
 	y = 0;
 	if (this.canvas.height>this.canvas.width)
@@ -918,8 +1033,8 @@ DVcanvas.prototype.DrawRadar = function(X,Y,Z,min,max,colors)
 	{
 		t = i%Z.length;
 		Ang = t*incAng + BaseAng;
-		MapX.push(Math.cos(Ang)*CircleDia/2*0.8);
-		MapY.push(Math.sin(Ang)*CircleDia/2*0.8);
+		MapX.push(Math.cos(Ang)*CircleDia*1.0/2*0.8);
+		MapY.push(Math.sin(Ang)*CircleDia*1.0/2*0.8);
 	}
 	incScore = (max - min)*1.0/5;
 	for (var step=0;step<=5;step++)
@@ -942,18 +1057,22 @@ DVcanvas.prototype.DrawRadar = function(X,Y,Z,min,max,colors)
 			
 			if (step==0)
 			{
-				this.ctx.font = this.canvas.width/800*20*2/this.ratio+ "px Arial";
+				this.ctx.font = Math.min(this.canvas.width,this.canvas.height)/800*30/this.ratio+ "px Arial";
 				this.ctx.moveTo(CircleDia/2,CircleDia/2);
 				this.ctx.lineTo(result[0]+shadow[0],result[1]+shadow[1]);
 				str =Z[i%Z.length]
 
-				textX = result[0] + MapX[i]*0.15 - MapX[i]*0.2*(Is(MapX[i]) );
-				textY = result[1] - 25+ MapY[i]*0.15 + MapY[i]*0.2*(Is(MapY[i]) );
+				textX = result[0] + MapX[i]*0.15 ;
+				textY = result[1] + MapY[i]*0.15 ;
+				Ang = (i % Z.length)*incAng + BaseAng;
+				//arcFilltext(this.ctx,str,textX,textY,Ang+(Math.PI - 2*Math.PI/Z.length)/2)
+				this.ctx.textAlign = "center";
 				this.ctx.fillText(str,textX,textY);
+				this.ctx.textAlign = "left";
 			}
 			if (i==0)
 			{	
-				this.ctx.font = this.canvas.width/800*10+ "px Arial";
+				this.ctx.font = Math.min(this.canvas.width,this.canvas.height)/800*20/this.ratio+ "px Arial";
 				this.ctx.fillText(min+incScore*(5-step),result[0]+shadow[0]+5,result[1]+shadow[1]);
 			}
 			this.ctx.moveTo(result[0]+shadow[0],result[1]+shadow[1]);
@@ -964,86 +1083,42 @@ DVcanvas.prototype.DrawRadar = function(X,Y,Z,min,max,colors)
 	}
 	for (var MainStep = 0;MainStep<2;MainStep++)
 	{
-	for (var class_index=0;class_index<X.length;class_index++)
-	{
-		
-		this.ctx.beginPath();
-		shadow = this.getShadow(MapX,MapY,0);
-		result = [MapX[0]/max*(Y[class_index][0]-min)+CircleDia/2,MapY[0]/max*(Y[class_index][0]-min)+CircleDia/2];
-		this.ctx.moveTo(result[0]+shadow[0],result[1]+shadow[1]);
-		this.ctx.strokeStyle = colors[class_index];
-		this.ctx.fillStyle = colors[class_index];
-		this.ctx.lineWidth = 2;
-		if (MainStep==0) //绘制多边形
-		for (var j = 0; j <= Z.length; j++) {
-			i = j % Z.length;
-			result = [MapX[i]/max*(Y[class_index][i]-min)+CircleDia/2,MapY[i]/max*(Y[class_index][i]-min)+CircleDia/2];
-			shadow = [0,0];//this.getShadow(MapX,MapY,i);
-			this.ctx.lineTo(result[0]+shadow[0],result[1]+shadow[1]);
-			//this.ctx.moveTo(result[0]+shadow[0],result[1]+shadow[1]);
-		};
-		this.ctx.closePath();
-		this.ctx.lineWidth = 2;
-		this.ctx.fill();
-		this.ctx.stroke();
-		if (MainStep==1) //绘制点
-		for (var j = 0; j <= Z.length; j++) {
-			i = j % Z.length;
-			result = [MapX[i]/max*(Y[class_index][i]-min)+CircleDia/2,MapY[i]/max*(Y[class_index][i]-min)+CircleDia/2];
-			shadow = this.getShadow(MapX,MapY,i);
-			this.Dot(result[0]+shadow[0],result[1]+shadow[1],colors[class_index],1);
-			//this.ctx.moveTo(result[0]+shadow[0],result[1]+shadow[1]);
-		};
+		for (var class_index=0;class_index<X.length;class_index++)
+		{
+			
+			shadow = this.getShadow(MapX,MapY,0);
+			result = [MapX[0]/max*(Y[class_index][0]-min)+CircleDia/2,MapY[0]/max*(Y[class_index][0]-min)+CircleDia/2];
+			this.ctx.moveTo(result[0]+shadow[0],result[1]+shadow[1]);
+			this.ctx.strokeStyle = colors[class_index];
+			this.ctx.fillStyle = colors[class_index];
+			this.ctx.lineWidth = 2;
+			if (MainStep==0) //绘制多边形
+			{
+				tmpX = new Array();
+				tmpY = new Array();
+				for (var j = 0; j <= Z.length; j++) {
+					i = j % Z.length;
+					result = [MapX[i]/max*(Y[class_index][i]-min)+CircleDia/2,MapY[i]/max*(Y[class_index][i]-min)+CircleDia/2];
+					tmpY.push(result[1]);
+					tmpX.push(result[0]);
+					//this.ctx.moveTo(result[0]+shadow[0],result[1]+shadow[1]);
+				};
+				this.fillPoly(tmpX,tmpY,1,colors[class_index])
+			}
 
+
+			if (MainStep==1) //绘制点
+			for (var j = 0; j <= Z.length; j++) {
+				i = j % Z.length;
+				result = [MapX[i]/max*(Y[class_index][i]-min)+CircleDia/2,MapY[i]/max*(Y[class_index][i]-min)+CircleDia/2];
+				shadow = this.getShadow(MapX,MapY,i);
+				this.Dot(result[0]+shadow[0],result[1]+shadow[1],colors[class_index],1);
+				//this.ctx.moveTo(result[0]+shadow[0],result[1]+shadow[1]);
+			};
+
+		}
 	}
-	}
-	// sum = 0;
-	// for (var i=0;i<X.length;i++)
-	// {
-	// 	sum += Y[i];
-	// }
 
-	// oldStyle = [this.ctx.fillStyle,this.ctx.strokeStyle];
-	// nowAng = 0;
-	
-	// oldfont = this.ctx.font;
-	// this.ctx.font = CircleDia/400*17+ "px Arial";
-	// for (var i=0;i<X.length;i++)
-	// {
-	// 	this.ctx.beginPath();
-	// 	destAng = nowAng + 2*Math.PI*Y[i]*1.0/sum;
-
-	// 	this.ctx.fillStyle = "rgba(100,100,100,0.3)";
-	// 	this.ctx.sector(CircleDia/2+Math.cos((destAng+nowAng)*1.0/2)*CircleDia/2*0.01,
-	// 					CircleDia/2+Math.sin((destAng+nowAng)*1.0/2)*CircleDia/2*0.01,CircleDia/2- 4*this.ratio,nowAng+0.005,destAng-0.005);
-	// 	this.ctx.fill();
-
-	// 	this.ctx.fillStyle = colors[i];
-	// 	this.ctx.strokeStyle = colors[i];
-		
-	// 	this.ctx.sector(CircleDia/2,CircleDia/2,CircleDia/2-20,nowAng,destAng);
-	// 	this.ctx.closePath();
-	// 	this.ctx.fill();
-
-
-	// 	//////////////!!!!!TODO////////
-	// 	oldfont = this.ctx.font;
-		
-
-	// 	this.ctx.fillStyle = "#FFF";
-	// 	str = 	Math.floor(Y[i]/sum*100)+"%";
-	// 	textX = CircleDia/2 + Math.cos((destAng+nowAng)*1.0/2)*CircleDia/2*0.8 - 8*str.length*Math.cos((destAng+nowAng)*1.0/2);
-	// 	textY = CircleDia/2 + Math.sin((destAng+nowAng)*1.0/2)*CircleDia/2*0.8 - 4*str.length*Math.sin((destAng+nowAng)*1.0/2);
-	// 	this.ctx.fillText(str,textX,textY);
-		
-
-	// 	nowAng = destAng;
-		
-	// }
-	// this.ctx.font = oldfont;
-	// this.ctx.strokeStyle = oldStyle[1];
-	// this.ctx.fillStyle = oldStyle[0];
-	// //根据canvas的大小调整Legend的位置
 	if (X.length>1)
 	{
 		y = 0;
