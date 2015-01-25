@@ -19,6 +19,8 @@
 <canvas id="myCanvas7" height="400px" width ="400px"></canvas>
 <canvas id="myCanvas8" height="400px" width ="600px"></canvas>
 <canvas id="myCanvas9" height="400px" width ="500px"></canvas>
+<canvas id="myCanvas10" height="400px" width ="600px"></canvas>
+
 </table>
 </body>
 
@@ -89,5 +91,10 @@ test8.DrawStackBar(["星期一","星期二","星期三","星期四","星期五",
 var test9 = new DVcanvas("myCanvas9");
 test9.drawAxes(0,0,"温度","湿度");
 test9.BubbleChart([1,2,3,4,5,6,7],[1,2,3,4,5,6,7],[1,2,3,4,5,6,7],["A","B","C","D","E","F","G"]);
+
+var test10 = new DVcanvas("myCanvas10");
+test10.drawAxes(0,0,"温度","湿度");
+test10.MulBubbleChart([[1,2,3,4,5,6,7],[3,6,4,2,5,8,9]],[[1,2,3,4,5,6,7],[4,2,3,7,4,6,1]],[[1,2,3,4,5,6,7],[2,3,5,8,3,6,9]],0,["发达国家","发展中国家"]);
+
 //test.rect(1,1,2,2)
 </script>

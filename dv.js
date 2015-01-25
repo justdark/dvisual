@@ -780,7 +780,7 @@ DVcanvas.prototype.initBubble = function(Z)
 {
 
 	this.bubbleInc = Z.min();
-	this.bubbleRatio = (Math.min(this.canvas.width,this.canvas.height)/this.ratio*0.15-10)/(Z.max() - Z.min());
+	this.bubbleRatio = (Math.min(this.canvas.width,this.canvas.height)/this.ratio*0.1)/(Z.max() - Z.min());
 }
 DVcanvas.prototype.getRightTextStyle = function(str,length)
 {
@@ -805,18 +805,18 @@ DVcanvas.prototype.Bubble = function(x,y,z,color,text)
 	this.ctx.save();
 	result = this.xyTrans(x,y);
 	z = (z - this.bubbleInc)*this.bubbleRatio+10;
+	this.ctx.beginPath();
 	this.ctx.fillStyle = color;
 	this.ctx.strokeStyle = color;
 	this.ctx.sector(result[0],result[1],z,0,Math.PI*2);
+	this.ctx.closePath();
 	this.ctx.fill();
 	this.ctx.stroke();
 
 	if (arguments.length==5)
 	{
-
 		this.ctx.fillStyle = "#FFF";
 		this.ctx.font = this.getRightTextStyle(text,z);
-
 		this.ctx.textAlign = "center";
 		this.ctx.fillText(text,result[0],result[1]+this.ctx.measureText("D").width/2);
 	}
@@ -832,7 +832,7 @@ DVcanvas.prototype.BubbleChart = function(X,Y,Z,text,color)
 	}
 	if (!this.Drawed)
 	{
-		this.initial([X.min(),X.max()*1.2],[Y.min(),Y.max()*1.2]);
+		this.initial([X.min(),X.max()*1.3],[Y.min(),Y.max()*1.2]);
 		this.drawGrid();
 		this.drawGrad();
 		this.initBubble(Z);
@@ -848,30 +848,52 @@ DVcanvas.prototype.BubbleChart = function(X,Y,Z,text,color)
 	};
 }
 
-DVcanvas.prototype.MulBubbleChart = function(Xs,Ys,Zs,texts,colors)
+DVcanvas.prototype.MulBubbleChart = function(Xs,Ys,Zs,texts,classes,colors)
 {
 	//TODO.......
-	if (X.length!=Y.length || X.length<=0)
+	if (Xs.length!=Ys.length || Ys.length!=classes.length || Xs.length<=0)
 	{
 		console.log("WRONG DATA LENGTH");
 		return 0;
 	}
+	xmin = 10000;
+	xmax = 0;
+	ymin = 10000;
+	ymax = 0;
+	zmin = 10000;
+	zmax = 0;
+	for (var i=0;i<classes.length;i++)
+		for (var j=0;j<Xs[i].length;j++)
+		{
+			xmin = Math.min(xmin,Xs[i][j]);
+			xmax = Math.max(xmax,Xs[i][j]);
+			ymin = Math.min(ymin,Ys[i][j]);
+			ymax = Math.max(ymax,Ys[i][j]);
+			zmin = Math.min(zmin,Zs[i][j]);
+			zmax = Math.max(zmax,Zs[i][j]);
+		}
 	if (!this.Drawed)
 	{
-		this.initial([X.min(),X.max()*1.2],[Y.min(),Y.max()*1.2]);
+		this.initial([xmin,xmax*1.4],[ymin,ymax*1.2]);
 		this.drawGrid();
 		this.drawGrad();
-		this.initBubble(Z);
+		this.initBubble([zmin,zmax]);
 	}
+
 	if(arguments.length<=5)
-		color = 'rgbA(142,214,249,0.5)';
-	for (var i = 0; i < X.length; i++) {
-		if (text==0)
-			this.Bubble(X[i],Y[i],Z[i],color);
-		else
-			this.Bubble(X[i],Y[i],Z[i],color,text[i]);
+		colors = this.getrandomCoLOR(classes.length,0.7);
+
+	for (var i=0;i<classes.length;i++)
+		for (var j=0;j<Xs[i].length;j++) {
+			if (texts==0)
+				this.Bubble(Xs[i][j],Ys[i][j],Zs[i][j],colors[i]);
+			else
+				this.Bubble(Xs[i][j],Ys[i][j],Zs[i][j],colors[i],texts[i][j]);
 
 	};
+	this.setLegendWidth(this.Xmargin/7);
+	this.DrawLegend(xmax+this.Xmargin/5,this.Yinc+this.Ymargin/20,classes,colors);
+	this.setLegendWidth(1);
 } 
 
 //这里可以以这种模式处理，index 和 all 表示是第几项，总共几项
@@ -1000,7 +1022,7 @@ DVcanvas.prototype.DrawMulBar = function(X,Y,Z,colors)
 			}
 	if (!this.Drawed)
 	{
-		this.initial([0,X.length+1],[ymin,ymax*1.1]);
+		this.initial([0,X.length*1.3],[ymin,ymax*1.1]);
 		this.drawGrad(X);
 		this.drawGridY();
 	}
@@ -1035,12 +1057,12 @@ DVcanvas.prototype.DrawLegend = function(x,y,Z,colors,pie)
 
 		
 		this.ctx.font = Math.min(this.canvas.width,this.canvas.height)/this.ratio/200*5+ "px Arial";
-		if (arguments.length==4)
+		if (arguments.length==4 || pie==0)
 		{
-			result = this.xyTrans(x-0.5+this.LegendWidth*0.65,this.Ymargin/20+this.Ymargin/6/Z.length*(i)+y+this.Ymargin/6/Z.length*0.2);
-			this.ctx.fillText(Z[i],result[0],result[1],this.xLenTrans(this.LegendWidth*0.35));
-			this.rect(x-0.45,this.Ymargin/6/Z.length*(i)+this.Ymargin/20+y,this.Ymargin/6/Z.length*0.8,this.LegendWidth*0.55,color);
-			this.fillRect(x-0.45,this.Ymargin/6/Z.length*(i)+this.Ymargin/20+y,this.Ymargin/6/Z.length*0.8,this.LegendWidth*0.55,colors[i]);
+			result = this.xyTrans(x-0.5+this.LegendWidth*0.58,this.Ymargin/20+this.Ymargin/6/Z.length*(i)+y+this.Ymargin/6/Z.length*0.2);
+			this.ctx.fillText(Z[i],result[0],result[1],this.xLenTrans(this.LegendWidth*0.42));
+			this.rect(x-0.45,this.Ymargin/6/Z.length*(i)+this.Ymargin/20+y,this.Ymargin/6/Z.length*0.8,this.LegendWidth*0.5,color);
+			this.fillRect(x-0.45,this.Ymargin/6/Z.length*(i)+this.Ymargin/20+y,this.Ymargin/6/Z.length*0.8,this.LegendWidth*0.5,colors[i]);
 		} else
 		{
 			result = this.xyTrans(x-0.12,this.Ymargin/6/Z.length*(i)+y+this.Ymargin/6/Z.length*0.2);
