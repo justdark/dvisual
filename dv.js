@@ -52,6 +52,19 @@ CanvasRenderingContext2D.prototype.sector = function (x, y, radius, sDeg, eDeg) 
 	return this;
 }
 //////
+
+function DVColor(r,g,b,a)
+{
+	if (arguments.length<4)
+		this.a = 0.5;
+	if (arguments.length<3)
+		this.b = 100;
+	if (arguments.length<2)
+		this.g = 100;
+	if (arguments.length<1)
+		this.r = 100;
+}
+
 function DVcanvas(canvasName)
 {
  	this.canvas = document.getElementById(canvasName);
@@ -90,8 +103,13 @@ function DVcanvas(canvasName)
 	this.YZoom = 1;
 	this.originX = 0;
 	this.originY = this.Ymargin/this.ratio;
+	this.LegendWidth = 1;
 }
 
+DVcanvas.prototype.setLegendWidth = function(width)
+{
+	this.LegendWidth = width;
+}
 DVcanvas.prototype.setinc = function(Xinc,Yinc)
 {
 	if (this.Drawed)
@@ -321,8 +339,8 @@ DVcanvas.prototype.fillRect = function(x1,y1,height,width,color)
 	result1[1] = result1[1] - result2[0]; 
 	this.ctx.beginPath();
 	this.ctx.save();
-	this.ctx.fillStyle = "rgba(100,100,100,0.3)";
-	this.ctx.rect(result1[0]+3,result1[1]+2,result2[1],result2[0]-2);
+	this.ctx.fillStyle = "rgba(50,50,50,0.1)";
+	this.ctx.rect(result1[0]+3,result1[1]+2,result2[1],result2[0]);
 	this.ctx.closePath();
 	this.ctx.fill();
 
@@ -397,19 +415,23 @@ DVcanvas.prototype.sortXY = function(X,Y)
 
 DVcanvas.prototype.formatColor =function(color)
 {
-	this.ctx.save()
+	this.ctx.save();
 
 	this.ctx.fillStyle = color;
 	this.ctx.strokeStyle = color;
 	this.ctx.rect(0,0,1,1);
 	this.ctx.fill();
 	this.ctx.stroke();
-	this.ctx.restore();
+
 	imageData = this.ctx.getImageData(0,0,10,10);
 	r = imageData.data[0];  // red   color
 	g = imageData.data[1];  // green color
 	b = imageData.data[2];  // blue  color
 	a = imageData.data[3];
+
+
+
+	this.ctx.restore();
 	return [r,g,b,a]
 }
 
@@ -797,8 +819,52 @@ DVcanvas.prototype.DrawBar = function(X,Y,index,all,color)
 	}
 	this.ctx.lineWidth = 1;
 	this.ctx.font = oldfont;
-	
 }
+DVcanvas.prototype.DrawStackBar = function(X,Y,Z,colors)
+{
+	if (X.length!=Y.length || X.length<=0 ||arguments.length<3)
+	{
+		console.log("WRONG DATA LENGTH");
+		return 0;
+	}
+	if(arguments.length==3)
+		colors = this.getrandomCoLOR(Z.length,0.3);
+	maxsum = 0;
+	for (var i=0;i<Y.length;i++)
+	{
+		sum = 0;
+		for (var j=0;j<Y[i].length;j++)
+			sum+=Y[i][j];
+		maxsum = Math.max(maxsum,sum);
+	}
+	if (!this.Drawed)
+	{
+		this.initial([0,X.length*1.3],[0,maxsum*1.2]);
+		this.drawGrad(X);
+		this.drawGridY();
+	}
+
+	for (var i=0;i<X.length;i++)
+	{
+		tmp_y_inc = 0.0;
+		for (var j=0;j<Y[i].length;j++)
+		{
+			
+			//color = "rgba("+color_Format[0]+","+color_Format[1]+","+color_Format[2]+",0.3)"
+			result = this.xyTrans(i+1,Y[i][j]);
+			this.fillRect(i+0.7,tmp_y_inc,Y[i][j]-this.Yinc,0.7,colors[j]);
+			//this.rect(i+0.2,-1,Y[i],0.6,color);
+			color_Format = this.formatColor(colors[j]);
+			color = "rgba("+color_Format[0]+","+color_Format[1]+","+color_Format[2]+",1)"
+			this.rect(i+0.7,tmp_y_inc,Y[i][j]-this.Yinc,0.7,color);
+			tmp_y_inc+=Y[i][j];
+		}
+
+	}
+
+	this.DrawLegend(X.length+1.2,this.Yinc+this.Ymargin/20,Z,colors)
+}
+
 DVcanvas.prototype.getrandom =function(N)
 {
 	return Math.floor(Math.random() * ( N + 1));
@@ -847,7 +913,9 @@ DVcanvas.prototype.DrawMulBar = function(X,Y,Z,colors)
 			TmpY.push(Y[j][i]);
 		this.DrawBar(X,TmpY,i+1,Z.length,colors[i]);
 	}
-	this.DrawLegend(X.length+1,this.Yinc,Z,colors);
+	this.setLegendWidth(0.7);
+	this.DrawLegend(X.length+1,this.Ymargin/20+this.Yinc,Z,colors);
+	this.setLegendWidth(1);
 }
 
 DVcanvas.prototype.DrawLegend = function(x,y,Z,colors,pie)
@@ -855,8 +923,8 @@ DVcanvas.prototype.DrawLegend = function(x,y,Z,colors,pie)
 	color = 'rgbA(142,214,249,0.5)';
 	if (arguments.length==4)
 	{
-		this.fillRect(x-0.5,this.Ymargin/25+y,this.Ymargin/5.5,0.7,color);
-		y = this.Ymargin/20+this.Yinc;
+		this.fillRect(x-0.5,this.Ymargin/25+y,this.Ymargin/5.5,this.LegendWidth,color);
+		//y = this.Ymargin/20+this.Yinc;
 	}
 	else
 	{
@@ -866,15 +934,18 @@ DVcanvas.prototype.DrawLegend = function(x,y,Z,colors,pie)
 
 	for (var i=0;i<Z.length;i++)
 	{
-		result = this.xyTrans(x-0.12,this.Ymargin/6/Z.length*(i)+y+this.Ymargin/6/Z.length*0.2);
+
+		
 		this.ctx.font = Math.min(this.canvas.width,this.canvas.height)/this.ratio/200*5+ "px Arial";
 		if (arguments.length==4)
 		{
-			this.ctx.fillText(Z[i],result[0],result[1],this.xLenTrans(0.31));
-			this.rect(x-0.45,this.Ymargin/6/Z.length*(i)+this.Ymargin/20+this.Yinc,this.Ymargin/6/Z.length*0.8,0.3,color);
-			this.fillRect(x-0.45,this.Ymargin/6/Z.length*(i)+this.Ymargin/20+this.Yinc,this.Ymargin/6/Z.length*0.8,0.3,colors[i]);
+			result = this.xyTrans(x-0.5+this.LegendWidth*0.65,this.Ymargin/20+this.Ymargin/6/Z.length*(i)+y+this.Ymargin/6/Z.length*0.2);
+			this.ctx.fillText(Z[i],result[0],result[1],this.xLenTrans(this.LegendWidth*0.35));
+			this.rect(x-0.45,this.Ymargin/6/Z.length*(i)+this.Ymargin/20+y,this.Ymargin/6/Z.length*0.8,this.LegendWidth*0.55,color);
+			this.fillRect(x-0.45,this.Ymargin/6/Z.length*(i)+this.Ymargin/20+y,this.Ymargin/6/Z.length*0.8,this.LegendWidth*0.55,colors[i]);
 		} else
 		{
+			result = this.xyTrans(x-0.12,this.Ymargin/6/Z.length*(i)+y+this.Ymargin/6/Z.length*0.2);
 			this.ctx.fillStyle = "#000";
 			this.ctx.fillText(Z[i],result[0]+this.Xmargin/11/this.ratio,result[1]-this.Ymargin*0.004,(this.Xmargin/10.6 - this.Xmargin/14)*2/this.ratio);
 			this.rect(x+5*this.ratio,this.Ymargin/6/Z.length*(i)+y+this.Ymargin*0.008,this.Ymargin/6/Z.length*0.8,this.Xmargin/14-2,colors[i]);
@@ -888,7 +959,7 @@ DVcanvas.prototype.DrawHist = function(X,inc,margin,color)
 {
 	if (arguments.length==3 || arguments.length==1 || arguments.length==2)
 	{
-		color = this.getrandomCoLOR(1)[0];
+		color = 'rgbA(142,214,249,0.8)';
 	}
 	if (arguments.length==2)
 	{
@@ -1009,7 +1080,7 @@ DVcanvas.prototype.DrawRadar = function(X,Y,Z,min,max,colors)
 		return 0;
 	if (arguments.length<6)
 	{
-		colors = this.getrandomCoLOR(X.length,0.5);
+		colors = this.getrandomCoLOR(X.length,0.3);
 	}
 	if (arguments.length<5)
 	{
