@@ -106,6 +106,9 @@ test6.DrawRadar(["型号1","型号2"],[[6,7,3,5,6],[3,6,7,2,8]],["速度","能�
 <img src="https://raw.githubusercontent.com/justdark/dvisual/master/image/10.png" alt="Drawing" width="400px" />
 
 ----------------------------------------------
+<img src="https://raw.githubusercontent.com/justdark/dvisual/master/image/11.png" alt="Drawing" width="400px" />
+
+----------------------------------------------
 Class Format Guid
 ===
 TODO
