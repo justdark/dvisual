@@ -104,6 +104,8 @@ function DVcanvas(canvasName)
 	this.originX = 0;
 	this.originY = this.Ymargin/this.ratio;
 	this.LegendWidth = 1;
+	this.bubbleRatio = 1;
+	this.bubbleInc = 0;
 }
 
 DVcanvas.prototype.setLegendWidth = function(width)
@@ -756,7 +758,7 @@ DVcanvas.prototype.drawGrid = function()
 	this.drawGridY();
 	this.drawGridX();
 }
-DVcanvas.prototype.DotPath = function(X,Y,color)
+DVcanvas.prototype.DotChart = function(X,Y,color)
 {
 	if (X.length!=Y.length || X.length<=0)
 	{
@@ -774,7 +776,103 @@ DVcanvas.prototype.DotPath = function(X,Y,color)
 	};
 
 }
+DVcanvas.prototype.initBubble = function(Z)
+{
 
+	this.bubbleInc = Z.min();
+	this.bubbleRatio = (Math.min(this.canvas.width,this.canvas.height)/this.ratio*0.15-10)/(Z.max() - Z.min());
+}
+DVcanvas.prototype.getRightTextStyle = function(str,length)
+{
+	this.ctx.save();
+	i = 0;
+	for (i=1;i<(Math.min(this.canvas.width,this.canvas.height)/this.ratio/400*23);i++)
+	{
+		this.ctx.font = i+"px Arial";
+		if (this.ctx.measureText(str).width>length)
+		{
+			i = i - 1;
+			this.ctx.restore();
+			return i+"px Arial";
+		}
+	}
+	this.ctx.restore();
+	return i + "px Arial";
+	
+}
+DVcanvas.prototype.Bubble = function(x,y,z,color,text)
+{
+	this.ctx.save();
+	result = this.xyTrans(x,y);
+	z = (z - this.bubbleInc)*this.bubbleRatio+10;
+	this.ctx.fillStyle = color;
+	this.ctx.strokeStyle = color;
+	this.ctx.sector(result[0],result[1],z,0,Math.PI*2);
+	this.ctx.fill();
+	this.ctx.stroke();
+
+	if (arguments.length==5)
+	{
+
+		this.ctx.fillStyle = "#FFF";
+		this.ctx.font = this.getRightTextStyle(text,z);
+
+		this.ctx.textAlign = "center";
+		this.ctx.fillText(text,result[0],result[1]+this.ctx.measureText("D").width/2);
+	}
+
+	this.ctx.restore();
+}
+DVcanvas.prototype.BubbleChart = function(X,Y,Z,text,color)
+{
+	if (X.length!=Y.length || X.length<=0)
+	{
+		console.log("WRONG DATA LENGTH");
+		return 0;
+	}
+	if (!this.Drawed)
+	{
+		this.initial([X.min(),X.max()*1.2],[Y.min(),Y.max()*1.2]);
+		this.drawGrid();
+		this.drawGrad();
+		this.initBubble(Z);
+	}
+	if(arguments.length<5)
+		color = 'rgbA(142,214,249,0.5)';
+	for (var i = 0; i < X.length; i++) {
+		if (arguments.length<=3 || text==0)
+			this.Bubble(X[i],Y[i],Z[i],color);
+		else
+			this.Bubble(X[i],Y[i],Z[i],color,text[i]);
+
+	};
+}
+
+DVcanvas.prototype.MulBubbleChart = function(Xs,Ys,Zs,texts,colors)
+{
+	//TODO.......
+	if (X.length!=Y.length || X.length<=0)
+	{
+		console.log("WRONG DATA LENGTH");
+		return 0;
+	}
+	if (!this.Drawed)
+	{
+		this.initial([X.min(),X.max()*1.2],[Y.min(),Y.max()*1.2]);
+		this.drawGrid();
+		this.drawGrad();
+		this.initBubble(Z);
+	}
+	if(arguments.length<=5)
+		color = 'rgbA(142,214,249,0.5)';
+	for (var i = 0; i < X.length; i++) {
+		if (text==0)
+			this.Bubble(X[i],Y[i],Z[i],color);
+		else
+			this.Bubble(X[i],Y[i],Z[i],color,text[i]);
+
+	};
+} 
 
 //这里可以以这种模式处理，index 和 all 表示是第几项，总共几项
 DVcanvas.prototype.DrawBar = function(X,Y,index,all,color)
@@ -1037,7 +1135,6 @@ DVcanvas.prototype.DrawPie = function(X,Y,colors)
 		this.ctx.sector(CircleDia/2,CircleDia/2,CircleDia/2-20,nowAng,destAng);
 		this.ctx.closePath();
 		this.ctx.fill();
-		//////////////!!!!!TODO////////
 		oldfont = this.ctx.font;
 		
 
@@ -1073,7 +1170,7 @@ Is = function(x) //Inspector
 	if (x>0)
 		return 1;
 	return -1;
-}
+} 
 DVcanvas.prototype.DrawRadar = function(X,Y,Z,min,max,colors)
 {
 	if (X.length != Y.length)
