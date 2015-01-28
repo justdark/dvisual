@@ -53,18 +53,23 @@ CanvasRenderingContext2D.prototype.sector = function (x, y, radius, sDeg, eDeg) 
 }
 //////
 
-function DVColor(r,g,b,a)
-{
-	if (arguments.length<4)
-		this.a = 0.5;
-	if (arguments.length<3)
-		this.b = 100;
-	if (arguments.length<2)
-		this.g = 100;
-	if (arguments.length<1)
-		this.r = 100;
-}
+// function DVColor(r,g,b,a)
+// {
+// 	if (arguments.length<4)
+// 		this.a = 0.5;
+// 	if (arguments.length<3)
+// 		this.b = 100;
+// 	if (arguments.length<2)
+// 		this.g = 100;
+// 	if (arguments.length<1)
+// 		this.r = 100;
+// }
 
+/**
+ * The Main Class of dvisual
+ * @constructor
+ * @param {string} canvasName - The id of the 『canvas』 in the html
+ */
 function DVcanvas(canvasName)
 {
  	this.canvas = document.getElementById(canvasName);
@@ -107,11 +112,22 @@ function DVcanvas(canvasName)
 	this.bubbleRatio = 1;
 	this.bubbleInc = 0;
 }
-
+/**
+ * set the Legend width (in the data scale),try to get a suitable display of Legend
+ * @function
+ * @param {double} width - the legend width you want to set.(in the data scale)
+ */
 DVcanvas.prototype.setLegendWidth = function(width)
 {
 	this.LegendWidth = width;
 }
+
+/**
+ * set the base increment of x and y,to make the visualization in right scale
+ * @function
+ * @param {double} Xinc - the base increment of X
+ * @param {double} Yinc - the base increment of Y
+ */
 DVcanvas.prototype.setinc = function(Xinc,Yinc)
 {
 	if (this.Drawed)
@@ -122,6 +138,13 @@ DVcanvas.prototype.setinc = function(Xinc,Yinc)
 	this.Yinc = Yinc;
 
 };
+
+/**
+ * set the margin of x and y in data scale,calculate the right zoom level for x and y axes
+ * @function
+ * @param {double} Xmargin - the margin of X (tips: X.max() - X.min() for example)
+ * @param {double} Ymargin - the margin of Y
+ */
 DVcanvas.prototype.setmargin = function(Xmargin,Ymargin)
 {
 	if (this.Drawed)
@@ -139,17 +162,18 @@ DVcanvas.prototype.setmargin = function(Xmargin,Ymargin)
 
 };
 
-DVcanvas.prototype.transmargin = function(x)
-{
-	return x*1.0/2*this.ratio;
-}
-
-
-DVcanvas.prototype.drawAxes = function(X_shift,Y_shift,xName,yName) {
+/**
+ * draw the basic X Y Axes on the canvas
+ * @function
+ * @param {string} xName - the text that indicate the X axes
+ * @param {string} yName - the text that indicate the Y axes
+ */
+DVcanvas.prototype.drawAxes = function(xName,yName) {
 	height = this.canvas.height/this.ratio;
 	width = this.canvas.width/this.ratio;
-	this.originX = 40 + X_shift;
-	this.originY = height - 40 - Y_shift;
+
+	this.originX = 40 ;
+	this.originY = height - 40 ;
 	X_axis_Y = this.originY;
 	X_axis_X = width - 10;
 	Y_axis_X = this.originX;
@@ -189,6 +213,12 @@ DVcanvas.prototype.drawAxes = function(X_shift,Y_shift,xName,yName) {
 	
 }
 
+/**
+ * translate the (x,y) coordinate from data scale to real canvas scale.
+ * @function
+ * @param {double} x - the x value in data scale
+ * @param {double} y - the y value in data scale
+ */
 DVcanvas.prototype.xyTrans = function(x,y) {
 	resultX = (x*1.0 - this.Xinc)/this.XZoom/this.ratio + this.originX ;
 	
@@ -196,14 +226,31 @@ DVcanvas.prototype.xyTrans = function(x,y) {
 
 	return [resultX,resultY];
 }
-
+/**
+ * translate the length of x axes from data scale to real canvas scale.
+ * @function
+ * @param {double} len - the length in x axes (data scale)
+ */
 DVcanvas.prototype.xLenTrans = function(len) {
 	return len*1.0/this.XZoom/this.ratio;
 }
-
+/**
+ * translate the length of y axes from data scale to real canvas scale.
+ * @function
+ * @param {double} len - the length in y axes (data scale)
+ */
 DVcanvas.prototype.yLenTrans = function(len) {
 	return len*1.0/this.YZoom/this.ratio;
 }
+
+/**
+ * paint a dot with shadow on the canvas
+ * @function
+ * @param {double} x - the length in y axes (data scale)
+ * @param {double} y - the length in y axes (data scale)
+ * @param {string} color - (Optional Parameters)the dot color you want,be "#FFF" in default
+ * @param {boolean} flag - (Optional Parameters)indicate whether draw a hollow dot,true = yes;false = no; be false in default.
+ */
 DVcanvas.prototype.Dot = function(x,y,color,flag)
 {
 	result = this.xyTrans(x,y)
@@ -215,7 +262,6 @@ DVcanvas.prototype.Dot = function(x,y,color,flag)
 
 		color = "#FFF";
 	}
-
 	if (arguments.length!=4)
 	{
 		this.ctx.fillStyle = "rgba(100,100,100,0.5)";
@@ -235,13 +281,13 @@ DVcanvas.prototype.Dot = function(x,y,color,flag)
 	}
 
 	this.ctx.beginPath();
-	if (arguments.length!=4)
-	this.ctx.arc(result[0],result[1],2,0,2*Math.PI,true);
+	if (arguments.length!=4 || !flag)
+		this.ctx.arc(result[0],result[1],2,0,2*Math.PI,true);
 	else
-	this.ctx.arc(result[0],result[1],Math.min(this.canvas.width,this.canvas.height)/800*4,0,2*Math.PI,true);
+		this.ctx.arc(result[0],result[1],Math.min(this.canvas.width,this.canvas.height)/800*4,0,2*Math.PI,true);
 	this.ctx.closePath();
 	this.ctx.fill();
-	if (arguments.length==4)
+	if (arguments.length==4 && flag)
 	{
 		this.ctx.strokeStyle = bak_color;
 		this.ctx.beginPath();
@@ -249,20 +295,24 @@ DVcanvas.prototype.Dot = function(x,y,color,flag)
 		this.ctx.closePath();
 		this.ctx.stroke();
 	}
-
-
-	
 	this.ctx.restore();
 	
 }
-
+/**
+ * fill a polygon with shadow ont the canvas
+ * @function
+ * @param {Array(double)} X - the array of X coordinates (canvas scale)
+ * @param {Array(double)} Y - the array of Y coordinates ((canvas scale))
+ * @param {boolean} flag - (Optional Parameters) indicate whether draw a normal polygon or an area formed by data and X axes. true in default.
+ * @param {string} color - (Optional Parameters) the polygon color you want,be a random color in default.
+ */
 DVcanvas.prototype.fillPoly = function(X,Y,flag,color)
 {
 	if (arguments.length<4)
 		color = this.getrandomCoLOR(1)[0];
 	if (arguments.length<3)
-		flag = 1;                //默认是首尾相连的多边形， 如果flag为0，则是到X轴的面积图
-	if (flag==0)
+		flag = true;                //默认是首尾相连的多边形， 如果flag为0，则是到X轴的面积图
+	if (!flag)
 	{
 		sort = this.sortXY(X,Y);
 		X = sort[0];
