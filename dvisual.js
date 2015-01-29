@@ -818,7 +818,7 @@ DVLegend.prototype.prepare = function(dv)
 		drawLength = this.args['width']/(6.0/5*this.args.classes.length);
 	}
 
-	font = DVgetRightTextStyle(dv,TextHeight*0.6);
+	font = DVgetRightTextStyle(dv,TextHeight*0.5);
 	boxtopy = this.args.y-this.args.height;
 	if (this.args.outerbox)
 	{
@@ -1775,35 +1775,14 @@ DVRadarChart.prototype.prepare = function(dv)
 			nY = oY + Math.sin(Deg*j+1.5*Math.PI)*r*(this.args.Y[i][j]-this.args.argumin)/this.args.argumax;
 			tmpX.push(nX);
 			tmpY.push(nY);
-			this.eles.push(new DVDot({'x':nX,'y':nY,'color':this.args.colors[i],'style':'stroke'}));
+			//this.eles.push(new DVDot({'x':nX,'y':nY,'color':this.args.colors[i],'style':'stroke'}));
 		}
 		this.eles.push(new DVPolygon({'X':tmpX,'Y':tmpY,'style':'fill','color':this.args.colors[i],'shadow':true,'lineWidth':2}));
 	}
 	xs = 0.8;
 	this.eles.push(new DVLegend({'classes':this.args.X,'colors':this.args.colors,'x':xs*D,'y':dv.oldHeight,
 						'height':(1-xs)*D,'width':(1-xs)*D,'outerbox':this.args.legendOuterBox}))
-	// D = Math.min(dv.oldWidth,dv.oldHeight);
-	// for (var i=0;i<this.args.X.length;i++)
-	// {
-	// 	sDeg = acumDeg;
-	// 	eDeg = sDeg + (this.args.Y[i]*1.0/sum)*(Math.PI*2);
-	// 	str = Math.floor((this.args.Y[i]*1.0/sum).toFixed(2)*100)+"%";
-	// 	r = D*1.0/2/6*5;
-	// 	//alert(D+" "+r)
-	// 	if (this.args.style=='showtext')
-	// 		str = this.args.text[i];
-	// 	else if (this.args.style=='empty')
-	// 		str = "";
-	// 	//
-		
-	// 	//this.eles.push(new DVSector({'x':200,'y':200,'sDeg':Math.PI*1.95 ,'radius':180,'eDeg':Math.PI*2,'innerText':'15%'}));
-	// 	//alert(D/2+" "+sDeg+" "+r+" "+eDeg+" "+str);
-	// 	this.eles.push(new DVSector({'x':D/2-D/15,'y':D/2-D/15,'sDeg':sDeg,'radius':r,'eDeg':eDeg,'innerText':str,'color':this.args.colors[i]}));
-	// 	acumDeg = eDeg;
-	// }
-	// xs = (7.0/24/1.41+5.0/12+1.0/9);
-	// this.eles.push(new DVLegend({'classes':this.args.X,'colors':this.args.colors,'x':xs*D,'y':dv.oldHeight,
-	// 					'height':(1-xs)*D,'width':(1-xs)*D,'outerbox':this.args.legendOuterBox}))
+
 }
 DVRadarChart.prototype.draw = function(dv)
 {
