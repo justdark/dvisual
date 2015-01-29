@@ -10,7 +10,7 @@ Code Files
 
 `./dvisual.js` -the main js file
 
-`./test.html` -the test html file
+`./example.html` -the test html file
 
 ----------------------------------------------
 <script type="text/javascript" src="dv.js">
@@ -141,7 +141,7 @@ TODO
 ----------------------------------------------
 Install
 ===
-just use the `dv.js` as usual
+just use the `dvisual.js` as usual
 
 ----------------------------------------------
 Warning
