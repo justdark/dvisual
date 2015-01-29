@@ -47,42 +47,12 @@ Array.prototype.min = function()
 { 
 	return Math.min.apply({},this) 
 } 
-
-
-function DVColor(r,g,b,a)
-{
-	if (arguments.length<4)
-		a = 1;
-	if (arguments.length<3)
-		b = 0;
-	if (arguments.length<2)
-		g = 0;
-	if (arguments.length<1)
-		r = 0;
-	this.a = a;
-	this.r = r;
-	this.g = g;
-	this.b = b;
-}
-DVColor.prototype.tostring = function()
-{
-	return "rgba("+this.r+","+this.g+","+this.b+","+this.a+")";
-}
-
-function getEventPosition(ev){
-  	var x, y;
-  	if (ev.layerX || ev.layerX == 0) {
-    	x = ev.layerX;
-    	y = ev.layerY;
- 	}else if (ev.offsetX || ev.offsetX == 0) { // Opera
-    	x = ev.offsetX;
-    	y = ev.offsetY;
-  	}
-  	return {x: x, y: y};
-}
-
-
-
+/**
+ * The Main Class of DVisual
+ * @constructor
+ * @param {string} canvasName - the canvas's id you want to paint
+ * @example new DVisual(canvas_id);
+ */
 function DVisual(canvasName)
 {
 	reshape_flag = true;
@@ -149,12 +119,80 @@ function DVisual(canvasName)
     // }, false);
   
 }
+
+/**
+ * The Formated Color Class of DVisual
+ * @constructor
+ * @param {double} r - the Red component of RGBs,0 in default,[0-256]
+ * @param {double} g - the Green component of RGBs,0 in default,[0-256]
+ * @param {double} b - the Blue component of RGBs,0 in default,[0-256]
+ * @param {double} a - the Alpha component of RGBa,1 in default,[0-1]
+ */
+function DVColor(r,g,b,a)
+{
+	if (arguments.length<4)
+		a = 1;
+	if (arguments.length<3)
+		b = 0;
+	if (arguments.length<2)
+		g = 0;
+	if (arguments.length<1)
+		r = 0;
+	this.a = a;
+	this.r = r;
+	this.g = g;
+	this.b = b;
+}
+/**
+ * translate the color to the html color style
+ * @function
+ * @return {string} the rgba style string
+ */
+DVColor.prototype.tostring = function()
+{
+	return "rgba("+this.r+","+this.g+","+this.b+","+this.a+")";
+}
+
+/**
+ * get the eventPosition on canvas
+ * @function
+ * @return {{}} {x:x,y:y}
+ */
+function getEventPosition(ev){
+  	var x, y;
+  	if (ev.layerX || ev.layerX == 0) {
+    	x = ev.layerX;
+    	y = ev.layerY;
+ 	}else if (ev.offsetX || ev.offsetX == 0) { // Opera
+    	x = ev.offsetX;
+    	y = ev.offsetY;
+  	}
+  	return {x: x, y: y};
+}
+
+
+
+/**
+ * translate the x and y coordinate from data space to real canvas space
+ * @function
+ * @param {double} x - x value in data space
+ * @param {double} y - y value in data space
+ * @return {Array(double)} [resultX,resultY] - the real coordinate value of (x,y)
+ */
 DVisual.prototype.xyTrans = function(x,y)
 {
 	resultX = (x*1.0 - this.Xinc)/this.XZoom + this.originX;
 	resultY = this.originY - (y*1.0 - this.Yinc)/this.YZoom;
 	return [resultX,resultY]
 }
+
+/**
+ * translate the x and y coordinate from real canvas space to data space
+ * @function
+ * @param {double} x - x value in real canvas space
+ * @param {double} y - y value in real canvas space
+ * @return {Array(double)} [resultX,resultY] - the real coordinate value of (x,y)
+ */
 DVisual.prototype.transXY = function(x,y)
 {
 	resultX = (x - this.originX)*this.XZoom+this.Xinc;
@@ -162,14 +200,31 @@ DVisual.prototype.transXY = function(x,y)
 	return [resultX,resultY]
 }
 
+/**
+ * translate the x length from data space to real canvas space
+ * @function
+ * @param {double} len - the length in data space
+ * @return {double} length - the length in real canvas space
+ */
 DVisual.prototype.xLenTrans = function(len) {
 	return len*1.0/this.XZoom;
 }
 
+/**
+ * translate the y length from data space to real canvas space
+ * @function
+ * @param {double} len - the length in data space
+ * @return {double} length - the length in real canvas space
+ */
 DVisual.prototype.yLenTrans = function(len) {
 	return len*1.0/this.YZoom;
 }
 
+/**
+ * initialize the Z data degree for zoom
+ * @function
+ * @param {Array(double)} Z - the Z degree data,should contain the maxium and minum.
+ */
 DVisual.prototype.initialZ = function(Z) {
 		zmm = [Z.min(),Z.max()];
 		this.zinc = 0;
@@ -178,17 +233,36 @@ DVisual.prototype.initialZ = function(Z) {
 		this.Zzoom = (Math.min(this.oldWidth,this.oldHeight)/10 - 5)/(zmm[1] - this.zinc);
 }
 
+/**
+ * translate the z length from data space to real canvas space
+ * @function
+ * @param {double} len - the length in data space
+ * @return {double} length - the length in real canvas space
+ */
 DVisual.prototype.zLenTrans = function(len)
 {
 		return (len - this.zinc)*this.Zzoom+5;
 
 }
 
+/**
+ * set the base value of X and Y
+ * @function
+ * @param {double} Xinc - the base increment value of X
+ * @param {double} Yinc - the base increment value of Y
+ */
 DVisual.prototype.setinc = function(Xinc,Yinc)
 {
 	this.Xinc = Xinc;
 	this.Yinc = Yinc;
 };
+
+/**
+ * set the margin of data space,set the zoom value of x and y;
+ * @function
+ * @param {double} Xmargin - the margin of X in data space
+ * @param {double} Ymargin - the margin of Y in data space
+ */
 DVisual.prototype.setmargin = function(Xmargin,Ymargin)
 {	
 	this.XZoom = Xmargin*1.2/this.Xmargin;
@@ -197,6 +271,12 @@ DVisual.prototype.setmargin = function(Xmargin,Ymargin)
 	this.Ymargin = Ymargin*1.2;
 };
 
+/**
+ * intialize the zoom and margin of X and Y
+ * @function
+ * @param {Array(double)} X - the data'X
+ * @param {Array(double)} Y - the data'Y 
+ */
 DVisual.prototype.initial = function(X,Y)
 {	
 	incX = Math.min(0.0,Math.floor(X.min()));
@@ -229,12 +309,21 @@ DVisual.prototype.initial = function(X,Y)
 	this.Drawed = true;
 };
 
-
+/**
+ * add the element to the main class
+ * @function
+ * @param {DVElement} ele - DVElement can be any DVisual Graph Class,contain a draw() fucntion to draw itself on canvas.
+ */
 DVisual.prototype.addElement = function(ele)
 {
 
 	this.eles.push(ele);
 }
+
+/**
+ * draw all graph on the canvas
+ * @function
+ */
 DVisual.prototype.draw = function()
 {
 	for (var i=this.eles.length-1;i>=0;i--)
@@ -243,9 +332,23 @@ DVisual.prototype.draw = function()
 
 
 
-//args : x,y,color,style,shadow,description
+/**
+ * A DVisual graph element indicate a dot.(bubble)
+ * @constructor
+ * @example new DVDot({'x':100,'y':100});
+ * @param {Object[]} args - a array contain arguments below
+ * @param {double} args.x - the x value of the dot
+ * @param {double} args.y - the y value of the dot,0 in default
+ * @param {DVColor=} [args.color = new DVColor()] - the color of the dot,black in default
+ * @param {string=} [args.style ='fill']- the style of this dot,should be one of 'fill','stroke' and 'bubble'
+ * @param {boolean=} [args.shadow ='true'] - whether draw dot's shadow.
+ * @param {double=} [args.radius = '2'] - the radius of this dot(a circle)
+ * @param {double=} [args.lineWidth = '1'] - the lineWidth of this dot(a circle)
+ */
+
 function DVDot(args)
 {
+
 	if (arguments.length==0)
 		args = {};
 	this.args = args.cloneAll();
@@ -272,6 +375,11 @@ function DVDot(args)
 
 }
 
+/**
+ * draw the dot on dv's canvas
+ * @function
+ * @param {DVisual} dv - the Dvisual instance you want to draw the dot
+ */
 DVDot.prototype.draw = function(dv)
 {
 	dv.ctx.save();
@@ -317,6 +425,24 @@ DVDot.prototype.draw = function(dv)
 	dv.ctx.restore();
 }
 
+
+/**
+ * A DVisual graph element indicate a text
+ * @constructor
+ * @example new DVDot({'x':100,'y':100,'font'="13px Arial"});
+ * @param {Object[]} args - a array contain arguments below
+ * @param {double} args.x - the x value of the dot
+ * @param {double} args.y - the y value of the dot,0 in default
+ * @param {string} args.text - the text content you want to draw
+ * @param {string=} [args.font="8px Arial"] - the text's font
+ * @param {DVColor=} [args.color = new DVColor()] - the color of the dot,black in default
+ * @param {string=} [args.style ='fill']- the style of this dot,should be one of 'fill','stroke'
+ * @param {boolean=} [args.shadow =true] - whether draw text's shadow.
+ * @param {double=} [args.maxwidth =-1] - the limited width of printed text,-1 means no limit
+ * @param {string=} [args.textAlign = 'left'] - the text align of printed text position
+ * @param {string=} [args.direction = 'horizontal'] - the direction of text:horizontal or vertical
+ * @param {double=} [args.lineWidth = '1'] - the lineWidth of text
+ */
 function DVText(args)
 {
 	if (arguments.length==0)
@@ -349,14 +475,18 @@ function DVText(args)
 	if (args['lineWidth']==null)
 		this.args['lineWidth'] = 1;
 
-	if (args['testAlign']==null)
-		this.args['testAlign'] = 'left';
+	if (args['textAlign']==null)
+		this.args['textAlign'] = 'left';
 
 	if (args['direction']==null || (args['direction']!='vertical' && args['direction']!='horizontal'))
 		this.args['direction'] = 'horizontal';
 
 }
-
+/**
+ * draw the text on dv's canvas
+ * @function
+ * @param {DVisual} dv - the Dvisual instance you want to draw
+ */
 DVText.prototype.draw = function(dv)
 {
 	dv.ctx.save();
@@ -408,7 +538,21 @@ DVText.prototype.draw = function(dv)
 	}
 	dv.ctx.restore();
 }
-//args: beginX,beginY,endX,endY,shadow,color,lineWidth,style
+
+/**
+ * A DVisual graph element indicate a line
+ * @constructor
+ * @example new DVLine({'beginX':100,'beginY':100,'endX':20,'endY':20,'style':'dash'});
+ * @param {Object[]} args - a array contain arguments below
+ * @param {double} args.beginX - the x value of the start node
+ * @param {double} args.beginY - the y value of the start node
+ * @param {double} args.endX - the x value of the stop node
+ * @param {double} args.endY - the y value of the stop node
+ * @param {DVColor=} [args.color = new DVColor()] - the color of the dot,black in default
+ * @param {string=} [args.style ='real']- the style of this dot,should be one of 'real','dash'
+ * @param {boolean=} [args.shadow =true] - whether draw the line's shadow.
+ * @param {double=} [args.lineWidth = '1'] - the lineWidth of line
+ */
 function DVLine(args)
 {
 	if (arguments.length==0)
@@ -438,6 +582,11 @@ function DVLine(args)
 	if (args['lineWidth']==null)
 		this.args['lineWidth'] = 1;
 }
+/**
+ * get the shadow according to the line's direction
+ * @function
+ * @return [0,1]
+ */
 DVLine.prototype.getShadow = function()
 {
 	// if ((this.args.beginX<this.args.endX && this.args.beginY<=this.args.endY)
@@ -445,6 +594,13 @@ DVLine.prototype.getShadow = function()
 	// 	return [0,-1]
 	return [0,1]
 }
+/**
+ * whether the node in the lines's region
+ * @function
+ * @param {double} x -the x value of test node
+ * @param {double} y -the y value of test node
+ * @return {boolean} result -whether (x,y) is in the line's region
+ */
 DVLine.prototype.between =function(x,y)
 {
 	if (x>=Math.min(this.args['beginX'],this.args['endX']) && x<=Math.max(this.args['beginX'],this.args['endX']) &&
@@ -452,6 +608,11 @@ DVLine.prototype.between =function(x,y)
 		return true;
 	return false;
 }
+/**
+ * draw the line on dv's canvas
+ * @function
+ * @param {DVisual} dv - the Dvisual instance you want to draw 
+ */
 DVLine.prototype.draw = function(dv)
 {
 	dv.ctx.save();
@@ -511,8 +672,19 @@ DVLine.prototype.draw = function(dv)
 }
 
 
-//X,Y:Array();color,style("fill","stroke","transFill"),lineWidth,shadow,
-function DVPolygon(args)
+/**
+ * A DVisual graph element indicate a polygon
+ * @constructor
+ * @example new DVPolygon({'X':[10,10,20,20],'Y':[10,20,20,10],'style':'stroke'});
+ * @param {Object[]} args - a array contain arguments below
+ * @param {Array(double)} args.X - the set of a series nodes' x value
+ * @param {Array(double)} args.Y - the set of a series nodes' y value
+ * @param {DVColor=} [args.color = new DVColor()] - the color of the dot,black in default
+ * @param {string=} [args.style ='fill']- the style of this dot,should be one of 'fill','stroke'
+ * @param {boolean=} [args.shadow =true] - whether draw text's shadow.
+ * @param {double=} [args.lineWidth = '1'] - the lineWidth of text
+ */
+ function DVPolygon(args)
 {
 	if (arguments.length==0)
 		args = {};
@@ -539,6 +711,12 @@ function DVPolygon(args)
 		this.args['lineWidth'] = 1;
 
 }
+
+/**
+ * draw the polygon on dv's canvas
+ * @function
+ * @param {DVisual} dv - the Dvisual instance you want to draw 
+ */
 DVPolygon.prototype.draw = function(dv)
 {
 	dv.ctx.save();
@@ -600,7 +778,17 @@ DVPolygon.prototype.draw = function(dv)
 	dv.ctx.restore();
 }
 
-//polygon 变形
+/**
+ * A DVisual graph element indicate a Rect
+ * @constructor
+ * @example new DVLine({'beginX':100,'beginY':100,'endX':20,'endY':20,'style':'dash'});
+ * @param {Object[]} args - a array contain arguments below
+ * @param {double} args.x - the x value of the Rect's start node(left top node)
+ * @param {double} args.y - the y value of the Rect's start node(left top node)
+ * @param {double} args.height - the height of the Rect
+ * @param {double} args.y - the width of the Rect
+ * @param {others=} [args.others] - !!!the same with DVPolygon's arguments.!!!(others is not an argument,but an annotation)
+ */
 function DVRect(args)
 {
 	if (arguments.length==0)
@@ -618,7 +806,11 @@ function DVRect(args)
 	if (args['width']==null)
 		this.args['width'] = 0;
 }
-
+/**
+ * draw the Rect on dv's canvas
+ * @function
+ * @param {DVisual} dv - the Dvisual instance you want to draw 
+ */
 DVRect.prototype.draw = function(dv)
 {
 	if (this.polyRect==null)
@@ -630,13 +822,22 @@ DVRect.prototype.draw = function(dv)
 	this.polyRect.draw(dv);
 }
 
-//args: xGrid :boolean
-//      yGrid :boolean
-//      xStyle : 'value','class'
-//      xDescript : string
-//		yDescript : string
-//		xSpan : double
-//      ySpan : double
+/**
+ * A DVisual graph element indicate a Coordinate,the main structure of most chart
+ * @constructor
+ * @example new DVCoordinate({'xDescript':"time",'yDescript':"value",'xSpan':20,'ySpan'});
+ * @param {Object[]} args - a array contain arguments below
+ * @param {boolean} args.xGrid - whether draw the grid line started from X axes
+ * @param {boolean} args.yGrid - whether draw the grid line started from Y axes
+ * @param {string=} [args.xStyle='value'] - the X axes's style,'value' or 'class'
+ * @param {string=} [args.yStyle='value'] - the Y axes's style,'value' or 'percentage%'
+ * @param {Array(string)} args.classes - when x's Style is 'class',you need this argument to show the texts of each class on the X-axes
+ * @param {string=} [args.xDescript='x'] - the X axes's description
+ * @param {string=} [args.yDescript='y'] - the Y axes's description
+ * @param {double} args.xSpan - the increment on x value in each grid,(data space)
+ * @param {double} args.ySpan - the increment on y value in each grid,(data space)
+ * @param {double=} [args.lineWidth = '1'] - the lineWidth of text
+ */
 function DVCoordinate(args)
 {
 	if (arguments.length==0)
@@ -675,6 +876,11 @@ function DVCoordinate(args)
 	this.eles = new Array();
 
 }
+/**
+ * prepare the needed elements on the first time to draw it
+ * @function
+ * @param {DVisual} dv - the Dvisual instance you want to draw 
+ */
 DVCoordinate.prototype.prepare = function(dv)
 {
 	x_axes_arg = {'beginX':dv.originX,'beginY':dv.originY,'endX':dv.oldWidth-20,'endY':dv.originY};
@@ -758,7 +964,11 @@ DVCoordinate.prototype.prepare = function(dv)
 		y += this.args.ySpan;
 	}
 }
-
+/**
+ * draw the Coordinate on dv's canvas
+ * @function
+ * @param {DVisual} dv - the Dvisual instance you want to draw 
+ */
 DVCoordinate.prototype.draw = function(dv)
 {
 	if (this.eles.length==0)
@@ -771,6 +981,21 @@ DVCoordinate.prototype.draw = function(dv)
 
 
 
+/**
+ * A DVisual graph element indicate a Legend,an important structure of most chart
+ * @constructor
+ * @example new DVLegend({'xDescript':"time",'yDescript':"value",'xSpan':20,'ySpan'});
+ * @param {Object[]} args - a array contain arguments below
+ * @param {Array(string)} args.classes - the classes's texts for the legend
+ * @param {Array(DVColor)=} [args.colors=DVgetRandomColor(this.args.classes.length,0.7);] - the classes's colors for the legend
+ * @param {double} args.x - the x value of the Legend's start node(left bottom node)
+ * @param {double} args.y - the y value of the Legend's start node(left bottom node)
+ * @param {string=} [args.style='rect'] - the legend's note shape for each class,'rect','line' or 'bubble'
+ * @param {boolean=} [args.outerbox='true'] - whether draw the outerbox of legend
+ * @param {string=} [args.direction='vertical'] - the direction of legend,'vertical' means put all data in a column.'horizontal' means in a row
+ * @param {double=} [args.height=!!according to the canvas!!] - the height limit of Legend
+ * @param {double=} [args.width=!!according to the canvas!!] - the width limit of Legend
+ */
 function DVLegend(args)
 {
 	if (arguments.length==0)
@@ -806,12 +1031,23 @@ function DVLegend(args)
 	this.eles = new Array();
 
 }
+/**
+ * get the legend's height and width according to the dvisual instance
+ * @function
+ * @param {DVisual} dv - the Dvisual instance you want to draw 
+ * @return {Array} result - [height,width] 
+ */
 DVLegend.prototype.getHeightWidth =function(dv)
 {
 	if (this.args['direction']=='vertical')
 		return [dv.yLenTrans((dv.Ymargin*1.0/6)),dv.xLenTrans((dv.Xmargin*1.0/5))]
 	return [20,dv.xLenTrans((dv.Xmargin*1.0*2/3))]
 }
+/**
+ * prepare the needed elements on the first time to draw it
+ * @function
+ * @param {DVisual} dv - the Dvisual instance you want to draw 
+ */
 DVLegend.prototype.prepare = function(dv)
 {
 	if (this.args['width']==0 && this.args['height']==0)
@@ -876,6 +1112,11 @@ DVLegend.prototype.prepare = function(dv)
 	}
 	dv.ctx.restore();
 }
+/**
+ * draw the Coordinate on dv's canvas
+ * @function
+ * @param {DVisual} dv - the Dvisual instance you want to draw 
+ */
 DVLegend.prototype.draw = function(dv)
 {
 	if (this.eles.length==0)
@@ -886,6 +1127,13 @@ DVLegend.prototype.draw = function(dv)
 		this.eles[i].draw(dv);
 }
 
+/**
+ * get the fitted font style according to the height of text
+ * @function
+ * @param {DVisual} dv - the Dvisual instance you want to draw 
+ * @param {double} length - the height limit of text
+ * @return {string} font - the fitted font string.
+ */
 DVgetRightTextStyle = function(dv,length)
 {
 	dv.ctx.save();
@@ -905,6 +1153,14 @@ DVgetRightTextStyle = function(dv,length)
 	
 }
 
+/**
+ * get the fitted font style according to text and the length limit of text
+ * @function
+ * @param {DVisual} dv - the Dvisual instance you want to draw 
+ * @param {string} str - the text you want to draw
+ * @param {double} length - the height limit of text
+ * @return {string} font - the fitted font string.
+ */
 DVgetRightTextStyleByStrLenght = function(dv,str,length)
 {
 	dv.ctx.save();
@@ -924,9 +1180,24 @@ DVgetRightTextStyleByStrLenght = function(dv,str,length)
 	
 }
 
-//style : 'dot' 'line' 'area'  ||style可叠加使用
-//color,X,Y
-//lineWidth
+ 
+
+/**
+ * A DVisual graph element indicate a LineChart,integrate the dot,line,area or bubble  chart for a single path
+ * @constructor
+ * @example new DVLineChart({'X':[1,2,3,4,5],'Y':[1,2,3,4,5],'style':'area|dot'});
+ * @param {Object[]} args - a array contain arguments below
+ * @param {Array(double)} args.X - the set of a series nodes' x value
+ * @param {Array(double)} args.Y - the set of a series nodes' y value
+ * @param {string=} [args.style='dot|line'] - the legend's note shape for each class,'dot','line','area' can be used simultaneously,'bubble' style is unique
+ * @param {DVColor=} [args.color = new DVColor(256,0,0,0.8)] - the color of the line/dot/area/bubble
+ * @param {double=} [args.lineWidth = '1'] - the lineWidth of graph
+ * @param {string=} [args.xDescript='x'] - the X axes's description
+ * @param {string=} [args.yDescript='y'] - the Y axes's description
+ * @param {boolean=} [args.xGrid=true] - whether draw the grid line started from X axes
+ * @param {boolean=} [args.yGrid=true] - whether draw the grid line started from Y axes
+ * @param {Array(double)} args.bubbleRadius - when the style is bubble,you should indicate the radius for each bubble
+ */
 function DVLineChart(args)
 {
 	if (arguments.length==0)
@@ -965,6 +1236,11 @@ function DVLineChart(args)
 
 	this.eles = new Array();
 }
+/**
+ * prepare the needed elements on the first time to draw it
+ * @function
+ * @param {DVisual} dv - the Dvisual instance you want to draw 
+ */
 DVLineChart.prototype.prepare = function(dv)
 {
 	if (!dv.drawed)
@@ -1021,6 +1297,11 @@ DVLineChart.prototype.prepare = function(dv)
 		}
 	}
 }
+/**
+ * draw the DVLineChart on dv's canvas
+ * @function
+ * @param {DVisual} dv - the Dvisual instance you want to draw 
+ */
 DVLineChart.prototype.draw = function(dv)
 {
 	if (this.eles.length==0)
@@ -1030,10 +1311,24 @@ DVLineChart.prototype.draw = function(dv)
 	for (var i=this.eles.length-1;i>=0;i--)
 		this.eles[i].draw(dv);
 }
+/**
+ * get a random number in certain margin
+ * @function
+ * @param {double} N - the margin of random number you want
+ * @return {double} randomN - the random number
+ */
 function getrandom(N)
 {
 	return Math.floor(Math.random() * ( N + 1));
 }
+
+/**
+ * get a series of DVColor
+ * @function
+ * @param {int} lens - how many colors you want.
+ * @param {double=} [alpha=0.7] - the alpha component 
+ * @return {Array()} randomN - the random color set
+ */
 function DVgetRandomColor(lens,alpha)
 {
 	result = new Array();
@@ -1045,6 +1340,12 @@ function DVgetRandomColor(lens,alpha)
 	}
 	return result
 }
+/**
+ * get the min and max for a 2d array
+ * @function
+ * @param {Array(Array(double))} Xs - the 2d Array
+ * @return {Array()} [min,max] - the minium and maxium of the 2D array.
+ */
 function DV2dArrMinMax(Xs)
 {
 	mins = 100000;
@@ -1058,6 +1359,21 @@ function DV2dArrMinMax(Xs)
 	return [mins,maxx]
 }
 
+/**
+ * A DVisual graph element indicate a Multiple Line Chart,integrate the dot,line,area or bubble  chart for multiple path
+ * @constructor
+ * @example new DVMulLineChart({'Xs':[[1,2,3,4,5,6],[1,2,3,4,5,6]],'Ys':[[1,2,3,4,3,6],[3,5,2,7,5,2]],'classes':['A','B'],'style':'dot|line'});
+ * @param {Object[]} args - a array contain arguments below
+ * @param {Array(Array(double))} args.Xs - the set of multiple series nodes' x value,the length indicate how many kinds (dot,line,area,bubble)'s  you want to draw
+ * @param {Array(Array(double))} args.Ys - the set of multiple series nodes' y value,the length indicate how many kinds (dot,line,area,bubble)'s  you want to draw
+ * @param {boolean=} [args.legendOuterBox=true] - whether draw the outer box of legend
+ * @param {Array(Array(double))=} args.Zs - !!!the third degree of data,the bubble chart need it.!!!
+ * @param {Array(string)} args.classes - the description for each set of (dot,line,area,bubble),the length is the kinds number of (dot,line,area,bubble)
+ * @param {string=} [args.xDescript='x'] - the X axes's description
+ * @param {string=} [args.yDescript='y'] - the Y axes's description
+ * @param {boolean=} [args.xGrid=true] - whether draw the grid line started from X axes
+ * @param {boolean=} [args.yGrid=true] - whether draw the grid line started from Y axes
+ */
 function DVMulLineChart(args)
 {
 	if (arguments.length==0)
@@ -1102,6 +1418,11 @@ function DVMulLineChart(args)
 
 	this.eles = new Array();
 }
+/**
+ * prepare the needed elements on the first time to draw it
+ * @function
+ * @param {DVisual} dv - the Dvisual instance you want to draw 
+ */
 DVMulLineChart.prototype.prepare = function(dv)
 {
 	dv.drawed = true;
@@ -1161,6 +1482,11 @@ DVMulLineChart.prototype.prepare = function(dv)
 
 	}
 }
+/**
+ * draw the DVMulLineChart on dv's canvas
+ * @function
+ * @param {DVisual} dv - the Dvisual instance you want to draw 
+ */
 DVMulLineChart.prototype.draw = function(dv)
 {
 	if (this.eles.length==0)
@@ -1172,7 +1498,26 @@ DVMulLineChart.prototype.draw = function(dv)
 }
 
 
-///////////////style : bar stack
+
+/**
+ * A DVisual graph element indicate a Bar Chart,integrate the normal,stacked bar chart.
+ * @constructor
+ * @param {Object[]} args - a array contain arguments below
+ * @param {Array(string)} args.X - a list of string for each x-label
+ * @param {Array(double)} args.Y - the set of a series value
+ * @param {string=} [args.style='bar'] - the style of bar chart,'stacked' or 'bar'
+ * @param {Array(Array(double))} args.stackedY - use for stacked bar chart,for each element in this array have #stacked_component numbers.
+ * @param {Array(string)} args.stackedClass - a series of string indicate each stacked_component class.
+ * @param {Array(DVColor)} args.stackedColors - a series of DVColor indicate each stacked_component class.
+ * @param {int} args.all - how many bar you want for each X-label
+ * @param {int} args.index - current data is the i-th bar for the each X-label
+ * @param {DVColor=} [args.color = new DVColor(256,0,0,0.8)] - the color of the bar(normal bar)
+ * @param {boolean=} [args.xGrid=false] - whether draw the grid line started from X axes
+ * @param {boolean=} [args.yGrid=true] - whether draw the grid line started from Y axes
+ * @param {string=} [args.xDescript='x'] - the X axes's description
+ * @param {string=} [args.yDescript='y'] - the Y axes's description
+ * @param {boolean=} [args.legendOuterBox=true] - whether draw the outer box of legend
+ */
 function DVBarChart(args)
 {
 	if (arguments.length==0)
@@ -1226,7 +1571,11 @@ function DVBarChart(args)
 
 	this.eles = new Array();
 }
-
+/**
+ * prepare the needed elements on the first time to draw it
+ * @function
+ * @param {DVisual} dv - the Dvisual instance you want to draw 
+ */
 DVBarChart.prototype.prepare = function(dv)
 {
 	if (!dv.drawed)
@@ -1304,6 +1653,11 @@ DVBarChart.prototype.prepare = function(dv)
 	// 	Ys.push(result[1]);
 	// }
 }
+/**
+ * draw the DVBarChart on dv's canvas
+ * @function
+ * @param {DVisual} dv - the Dvisual instance you want to draw 
+ */
 DVBarChart.prototype.draw = function(dv)
 {
 	if (this.eles.length==0)
@@ -1314,7 +1668,22 @@ DVBarChart.prototype.draw = function(dv)
 		this.eles[i].draw(dv);
 }
 
-//style 只能是bar
+
+
+/**
+ * A DVisual graph element indicate a Muliple Bar Chart
+ * @constructor
+ * @param {Object[]} args - a array contain arguments below
+ * @param {Array(string)} args.X - a list of string for each x-label
+ * @param {Array(Array(double))} args.Ys - 2d Array,indicate a series bar value for each x-label.
+ * @param {Array(string)} args.Z - a list of string indicate each kind of bar
+ * @param {boolean=} [args.legendOuterBox=true] - whether draw the outer box of legend
+ * @param {Array(DVColor)=} {args.colors=DVgetRandomColor(this.args['Z'].length)} - a series of DVColor indicate each kind of bar.
+ * @param {boolean=} [args.xGrid=false] - whether draw the grid line started from X axes
+ * @param {boolean=} [args.yGrid=true] - whether draw the grid line started from Y axes
+ * @param {string=} [args.xDescript='x'] - the X axes's description
+ * @param {string=} [args.yDescript='y'] - the Y axes's description
+ */
 function DVMulBarChart(args)
 {
 	if (arguments.length==0)
@@ -1353,6 +1722,11 @@ function DVMulBarChart(args)
 
 	this.eles = new Array();
 }
+/**
+ * prepare the needed elements on the first time to draw it
+ * @function
+ * @param {DVisual} dv - the Dvisual instance you want to draw 
+ */
 DVMulBarChart.prototype.prepare = function(dv)
 {
 	dv.drawed = true;
@@ -1377,6 +1751,11 @@ DVMulBarChart.prototype.prepare = function(dv)
 	
 
 }
+/**
+ * draw the DVMulLineChart on dv's canvas
+ * @function
+ * @param {DVisual} dv - the Dvisual instance you want to draw 
+ */
 DVMulBarChart.prototype.draw = function(dv)
 {
 	if (this.eles.length==0)
@@ -1388,7 +1767,20 @@ DVMulBarChart.prototype.draw = function(dv)
 }
 
 
-//style 只能是bar
+/**
+ * A DVisual graph element indicate a Histgram Chart
+ * @constructor
+ * @param {Object[]} args - a array contain arguments below
+ * @param {Array(double)} args.X - a series of value,the hist chart will be created by this data
+ * @param {DVColor=} [args.color = new DVColor(256,0,0,0.8)] - the color of the bar(normal bar)
+ * @param {sec=} [args.sec = this.getsec(this.args.X)] - the segment for the input data for each hist,will be calculate in default.
+ * @param {string=} [args.yStyle='value'] - show the value of each bar or the percentage,'value' or 'percentage'
+ * @param {double=} [args.lineWidth = '1'] - the lineWidth of graph
+ * @param {string=} [args.xDescript='x'] - the X axes's description
+ * @param {string=} [args.yDescript='y'] - the Y axes's description
+ * @param {boolean=} [args.xGrid=false] - whether draw the grid line started from X axes
+ * @param {boolean=} [args.yGrid=true] - whether draw the grid line started from Y axes
+ */
 function DVHistChart(args)
 {
 	if (arguments.length==0)
@@ -1424,6 +1816,12 @@ function DVHistChart(args)
 
 	this.eles = new Array();
 }
+/**
+ * calculate the segment if the user haven't set.
+ * @function
+ * @param {Array(double)} X - the set of input data
+ * @return {double} sec - the segment ofr the hist chart
+ */
 DVHistChart.prototype.getsec = function(X)
 {
 	this.incX = 0.0;
@@ -1447,27 +1845,38 @@ DVHistChart.prototype.getsec = function(X)
 	}
 	return 1;
 }
-function DVGetSpan(Ymargin)
+/**
+ * get the span for a settled margin
+ * @function
+ * @param {double} margin - the margin
+ * @return {double} Span - the span for the input margin
+ */
+function DVGetSpan(margin)
 {
-	ySpan = 1;
-	if (Ymargin<0.5)
-		ySpan = 0.05;
-	else if (Ymargin<1)
-		ySpan = 0.1;
-	else if (Ymargin<5)
-		ySpan = 0.5;
-	else if (Ymargin<15)
-		ySpan = 1;
-	else if (Ymargin<50)
-		ySpan = 5;
-	else if (Ymargin<100)
-		ySpan = 10;
-	else if (Ymargin<500)
-		ySpan = 50;
-	else if (Ymargin<1000)
-		ySpan = 100;
-	return ySpan;
+	Span = 1;
+	if (margin<0.5)
+		Span = 0.05;
+	else if (margin<1)
+		Span = 0.1;
+	else if (margin<5)
+		Span = 0.5;
+	else if (margin<15)
+		Span = 1;
+	else if (margin<50)
+		Span = 5;
+	else if (margin<100)
+		Span = 10;
+	else if (margin<500)
+		Span = 50;
+	else if (margin<1000)
+		Span = 100;
+	return Span;
 }
+/**
+ * prepare the needed elements on the first time to draw it
+ * @function
+ * @param {DVisual} dv - the Dvisual instance you want to draw 
+ */
 DVHistChart.prototype.prepare = function(dv)
 {
 
@@ -1519,6 +1928,11 @@ DVHistChart.prototype.prepare = function(dv)
 						'text':str,'textAlign':'center'}))
 	}
 }
+/**
+ * draw the DVMulLineChart on dv's canvas
+ * @function
+ * @param {DVisual} dv - the Dvisual instance you want to draw 
+ */
 DVHistChart.prototype.draw = function(dv)
 {
 	if (this.eles.length==0)
@@ -1529,7 +1943,21 @@ DVHistChart.prototype.draw = function(dv)
 		this.eles[i].draw(dv);
 }
 
-
+/**
+ * A DVisual graph element indicate a sector
+ * @constructor
+ * @param {Object[]} args - a array contain arguments below
+ * @param {double} args.x - the center's x value
+ * @param {double} args.y - the center's y value
+ * @param {double} args.radius - the radius of sector
+ * @param {double} args.sDeg - the stared angle Degree
+ * @param {double} args.eDeg - the end angle Degree
+ * @param {DVColor=} [args.color = DVgetRandomColor(1,0.6)[0]] - the color of the dot,random in default
+ * @param {boolean=} [args.pop =false] - whether poo out this sector
+ * @param {boolean=} [args.shadow =true] - whether draw text's shadow.
+ * @param {string=} [args.style ='fill']- the style of this sector,should be one of 'fill','stroke','transFill' means translucent fill.
+ * @param {string=} [args.innerText ='']- the text you want to shao in the center of sector
+ */
 function DVSector(args)
 {
 	if (arguments.length==0)
@@ -1574,6 +2002,12 @@ function DVSector(args)
 		this.args['y']+=this.args.radius/20*Math.sin((this.args.sDeg + this.args.eDeg)*1.0/2);
 	}
 }
+
+/**
+ * draw the sector on dv's canvas
+ * @function
+ * @param {DVisual} dv - the Dvisual instance you want to draw 
+ */
 DVSector.prototype.draw = function(dv)
 {
 	dv.ctx.save();
@@ -1635,6 +2069,18 @@ DVSector.prototype.draw = function(dv)
 	dv.ctx.restore();
 }
 
+
+/**
+ * A DVisual graph element indicate a Pie Chart
+ * @constructor
+ * @param {Object[]} args - a array contain arguments below
+ * @param {Array(string)} args.X - a series of string,indicate for each component on the pie
+ * @param {Array(double)} args.Y - a series of value,the hist chart will be created by this data
+ * @param {boolean=} [args.legendOuterBox=true] - whether draw the outer box of legend
+ * @param {Array(DVColor)=} [args.color = DVgetRandomColor(this.args.X.length)] - the colors for each component
+ * @param {Array(string)=} [args.text=!!label+':'+value!!] - a series of string you want to show on each sector on the pie.
+ * @param {string=} [args.style='showPercentage'] - show the value of each bar or the percentage,'empty' or 'showtext' or 'showPercentage'
+ */
 function DVPieChart(args)
 {
 	if (arguments.length==0)
@@ -1664,7 +2110,11 @@ function DVPieChart(args)
 		this.args['y'] = 'showPercentage';
 	this.eles = new Array();
 }
-
+/**
+ * prepare the needed elements on the first time to draw it
+ * @function
+ * @param {DVisual} dv - the Dvisual instance you want to draw 
+ */
 DVPieChart.prototype.prepare = function(dv)
 {
 	acumDeg = 0;
@@ -1685,10 +2135,7 @@ DVPieChart.prototype.prepare = function(dv)
 			str = this.args.text[i];
 		else if (this.args.style=='empty')
 			str = "";
-		//
-		
-		//this.eles.push(new DVSector({'x':200,'y':200,'sDeg':Math.PI*1.95 ,'radius':180,'eDeg':Math.PI*2,'innerText':'15%'}));
-		//alert(D/2+" "+sDeg+" "+r+" "+eDeg+" "+str);
+
 		this.eles.push(new DVSector({'x':D/2-D/15,'y':D/2-D/15,'sDeg':sDeg,'radius':r,'eDeg':eDeg,'innerText':str,'color':this.args.colors[i]}));
 		acumDeg = eDeg;
 	}
@@ -1696,6 +2143,11 @@ DVPieChart.prototype.prepare = function(dv)
 	this.eles.push(new DVLegend({'classes':this.args.X,'colors':this.args.colors,'x':xs*D,'y':dv.oldHeight,
 						'height':(1-xs)*D,'width':(1-xs)*D,'outerbox':this.args.legendOuterBox}))
 }
+/**
+ * draw the Pie chart on dv's canvas
+ * @function
+ * @param {DVisual} dv - the Dvisual instance you want to draw 
+ */
 DVPieChart.prototype.draw = function(dv)
 {
 	if (this.eles.length==0)
@@ -1706,18 +2158,30 @@ DVPieChart.prototype.draw = function(dv)
 		this.eles[i].draw(dv);
 }
 
-
+/**
+ * A DVisual graph element indicate a Radar Chart
+ * @constructor
+ * @example new DVRadarChart({'X':["型号1","型号2"],'Y':[[6,7,3,5,6,9],[8,6,7,2,8,6]],'arguments':["速度","能力","强度","战斗力","成本","价格"]})
+ * @param {Object[]} args - a array contain arguments below
+ * @param {Array(string)} args.X - a series of string,indicate for each player you want to draw,() 
+ * @param {Array(Array(double))} args.Y - a series of value,it's length should be player's number,each element of this should be an array for arguments' number
+ * @param {Array(string)} args.arguments - a series of string,indicate each arguments.
+ * @param {double=} [args.argumax=10] - the maxium value for argument.(unified for all argument)
+ * @param {double=} [args.argumin=0] - the minium value for argument.(unified for all argument)
+ * @param {boolean=} [args.legendOuterBox=true] - whether draw the outer box of legend
+ * @param {Array(DVColor)=} [args.colors = DVgetRandomColor(this.args.X.length,0.4)] - the colors for each player
+ */
 function DVRadarChart(args)
 {
 	if (arguments.length==0)
 		args = {};
 
 	this.args = args.cloneAll();
-	if (args['Xs']==null)
-		this.args['Xs'] = [];
+	if (args['X']==null)
+		this.args['X'] = [];
 
-	if (args['Ys']==null)
-		this.args['Ys'] = [];
+	if (args['Y']==null)
+		this.args['Y'] = [];
 
 	if (args['arguments']==null)
 		this.args['arguments'] = [];
@@ -1736,7 +2200,11 @@ function DVRadarChart(args)
 
 	this.eles = new Array();
 }
-
+/**
+ * prepare the needed elements on the first time to draw it
+ * @function
+ * @param {DVisual} dv - the Dvisual instance you want to draw 
+ */
 DVRadarChart.prototype.prepare = function(dv)
 {
 	Deg = (Math.PI*2)/this.args.arguments.length;
@@ -1800,6 +2268,11 @@ DVRadarChart.prototype.prepare = function(dv)
 						'height':(1-xs)*D,'width':(1-xs)*D,'outerbox':this.args.legendOuterBox}))
 
 }
+/**
+ * draw the Radar chart on dv's canvas
+ * @function
+ * @param {DVisual} dv - the Dvisual instance you want to draw 
+ */
 DVRadarChart.prototype.draw = function(dv)
 {
 	if (this.eles.length==0)

@@ -51,6 +51,8 @@ CanvasRenderingContext2D.prototype.sector = function (x, y, radius, sDeg, eDeg) 
 	this.restore();
 	return this;
 }
+
+
 //////
 
 // function DVColor(r,g,b,a)
@@ -64,6 +66,8 @@ CanvasRenderingContext2D.prototype.sector = function (x, y, radius, sDeg, eDeg) 
 // 	if (arguments.length<1)
 // 		this.r = 100;
 // }
+
+
 
 /**
  * The Main Class of dvisual
@@ -112,6 +116,7 @@ function DVcanvas(canvasName)
 	this.bubbleRatio = 1;
 	this.bubbleInc = 0;
 }
+
 /**
  * set the Legend width (in the data scale),try to get a suitable display of Legend
  * @function
@@ -138,6 +143,8 @@ DVcanvas.prototype.setinc = function(Xinc,Yinc)
 	this.Yinc = Yinc;
 
 };
+
+
 
 /**
  * set the margin of x and y in data scale,calculate the right zoom level for x and y axes
@@ -348,6 +355,8 @@ DVcanvas.prototype.fillPoly = function(X,Y,flag,color)
 	this.ctx.restore();
 }
 
+
+
 DVcanvas.prototype.rect = function(x1,y1,height,width,color)
 {
 	flag = false;
@@ -486,6 +495,7 @@ DVcanvas.prototype.formatColor =function(color)
 	this.ctx.restore();
 	return [r,g,b,a]
 }
+
 
 DVcanvas.prototype.linePath = function(X,Y,color,flag)
 {
@@ -1376,3 +1386,12 @@ DVcanvas.prototype.DrawRadar = function(X,Y,Z,min,max,colors)
 		this.DrawLegend(x,y,X,colors,1);
 	}
 }
+
+
+
+
+
+
+
+
+
