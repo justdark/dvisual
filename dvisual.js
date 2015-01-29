@@ -18,13 +18,14 @@ CanvasRenderingContext2D.prototype.sector = function (x, y, radius, sDeg, eDeg) 
 }
 CanvasRenderingContext2D.prototype.clear = function () {
 	this.save()
-	this.fillStyle="#ffffff";//白色为例子；
+	this.fillStyle="#ffffff";
 	this.fillRect(0,0,4000,4000);
 	this.restore();
 	return this;
 }
 
-
+DVChartList = [DVBarChart,DVPieChart,DVLineChart,DVHistChart,DVRadarChart,DVMulLineChart,DVMulBarChart];
+DVCanvasList = [];
 
 Object.prototype.cloneAll=function(){
 	function clonePrototype(){};
@@ -37,6 +38,7 @@ Object.prototype.cloneAll=function(){
 	return obj;
 }
 
+
 Array.prototype.max = function()
 { 
 	return Math.max.apply({},this) 
@@ -45,6 +47,7 @@ Array.prototype.min = function()
 { 
 	return Math.min.apply({},this) 
 } 
+
 
 function DVColor(r,g,b,a)
 {
@@ -82,8 +85,17 @@ function getEventPosition(ev){
 
 function DVisual(canvasName)
 {
+	reshape_flag = true;
+	for (var i=0;i<DVCanvasList.length;i++)
+		if (DVCanvasList[i]==canvasName)
+		{
+			reshape_flag = false;
+		}
+	if (reshape_flag)
+		DVCanvasList.push(canvasName);
  	this.canvas = document.getElementById(canvasName);
 	this.ctx = this.canvas.getContext('2d');
+	this.ctx.clear();
 	this.eles = new Array();
 
 	this.devicePixelRatio = window.devicePixelRatio || 1;
@@ -93,16 +105,25 @@ function DVisual(canvasName)
                                              this.ctx.oBackingStorePixelRatio ||
                                              this.ctx.backingStorePixelRatio || 1;
     this.ratio = this.devicePixelRatio / this.backingStorePixelRatio;
-    this.oldWidth = this.canvas.width;
-    this.oldHeight = this.canvas.height;
-	if (this.devicePixelRatio !== this.backingStorePixelRatio) {
-		this.canvas.width = this.oldWidth * this.ratio;
-		this.canvas.height = this.oldHeight * this.ratio;
+    if (reshape_flag)
+    {
+    	this.oldWidth = this.canvas.width;
+    	this.oldHeight = this.canvas.height;
+		if (this.devicePixelRatio !== this.backingStorePixelRatio) 
+		{
+			this.canvas.width = this.oldWidth * this.ratio;
+			this.canvas.height = this.oldHeight * this.ratio;
 
-		this.canvas.style.width = this.oldWidth + 'px';
-		this.canvas.style.height = this.oldHeight + 'px';
-		this.ctx.scale(this.ratio, this.ratio);
-    }
+			this.canvas.style.width = this.oldWidth + 'px';
+			this.canvas.style.height = this.oldHeight + 'px';
+			this.ctx.scale(this.ratio, this.ratio);
+	    }
+	} else
+	{
+		this.oldWidth = this.canvas.width/this.ratio;
+    	this.oldHeight = this.canvas.height/this.ratio;
+	}
+
     this.Xinc = 0;
 	this.Yinc = 0;
 	this.Xmargin = this.oldWidth - 40;
@@ -140,22 +161,15 @@ DVisual.prototype.transXY = function(x,y)
 	resultY = (this.originY - y)*this.YZoom+this.Yinc;
 	return [resultX,resultY]
 }
-/**
- * translate the length of x axes from data scale to real canvas scale.
- * @function
- * @param {double} len - the length in x axes (data scale)
- */
+
 DVisual.prototype.xLenTrans = function(len) {
 	return len*1.0/this.XZoom;
 }
-/**
- * translate the length of y axes from data scale to real canvas scale.
- * @function
- * @param {double} len - the length in y axes (data scale)
- */
+
 DVisual.prototype.yLenTrans = function(len) {
 	return len*1.0/this.YZoom;
 }
+
 DVisual.prototype.initialZ = function(Z) {
 		zmm = [Z.min(),Z.max()];
 		this.zinc = 0;
@@ -163,6 +177,7 @@ DVisual.prototype.initialZ = function(Z) {
 			this.zinc = zmm[0];
 		this.Zzoom = (Math.min(this.oldWidth,this.oldHeight)/10 - 5)/(zmm[1] - this.zinc);
 }
+
 DVisual.prototype.zLenTrans = function(len)
 {
 		return (len - this.zinc)*this.Zzoom+5;
@@ -217,6 +232,7 @@ DVisual.prototype.initial = function(X,Y)
 
 DVisual.prototype.addElement = function(ele)
 {
+
 	this.eles.push(ele);
 }
 DVisual.prototype.draw = function()
