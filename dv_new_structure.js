@@ -112,20 +112,20 @@ function DVisual(canvasName)
 	this.originX = 25;
 	this.originY = this.oldHeight - 40;
 	this.drawed = false;
-    canvasName = this;
-    this.canvas.addEventListener('mousemove', function(e){
-      p = getEventPosition(e);
-      canvasName.ctx.clear();
-      canvasName.draw()
+    // canvasName = this;
+    // this.canvas.addEventListener('mousemove', function(e){
+    //   p = getEventPosition(e);
+    //   canvasName.ctx.clear();
+    //   canvasName.draw()
 
-      canvasName.ctx.moveTo(0,p.y);
-      canvasName.ctx.lineTo(canvasName.oldWidth,p.y);
-      canvasName.ctx.moveTo(p.x,0);
-      canvasName.ctx.lineTo(p.x,canvasName.oldHeight);
-      canvasName.ctx.strokeText(canvasName.transXY(p.x,p.y)[0].toFixed(2)+" "+canvasName.transXY(p.x,p.y)[1].toFixed(2),p.x,p.y)
-      canvasName.ctx.stroke();
+    //   canvasName.ctx.moveTo(0,p.y);
+    //   canvasName.ctx.lineTo(canvasName.oldWidth,p.y);
+    //   canvasName.ctx.moveTo(p.x,0);
+    //   canvasName.ctx.lineTo(p.x,canvasName.oldHeight);
+    //   canvasName.ctx.strokeText(canvasName.transXY(p.x,p.y)[0].toFixed(2)+" "+canvasName.transXY(p.x,p.y)[1].toFixed(2),p.x,p.y)
+    //   canvasName.ctx.stroke();
       
-    }, false);
+    // }, false);
   
 }
 DVisual.prototype.xyTrans = function(x,y)
@@ -184,8 +184,8 @@ DVisual.prototype.setmargin = function(Xmargin,Ymargin)
 
 DVisual.prototype.initial = function(X,Y)
 {	
-	incX = 0.0;
-	incY = 0.0;
+	incX = Math.min(0.0,Math.floor(X.min()));
+	incY = Math.min(0.0,Math.floor(Y.min()));
 	xmargin = this.oldWidth;
 	ymargin = this.oldHeight;
 	if (this.Drawed)
@@ -346,7 +346,7 @@ DVText.prototype.draw = function(dv)
 	dv.ctx.save();
 	dv.ctx.fillStyle = this.args.color.tostring();
 	dv.ctx.strokeStyle = this.args.color.tostring();
-	//dv.ctx.font = this.args['font'];
+	dv.ctx.font = this.args['font'];
 	dv.ctx.lineWidth = this.args['lineWidth'];
 	dv.ctx.textAlign = this.args['textAlign'];
 	shadow = new DVColor(100,100,100,0.3);
@@ -694,7 +694,10 @@ DVCoordinate.prototype.prepare = function(dv)
 		x_kedu_line_arg = {'beginX':result[0],'beginY':result[1],'endX':result[0],'endY':result[1]-5};
 		if (this.args.xGrid)
 		{
-			xgrid_line = {'beginX':result[0],'beginY':result[1],'endX':result[0],'endY':0,'color':new DVColor(100,100,100,0.3),'shadow':false};
+			color = new DVColor(100,100,100,0.1);
+			if (dv.Xinc<0 && x==0)
+				color = new DVColor(256,0,0,0.3);
+			xgrid_line = {'beginX':result[0],'beginY':result[1],'endX':result[0],'endY':0,'color':color,'shadow':false};
 			this.eles.push(new DVLine(xgrid_line));
 		}
 		this.eles.push(new DVText(x_kedu_arg));
@@ -728,7 +731,10 @@ DVCoordinate.prototype.prepare = function(dv)
 		y_kedu_line_arg = {'beginX':result[0],'beginY':result[1],'endX':result[0]+5,'endY':result[1]};
 		if (this.args.yGrid)
 		{
-			ygrid_line = {'beginX':result[0],'beginY':result[1],'endX':result[0]+dv.oldWidth,'endY':result[1],'color':new DVColor(100,100,100,0.3),'shadow':false};
+			color = new DVColor(100,100,100,0.1);
+			if (dv.Yinc<0 && y==0)
+				color = new DVColor(256,0,0,0.3);
+			ygrid_line = {'beginX':result[0],'beginY':result[1],'endX':result[0]+dv.oldWidth,'endY':result[1],'color':color,'shadow':false};
 			this.eles.push(new DVLine(ygrid_line));
 		}
 		this.eles.push(new DVText(y_kedu_arg));
@@ -767,7 +773,7 @@ function DVLegend(args)
 	if (args['y']==null)
 		this.args['y'] = 100;
 
-	if (args['style']==null || (args['style']!='rect' && args['style']!='line'))
+	if (args['style']==null || (args['style']!='rect' && args['style']!='line'  && args['style']!='bubble'))
 		this.args['style'] = 'rect';
 
 	if (args['outerbox']==null)
@@ -811,12 +817,20 @@ DVLegend.prototype.prepare = function(dv)
 		drawXinc = this.args['width']/(6.0/5*this.args.classes.length)*6/5;
 		drawLength = this.args['width']/(6.0/5*this.args.classes.length);
 	}
-	font = DVgetRightTextStyle(dv,TextHeight);
+
+	font = DVgetRightTextStyle(dv,TextHeight*0.6);
 	boxtopy = this.args.y-this.args.height;
 	if (this.args.outerbox)
 	{
 		this.eles.push(new DVRect({'x':this.args.x,'y':boxtopy,'width':this.args.width,'height':this.args.height,'style':'fill',
 									'color':new DVColor(30,144,255,0.3)}))
+	}
+	dv.ctx.save();
+	dv.ctx.font = font;
+	maxlength = 0;
+	for (var i=0;i<this.args.classes.length;i++)
+	{
+		maxlength = Math.max(maxlength,dv.ctx.measureText(this.args.classes[i]).width);
 	}
 	for (var i=0;i<this.args.classes.length;i++)
 	{
@@ -825,16 +839,26 @@ DVLegend.prototype.prepare = function(dv)
 		ratio = 2.0/4;
 		// this.eles.push(new DVRect({'x':paintX,'y':paintY,'width':drawLength,'height':TextHeight,'style':'fill',
 		// 							'color':new DVColor(0,0,0,0.7)}))
+		if (maxlength<drawLength*(1-ratio)*1.0)
+		{
+			ratio = 1 - maxlength*1.0/drawLength;
+		}
 		if (this.args.style=='rect')
 			this.eles.push(new DVRect({'x':paintX,'y':paintY,'width':drawLength*ratio,'height':TextHeight,'style':'fill',
-									'color':this.args.colors[i]}))
-		else
+									'color':this.args.colors[i]}));
+		else if (this.args.style=='line')
 			this.eles.push(new DVLine({'beginX':paintX,'beginY':paintY+TextHeight*1.0/2,
 									'endX':paintX + drawLength*ratio,"endY":paintY+TextHeight*1.0/2,
-									'color':this.args.colors[i],'lineWidth':3}))
-		this.eles.push(new DVText({'text':this.args.classes[i],'x':paintX + drawLength*ratio+drawLength*(1-ratio)*1.0/2+2,'y':paintY+TextHeight*1.0/1.3,'textAlign':'center',
-									'maxwidth':drawLength*(1-ratio)*1.0}))
+									'color':this.args.colors[i],'lineWidth':3}));
+		else if (this.args.style=='bubble')
+		{ 
+			this.eles.push(new DVDot({'x':paintX+drawLength*ratio/3,'y':paintY+TextHeight*1.0/2,'radius':TextHeight*1.0/2,'style':'bubble','color':this.args.colors[i]}));
+			ratio*=3.0/4;
+		}
+		this.eles.push(new DVText({'text':this.args.classes[i],'x':paintX + drawLength*ratio+drawLength*(1-ratio)*1.0*0+2,'y':paintY+TextHeight*1.0/1.3,'textAlign':'left',
+									'maxwidth':drawLength*(1-ratio)*1.0,'font':font}))
 	}
+	dv.ctx.restore();
 }
 DVLegend.prototype.draw = function(dv)
 {
@@ -854,6 +878,25 @@ DVgetRightTextStyle = function(dv,length)
 	{
 		dv.ctx.font = i+"px Arial";
 		if (dv.ctx.measureText("D").width>length)
+		{
+			i = i - 1;
+			dv.ctx.restore();
+			return i+"px Arial";
+		}
+	}
+	dv.ctx.restore();
+	return i + "px Arial";
+	
+}
+
+DVgetRightTextStyleByStrLenght = function(dv,str,length)
+{
+	dv.ctx.save();
+	i = 0;
+	for (i=1;i<100;i++)
+	{
+		dv.ctx.font = i+"px Arial";
+		if (dv.ctx.measureText(str).width>length)
 		{
 			i = i - 1;
 			dv.ctx.restore();
@@ -1011,6 +1054,9 @@ function DVMulLineChart(args)
 	if (args['Ys']==null)
 		this.args['Ys'] = [];
 
+	if (args['legendOuterBox']==null)
+		this.args['legendOuterBox'] = true;
+
 	if (args['Zs']==null)
 		this.args['Zs'] = [];
 
@@ -1085,13 +1131,17 @@ DVMulLineChart.prototype.prepare = function(dv)
 	}
 	if (this.args.style.indexOf('line')==-1)
 	{
-		result = dv.xyTrans(dv.Xmargin*(1-0.16),dv.Ymargin/30);
-		this.eles.push(new DVLegend({'classes':this.args.classes.reverse(),'colors':this.args.colors.reverse(),'x':result[0],'y':result[1]}))
+		style = 'rect';
+		if (this.args.style=='bubble')
+			style = 'bubble';
+		result = dv.xyTrans(dv.Xmargin*(1-0.16)+dv.Xinc,dv.Ymargin/30+dv.Yinc);
+		this.eles.push(new DVLegend({'classes':this.args.classes,'colors':this.args.colors,'x':result[0],'y':result[1],'outerbox':this.args.legendOuterBox,'style':style}))
 	}
 	else
 	{
-		result = dv.xyTrans(dv.Xmargin/5,dv.Ymargin/30);
-		this.eles.push(new DVLegend({'classes':this.args.classes.reverse(),'colors':this.args.colors.reverse(),'x':result[0],'y':dv.oldHeight,'direction':'horizontal','style':'line'}))
+		result = dv.xyTrans(dv.Xmargin/5+dv.Xinc,dv.Ymargin/30+dv.Yinc);
+		this.eles.push(new DVLegend({'classes':this.args.classes,'colors':this.args.colors,'x':result[0],'y':dv.oldHeight,
+						'direction':'horizontal','style':'line','outerbox':this.args.legendOuterBox}))
 
 	}
 }
@@ -1155,6 +1205,9 @@ function DVBarChart(args)
 	if (args['yGrid']==null)
 		this.args['yGrid'] = true;
 
+	if (args['legendOuterBox']==null)
+		this.args['legendOuterBox'] = true;
+
 	this.eles = new Array();
 }
 
@@ -1185,6 +1238,7 @@ DVBarChart.prototype.prepare = function(dv)
 
 	if (this.args.style=='bar')
 	{
+		dv.ctx.save();
 		for (var i=0;i<this.args.Y.length;i++)
 		{
 			left_most_X = i + 0.5 - 0.3;
@@ -1195,9 +1249,13 @@ DVBarChart.prototype.prepare = function(dv)
 			result = dv.xyTrans(left_most_X+xsec*5*(this.args.index-1),dv.Yinc+this.args.Y[i]);
 			this.eles.push(new DVRect({'x':result[0],'y':result[1],
 						'height':dv.yLenTrans(this.args.Y[i])-1,'width':dv.xLenTrans(xwidth),'color':this.args.color}));
-
-			this.eles.push(new DVText({'text':this.args.Y[i],'textAlign':'center','x':result[0]+dv.xLenTrans(xwidth)/2,'y':result[1]-3,'maxwidth':dv.xLenTrans(xwidth)}));
+			font = Math.min(dv.oldHeight,dv.oldWidth)/400*10+"px Arial";
+			dv.ctx.font = font;
+			
+			this.eles.push(new DVText({'font':font,'text':this.args.Y[i],'textAlign':'center','x':result[0]+dv.xLenTrans(xwidth)/2,'y':result[1]-dv.ctx.measureText('D').width/2,'maxwidth':dv.xLenTrans(xwidth)}));
+			
 		}
+		dv.ctx.restore();
 	}
 	if (this.args.style=='stacked')
 	{
@@ -1219,7 +1277,7 @@ DVBarChart.prototype.prepare = function(dv)
 			//this.eles.push(new DVText({'text':this.args.Y[i],'textAlign':'center','x':result[0]+dv.xLenTrans(xwidth)/2,'y':result[1]-3,'maxwidth':dv.xLenTrans(xwidth)}));
 		}
 		result = dv.xyTrans(this.args.stackedY.length,dv.Ymargin/20);
-		this.eles.push(new DVLegend({'classes':this.args.stackedClass.reverse(),'colors':this.args.stackedColor.reverse(),'x':result[0],'y':result[1]}))
+		this.eles.push(new DVLegend({'outerbox':this.args.legendOuterBox,'classes':this.args.stackedClass,'colors':this.args.stackedColor,'x':result[0],'y':result[1]}))
 	}
 	// Xs = new Array();
 	// Ys = new Array();
@@ -1255,6 +1313,9 @@ function DVMulBarChart(args)
 
 	if (args['Z']==null)
 		this.args['Z'] = [];
+
+	if (args['legendOuterBox']==null)
+		this.args['legendOuterBox'] = false;
 
 	if (args['colors']==null)
 		this.args['colors'] = DVgetRandomColor(this.args['Z'].length);
@@ -1295,8 +1356,8 @@ DVMulBarChart.prototype.prepare = function(dv)
 
 		this.eles.push(new DVBarChart({'X':this.args.X,'Y':tmpY,'color':this.args.colors[i],'all':this.args.Z.length,'index':i+1}));
 	}
-	result = dv.xyTrans(this.args.X.length,dv.Ymargin/20);
-	this.eles.push(new DVLegend({'classes':this.args.Z,'colors':this.args.colors,'x':result[0],'y':result[1]}))
+	result = dv.xyTrans(this.args.X.length+dv.Xinc,dv.Ymargin/20+dv.Yinc);
+	this.eles.push(new DVLegend({'classes':this.args.Z,'colors':this.args.colors,'x':result[0],'y':result[1],'outerbox':this.args.legendOuterBox}))
 	
 
 }
@@ -1441,9 +1502,6 @@ DVHistChart.prototype.prepare = function(dv)
 		this.eles.push(new DVText({'x':result[0]+dv.xLenTrans(width)/2,'y':result[1]-3,
 						'text':str,'textAlign':'center'}))
 	}
-	
-
-
 }
 DVHistChart.prototype.draw = function(dv)
 {
@@ -1454,4 +1512,310 @@ DVHistChart.prototype.draw = function(dv)
 	for (var i=this.eles.length-1;i>=0;i--)
 		this.eles[i].draw(dv);
 }
+
+
+function DVSector(args)
+{
+	if (arguments.length==0)
+		args = {};
+
+	this.args = args.cloneAll();
+	if (args['x']==null)
+		this.args['x'] = 100;
+
+	if (args['y']==null)
+		this.args['y'] = 100;
+
+	if (args['radius']==null)
+		this.args['radius'] = 50;
+
+	if (args['sDeg']==null)
+		this.args['sDeg'] = 0;
+
+	if (args['eDeg']==null)
+		this.args['eDeg'] = 0;
+
+	if (args['color']==null)
+		this.args['color'] = DVgetRandomColor(1,0.6)[0];
+
+	if (args['shadow']==null)
+		this.args['shadow'] = true;
+
+	if (args['pop']==null)
+		this.args['pop'] = false;
+
+	if (args['style']==null || (args.style!="fill" && args.style!="stroke" && args.style!="transFill"))
+		this.args['style'] = "fill";
+
+	if (args['innerText']==null)
+		this.args['innerText'] = "";
+
+	if (args['outerText']==null)
+		this.args['outerText'] = "";
+	if (this.args['pop'])
+	{
+		this.args['x']+=this.args.radius/20*Math.cos((this.args.sDeg + this.args.eDeg)*1.0/2);
+		this.args['y']+=this.args.radius/20*Math.sin((this.args.sDeg + this.args.eDeg)*1.0/2);
+	}
+}
+DVSector.prototype.draw = function(dv)
+{
+	dv.ctx.save();
+	dv.ctx.fillStyle = this.args.color.tostring();
+	dv.ctx.strokeStyle = this.args.color.tostring();
+	if (this.args['shadow'])
+	{
+		if (this.shadowSector == null)
+		{
+			shadowArgs = this.args.cloneAll();
+			shadowArgs['color'] = new DVColor(100,100,100,0.3);
+			shadowArgs['shadow'] = false;
+			shadowArgs['pop'] = false;
+			shadowArgs['radius']*=1.01;
+			shadowArgs['x']+=shadowArgs.radius/50*Math.cos((shadowArgs.sDeg + shadowArgs.eDeg)*1.0/2);
+			shadowArgs['y']+=shadowArgs.radius/50*Math.sin((shadowArgs.sDeg + shadowArgs.eDeg)*1.0/2);
+			shadowArgs['innerText'] = "";
+			shadowArgs['outerText'] = "";
+			this.shadowSector = new DVSector(shadowArgs);
+		}
+		this.shadowSector.draw(dv);
+	}
+	if (this.args.style=='stroke' || this.args.style=='fill')
+	{
+		dv.ctx.sector(this.args.x,this.args.y,this.args.radius,this.args.sDeg,this.args.eDeg);
+		if (this.args.style=='fill')
+			dv.ctx.fill();
+		else
+			dv.ctx.stroke();
+
+	}
+	else
+	{
+		dv.ctx.sector(this.args.x,this.args.y,this.args.radius,this.args.sDeg,this.args.eDeg);
+		dv.ctx.stroke();
+		dv.ctx.fillStyle = (new DVColor(this.args.color.r,this.args.color.g,this.args.color.b,0.5)).tostring();
+		dv.ctx.sector(this.args.x,this.args.y,this.args.radius,this.args.sDeg,this.args.eDeg);
+		dv.ctx.fill();
+	}
+	if (this.args.innerText!="")
+	{
+		if (this.innerDV==null)
+		{
+			r = this.args.radius/(1/Math.sin((this.args.eDeg - this.args.sDeg)/2)+1) //扇形内最大圆半径
+			teststr = this.args.innerText;
+			//alert(teststr.length)
+			if (teststr[teststr.length-1]=="%" && teststr.length<3)
+				teststr = "12%";
+			font = DVgetRightTextStyleByStrLenght(dv,teststr,Math.min(1.7*r,Math.min(dv.oldWidth,dv.oldHeight)*1.0/10));
+			dv.ctx.font = font;
+			yinc = dv.ctx.measureText('D').width/2;
+			textX = this.args.x + (this.args.radius-r)*Math.cos((this.args.sDeg + this.args.eDeg)*1.0/2);
+			textY = this.args.y + (this.args.radius-r)*Math.sin((this.args.sDeg + this.args.eDeg)*1.0/2)+yinc;
+
+			this.innerDV = new DVText({'maxwidth':1.7*r,'text':this.args.innerText,'x':textX,'y':textY,'textAlign':'center','color':new DVColor(256,256,256,1),'font':font})	
+		}
+		this.innerDV.draw(dv);
+	}
+	dv.ctx.restore();
+}
+
+function DVPieChart(args)
+{
+	if (arguments.length==0)
+		args = {};
+
+	this.args = args.cloneAll();
+	if (args['X']==null)
+		this.args['X'] = [];
+
+	if (args['Y']==null)
+		this.args['Y'] = [];
+
+	if (args['legendOuterBox']==null)
+		this.args['legendOuterBox'] = true;
+
+	if (args['colors']==null)
+		this.args['colors'] = DVgetRandomColor(this.args.X.length);
+
+	if (args['text']==null)
+	{
+		this.args['text'] = new Array();
+		for (var i=0;i<this.args.X.length;i++)
+			this.args['text'].push(this.args.X[i]+":"+this.args.Y[i]);
+	}
+
+	if (args['style']==null || (args.style!="empty" && args.style!="showPercentage" && args.style!="showtext"))
+		this.args['y'] = 'showPercentage';
+	this.eles = new Array();
+}
+
+DVPieChart.prototype.prepare = function(dv)
+{
+	acumDeg = 0;
+	sum = 0;
+	for (var i=0;i<this.args.X.length;i++)
+	{
+		sum+=this.args.Y[i];
+	}
+	D = Math.min(dv.oldWidth,dv.oldHeight);
+	for (var i=0;i<this.args.X.length;i++)
+	{
+		sDeg = acumDeg;
+		eDeg = sDeg + (this.args.Y[i]*1.0/sum)*(Math.PI*2);
+		str = Math.floor((this.args.Y[i]*1.0/sum).toFixed(2)*100)+"%";
+		r = D*1.0/2/6*5;
+		//alert(D+" "+r)
+		if (this.args.style=='showtext')
+			str = this.args.text[i];
+		else if (this.args.style=='empty')
+			str = "";
+		//
+		
+		//this.eles.push(new DVSector({'x':200,'y':200,'sDeg':Math.PI*1.95 ,'radius':180,'eDeg':Math.PI*2,'innerText':'15%'}));
+		//alert(D/2+" "+sDeg+" "+r+" "+eDeg+" "+str);
+		this.eles.push(new DVSector({'x':D/2-D/15,'y':D/2-D/15,'sDeg':sDeg,'radius':r,'eDeg':eDeg,'innerText':str,'color':this.args.colors[i]}));
+		acumDeg = eDeg;
+	}
+	xs = (7.0/24/1.41+5.0/12+1.0/9);
+	this.eles.push(new DVLegend({'classes':this.args.X,'colors':this.args.colors,'x':xs*D,'y':dv.oldHeight,
+						'height':(1-xs)*D,'width':(1-xs)*D,'outerbox':this.args.legendOuterBox}))
+}
+DVPieChart.prototype.draw = function(dv)
+{
+	if (this.eles.length==0)
+	{
+		this.prepare(dv);
+	}
+	for (var i=this.eles.length-1;i>=0;i--)
+		this.eles[i].draw(dv);
+}
+
+
+function DVRadarChart(args)
+{
+	if (arguments.length==0)
+		args = {};
+
+	this.args = args.cloneAll();
+	if (args['Xs']==null)
+		this.args['Xs'] = [];
+
+	if (args['Ys']==null)
+		this.args['Ys'] = [];
+
+	if (args['arguments']==null)
+		this.args['arguments'] = [];
+
+	if (args['argumax']==null)
+		this.args['argumax'] = 10;
+
+	if (args['argumin']==null)
+		this.args['argumin'] = 0;
+
+	if (args['legendOuterBox']==null)
+		this.args['legendOuterBox'] = true;
+
+	if (args['colors']==null)
+		this.args['colors'] = DVgetRandomColor(this.args.X.length,0.4);
+
+	this.eles = new Array();
+}
+
+DVRadarChart.prototype.prepare = function(dv)
+{
+	Deg = (Math.PI*2)/this.args.arguments.length;
+	D = Math.min(dv.oldWidth,dv.oldHeight);
+	oX = D/2;
+	oY = D/2;
+	r = D*1.0/2/6*5;
+	for (var step=0;step<=5;step++)
+	{
+		tmpX =[]
+		tmpY =[]
+		if (step==5)
+			color = new DVColor();
+		else
+			color = new DVColor(100,100,100,0.2);
+		for (var i=0;i<this.args.arguments.length;i++)
+		{
+			nX = oX + Math.cos(Deg*i+1.5*Math.PI)*r/5*step;
+			nY = oY + Math.sin(Deg*i+1.5*Math.PI)*r/5*step;
+			if (step==5)
+			{
+				this.eles.push(new DVLine({'beginX':oX,'beginY':oY,'endX':nX,'endY':nY,'color':new DVColor(100,100,100,0.8),'shadow':false}));
+				
+				font = DVgetRightTextStyle(dv,D*1.0/30);
+				dv.ctx.font = font;
+				yinc = dv.ctx.measureText("D").width*1.0/2;
+				textX = oX + r*1.12*Math.cos(Deg*i+1.5*Math.PI);
+				textY = oY + r*1.12*Math.sin(Deg*i+1.5*Math.PI)+yinc;
+				this.eles.push(new DVText({'text':this.args.arguments[i],'x':textX,'y':textY,'textAlign':'center','shadow':false,'font':font}))
+
+			}
+			if (i==0)
+			{
+				text = (this.args.argumax - this.args.argumin)*1.0/5*step + "";
+				this.eles.push(new DVText({'text':text,'x':nX,'y':nY,'shadow':false}));
+			}
+			tmpX.push(nX);
+			tmpY.push(nY);
+		}
+		lineWidth=1;
+		if (step==5)
+			lineWidth=2;
+		this.eles.push(new DVPolygon({'X':tmpX,'Y':tmpY,'style':'stroke','color':color,'shadow':false,'lineWidth':lineWidth}));
+	}
+	for (var i=0;i<this.args.X.length;i++)
+	{
+		tmpX = [];
+		tmpY = [];
+		for (var j=0;j<this.args.arguments.length;j++)
+		{
+			nX = oX + Math.cos(Deg*j+1.5*Math.PI)*r*(this.args.Y[i][j]-this.args.argumin)/this.args.argumax;
+			nY = oY + Math.sin(Deg*j+1.5*Math.PI)*r*(this.args.Y[i][j]-this.args.argumin)/this.args.argumax;
+			tmpX.push(nX);
+			tmpY.push(nY);
+			this.eles.push(new DVDot({'x':nX,'y':nY,'color':this.args.colors[i],'style':'stroke'}));
+		}
+		this.eles.push(new DVPolygon({'X':tmpX,'Y':tmpY,'style':'fill','color':this.args.colors[i],'shadow':true,'lineWidth':2}));
+	}
+	xs = 0.8;
+	this.eles.push(new DVLegend({'classes':this.args.X,'colors':this.args.colors,'x':xs*D,'y':dv.oldHeight,
+						'height':(1-xs)*D,'width':(1-xs)*D,'outerbox':this.args.legendOuterBox}))
+	// D = Math.min(dv.oldWidth,dv.oldHeight);
+	// for (var i=0;i<this.args.X.length;i++)
+	// {
+	// 	sDeg = acumDeg;
+	// 	eDeg = sDeg + (this.args.Y[i]*1.0/sum)*(Math.PI*2);
+	// 	str = Math.floor((this.args.Y[i]*1.0/sum).toFixed(2)*100)+"%";
+	// 	r = D*1.0/2/6*5;
+	// 	//alert(D+" "+r)
+	// 	if (this.args.style=='showtext')
+	// 		str = this.args.text[i];
+	// 	else if (this.args.style=='empty')
+	// 		str = "";
+	// 	//
+		
+	// 	//this.eles.push(new DVSector({'x':200,'y':200,'sDeg':Math.PI*1.95 ,'radius':180,'eDeg':Math.PI*2,'innerText':'15%'}));
+	// 	//alert(D/2+" "+sDeg+" "+r+" "+eDeg+" "+str);
+	// 	this.eles.push(new DVSector({'x':D/2-D/15,'y':D/2-D/15,'sDeg':sDeg,'radius':r,'eDeg':eDeg,'innerText':str,'color':this.args.colors[i]}));
+	// 	acumDeg = eDeg;
+	// }
+	// xs = (7.0/24/1.41+5.0/12+1.0/9);
+	// this.eles.push(new DVLegend({'classes':this.args.X,'colors':this.args.colors,'x':xs*D,'y':dv.oldHeight,
+	// 					'height':(1-xs)*D,'width':(1-xs)*D,'outerbox':this.args.legendOuterBox}))
+}
+DVRadarChart.prototype.draw = function(dv)
+{
+	if (this.eles.length==0)
+	{
+		this.prepare(dv);
+	}
+	for (var i=this.eles.length-1;i>=0;i--)
+		this.eles[i].draw(dv);
+}
+
+
+
+
 
