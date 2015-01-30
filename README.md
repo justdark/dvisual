@@ -17,6 +17,7 @@ How to use DVisual
 ===
 read the [Tutorial](https://github.com/justdark/dvisual/blob/master/tutorial.md)
 
+API document: [doc](http://justdark.github.io/dvisual/doc/)
 
 ----------------------------------------------
 <script type="text/javascript" src="dv.js">
