@@ -1673,12 +1673,12 @@ DVBarChart.prototype.draw = function(dv)
 /**
  * A DVisual graph element indicate a Muliple Bar Chart
  * @constructor
- * @param {Object[]} args - a array contain arguments below
+ * @param {Object} args - a array contain arguments below
  * @param {Array(string)} args.X - a list of string for each x-label
  * @param {Array(Array(double))} args.Ys - 2d Array,indicate a series bar value for each x-label.
  * @param {Array(string)} args.Z - a list of string indicate each kind of bar
  * @param {boolean=} [args.legendOuterBox=true] - whether draw the outer box of legend
- * @param {Array(DVColor)=} {args.colors=DVgetRandomColor(this.args['Z'].length)} - a series of DVColor indicate each kind of bar.
+ * @param {Array(DVColor)=} [args.colors=DVgetRandomColor(this.args['Z'].length)] - a series of DVColor indicate each kind of bar.
  * @param {boolean=} [args.xGrid=false] - whether draw the grid line started from X axes
  * @param {boolean=} [args.yGrid=true] - whether draw the grid line started from Y axes
  * @param {string=} [args.xDescript='x'] - the X axes's description

@@ -13,6 +13,12 @@ Code Files
 `./example.html` -the test html file
 
 ----------------------------------------------
+How to use DVisual
+===
+read the [Tutorial](https://github.com/justdark/dvisual/blob/master/tutorial.md)
+
+
+----------------------------------------------
 <script type="text/javascript" src="dv.js">
 </script>
 <script type="text/javascript" src="https://raw.githubusercontent.com/justdark/dvisual/master/dv.js
@@ -133,15 +139,7 @@ Examples
 
 <img src="https://raw.githubusercontent.com/justdark/dvisual/master/image/12.png" alt="Drawing" width="400px" />
 
-----------------------------------------------
-Class Format Guide
-===
-TODO
 
-----------------------------------------------
-Install
-===
-just use the `dvisual.js` as usual
 
 ----------------------------------------------
 Warning
