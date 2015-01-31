@@ -2078,7 +2078,7 @@ DVSector.prototype.draw = function(dv)
  * @param {Array(string)} args.X - a series of string,indicate for each component on the pie
  * @param {Array(double)} args.Y - a series of value,the hist chart will be created by this data
  * @param {boolean=} [args.legendOuterBox=true] - whether draw the outer box of legend
- * @param {Array(DVColor)=} [args.color = DVgetRandomColor(this.args.X.length)] - the colors for each component
+ * @param {Array(DVColor)=} [args.colors = DVgetRandomColor(this.args.X.length)] - the colors for each component
  * @param {Array(string)=} [args.text=!!label+':'+value!!] - a series of string you want to show on each sector on the pie.
  * @param {string=} [args.style='showPercentage'] - show the value of each bar or the percentage,'empty' or 'showtext' or 'showPercentage'
  */
@@ -2170,7 +2170,7 @@ DVPieChart.prototype.draw = function(dv)
  * @param {double=} [args.argumax=10] - the maxium value for argument.(unified for all argument)
  * @param {double=} [args.argumin=0] - the minium value for argument.(unified for all argument)
  * @param {boolean=} [args.legendOuterBox=true] - whether draw the outer box of legend
- * @param {Array(DVColor)=} [args.colors = DVgetRandomColor(this.args.X.length,0.4)] - the colors for each player
+ * @param {Array(DVColor)=} [args.colors = !!randomColor!!] - the colors for each player
  */
 function DVRadarChart(args)
 {

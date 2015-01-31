@@ -134,8 +134,9 @@ ssec = new DVisual("myCanvas9");
 // ssec.addElement(new DVSector({'x':200,'y':200,'sDeg':Math.PI/3,'radius':180,'eDeg':Math.PI,'innerText':'15ssssssss%','a':""}));
 // ssec.addElement(new DVSector({'x':200,'y':200,'sDeg':Math.PI,'radius':180,'eDeg':Math.PI*1.95,'innerText':'15ssssssss%','pop':false}));
 // ssec.addElement(new DVSector({'x':200,'y':200,'sDeg':Math.PI*1.95 ,'radius':180,'eDeg':Math.PI*2,'innerText':'15%','a':""}));
-ssec.addElement(new DVPieChart({'X':["星期一","星期二","星期四","周末"],'Y':[2,3,4,5]}))
-ssec.draw();
+	ssec.addElement(new DVPieChart({'X':["ClassA","ClassB","ClassC","ClassD"],
+										'Y':[2,3,4,5]}))
+	ssec.draw();
 
 
 
@@ -144,7 +145,7 @@ st = new DVisual("myCanvas10");
 // ssec.addElement(new DVSector({'x':200,'y':200,'sDeg':Math.PI/3,'radius':180,'eDeg':Math.PI,'innerText':'15ssssssss%','a':""}));
 // ssec.addElement(new DVSector({'x':200,'y':200,'sDeg':Math.PI,'radius':180,'eDeg':Math.PI*1.95,'innerText':'15ssssssss%','pop':false}));
 // ssec.addElement(new DVSector({'x':200,'y':200,'sDeg':Math.PI*1.95 ,'radius':180,'eDeg':Math.PI*2,'innerText':'15%','a':""}));
-st.addElement(new DVRadarChart({'X':["型号1","型号2"],'Y':[[6,7,3,5,6,9],[8,6,7,2,8,6]],'arguments':["速度","能力","强度","战斗力","成本","价格"]}))
+st.addElement(new DVRadarChart({'X':["ClassA","ClassB"],'Y':[[3,4,5,6,3,7],[6,7,6,5,8,9]],'arguments':["速度","能力","强度","战斗力","成本","价格"]}))
 st.draw();
 
 
