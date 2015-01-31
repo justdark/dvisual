@@ -30,8 +30,8 @@ dvisual offer some basic graph elements like `DVDot(),DVRect(),DVLine(),DVSector
 
 the most commonly used DVisual graph elements are:
 
-DVBarChart()
--
+##DVBarChart()
+
 it's the chart that we used at the first of the tutorial.we passed two member in the `args`,'X' and 'Y',in most of class in DVisual,'X' indicate the component related to the X-axe,in this case it's the bars' name.in other chart,X can also be the value in X-axe.
 
 DVBarChart alse offer the 'stacked' bar chart,now the 'Y' is useless,becaues stacked bar chart need more data to support,it needs `stackedY`,`stackedClass`,`stackedColor`  members in args,it will be easy to know there function by an example.
@@ -54,8 +54,8 @@ now we use `Ys` to pass the values,`[[1,2,3],[4,5,6]]` means 2 x-label,each labe
 
 <img src="https://raw.githubusercontent.com/justdark/dvisual/master/image/15.png" alt="Drawing" width="400px" />
 
-DVLineChart()
--
+##DVLineChart()
+
 DVLineChart can show `dot`,`line`,`area` and `bubble` chart,and the first three chart can be drawed simultaneously by set the style like `dot|line`,the arguments in args are intuitive,`X` indicate the x value for all node,`Y` for y value.here is a basic example:
 
 	divisual.addElement(new DVLineChart({'X':[1,2,3,4,5,6],
