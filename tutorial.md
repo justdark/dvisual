@@ -67,6 +67,8 @@ DVLineChart can show `dot`,`line`,`area` and `bubble` chart,and the first three 
 <img src="https://raw.githubusercontent.com/justdark/dvisual/master/image/16.png" alt="Drawing" width="400px" />
 
 we can see the red dots and the lines connect them, the default color is red.now we change the style to `dot|line|area`,we can get the area chart with dots and line.
+
+
 <img src="https://raw.githubusercontent.com/justdark/dvisual/master/image/17.png" alt="Drawing" width="400px" />
 
 as to the bubble chart,of course the need pass the third degree data,`bubbleRadius`,set the style to `bubble`:
