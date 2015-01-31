@@ -1,4 +1,32 @@
-CanvasRenderingContext2D.prototype.sector = function (x, y, radius, sDeg, eDeg) {
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: dvisual.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: dvisual.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>CanvasRenderingContext2D.prototype.sector = function (x, y, radius, sDeg, eDeg) {
 	this.save();
 	this.translate(x, y);
 	this.beginPath();
@@ -56,7 +84,7 @@ Array.prototype.min = function()
 function DVisual(canvasName)
 {
 	reshape_flag = true;
-	for (var i=0;i<DVCanvasList.length;i++)
+	for (var i=0;i&lt;DVCanvasList.length;i++)
 		if (DVCanvasList[i]==canvasName)
 		{
 			reshape_flag = false;
@@ -130,13 +158,13 @@ function DVisual(canvasName)
  */
 function DVColor(r,g,b,a)
 {
-	if (arguments.length<4)
+	if (arguments.length&lt;4)
 		a = 1;
-	if (arguments.length<3)
+	if (arguments.length&lt;3)
 		b = 0;
-	if (arguments.length<2)
+	if (arguments.length&lt;2)
 		g = 0;
-	if (arguments.length<1)
+	if (arguments.length&lt;1)
 		r = 0;
 	this.a = a;
 	this.r = r;
@@ -228,7 +256,7 @@ DVisual.prototype.yLenTrans = function(len) {
 DVisual.prototype.initialZ = function(Z) {
 		zmm = [Z.min(),Z.max()];
 		this.zinc = 0;
-		if ((zmm[1]-zmm[0])*1.0/zmm[0]<0.2)
+		if ((zmm[1]-zmm[0])*1.0/zmm[0]&lt;0.2)
 			this.zinc = zmm[0];
 		this.Zzoom = (Math.min(this.oldWidth,this.oldHeight)/10 - 5)/(zmm[1] - this.zinc);
 }
@@ -291,14 +319,14 @@ DVisual.prototype.initial = function(X,Y)
 	if (X.length!=0)
 	{
 		xm = (X.max()-X.min())*1.0;
-		if ((xm/X.max())<0.3)
+		if ((xm/X.max())&lt;0.3)
 			incX = Math.floor(X.min())-1;
 		xmargin = X.max()-incX;
 	}
 	if (Y.length!=0)
 	{
 		ym = (Y.max()-Y.min())*1.0;
-		if ((ym/Y.max())<0.3)
+		if ((ym/Y.max())&lt;0.3)
 			incY = Math.floor(Y.min())-1;
 		ymargin = Y.max()-incY;
 	}
@@ -361,7 +389,7 @@ function DVDot(args)
 	if (args['color']==null)
 		this.args['color'] = new DVColor();
 
-	if (args['style']==null || (args.style!="fill" && args.style!="stroke" && args.style!="bubble" ))
+	if (args['style']==null || (args.style!="fill" &amp;&amp; args.style!="stroke" &amp;&amp; args.style!="bubble" ))
 		this.args['style'] = "fill";
 
 	if (args['shadow']==null)
@@ -463,7 +491,7 @@ function DVText(args)
 	if (args['color']==null)
 		this.args['color'] = new DVColor();
 
-	if (args['style']==null || (args.style!="stroke" && args.style!="fill"))
+	if (args['style']==null || (args.style!="stroke" &amp;&amp; args.style!="fill"))
 		this.args['style'] = "fill";
 
 	if (args['shadow']==null)
@@ -478,7 +506,7 @@ function DVText(args)
 	if (args['textAlign']==null)
 		this.args['textAlign'] = 'left';
 
-	if (args['direction']==null || (args['direction']!='vertical' && args['direction']!='horizontal'))
+	if (args['direction']==null || (args['direction']!='vertical' &amp;&amp; args['direction']!='horizontal'))
 		this.args['direction'] = 'horizontal';
 
 }
@@ -573,7 +601,7 @@ function DVLine(args)
 	if (args['color']==null)
 		this.args['color'] = new DVColor();
 
-	if (args['style']==null || (args.style!="real" && args.style!="dash"))
+	if (args['style']==null || (args.style!="real" &amp;&amp; args.style!="dash"))
 		this.args['style'] = "real";
 
 	if (args['shadow']==null)
@@ -589,8 +617,8 @@ function DVLine(args)
  */
 DVLine.prototype.getShadow = function()
 {
-	// if ((this.args.beginX<this.args.endX && this.args.beginY<=this.args.endY)
-	// 	|| (this.args.beginX>this.args.endX && this.args.beginY>this.args.endY))
+	// if ((this.args.beginX&lt;this.args.endX &amp;&amp; this.args.beginY&lt;=this.args.endY)
+	// 	|| (this.args.beginX>this.args.endX &amp;&amp; this.args.beginY>this.args.endY))
 	// 	return [0,-1]
 	return [0,1]
 }
@@ -603,8 +631,8 @@ DVLine.prototype.getShadow = function()
  */
 DVLine.prototype.between =function(x,y)
 {
-	if (x>=Math.min(this.args['beginX'],this.args['endX']) && x<=Math.max(this.args['beginX'],this.args['endX']) &&
-		y>=Math.min(this.args['beginY'],this.args['endY']) && y<=Math.max(this.args['beginY'],this.args['endY']))
+	if (x>=Math.min(this.args['beginX'],this.args['endX']) &amp;&amp; x&lt;=Math.max(this.args['beginX'],this.args['endX']) &amp;&amp;
+		y>=Math.min(this.args['beginY'],this.args['endY']) &amp;&amp; y&lt;=Math.max(this.args['beginY'],this.args['endY']))
 		return true;
 	return false;
 }
@@ -701,7 +729,7 @@ DVLine.prototype.draw = function(dv)
 	if (args['color']==null)
 		this.args['color'] = new DVColor();
 
-	if (args['style']==null || (args.style!="fill" && args.style!="stroke" && args.style!="transFill"))
+	if (args['style']==null || (args.style!="fill" &amp;&amp; args.style!="stroke" &amp;&amp; args.style!="transFill"))
 		this.args['style'] = "transFill";
 
 	if (args['shadow']==null)
@@ -730,7 +758,7 @@ DVPolygon.prototype.draw = function(dv)
 			shadowArgs = this.args.cloneAll();
 			shadowArgs['color'] = new DVColor(200,200,200,0.3);
 			shadowArgs['shadow'] = false;
-			for (var i=0;i<shadowArgs.X.length;i++ )
+			for (var i=0;i&lt;shadowArgs.X.length;i++ )
 			{
 				shadowArgs.X[i]+=1;
 				shadowArgs.Y[i]+=1;
@@ -743,7 +771,7 @@ DVPolygon.prototype.draw = function(dv)
 	{
 		dv.ctx.beginPath();
 		dv.ctx.moveTo(this.args.X[0],this.args.Y[0]);
-		for (var i=0;i<this.args.X.length;i++)
+		for (var i=0;i&lt;this.args.X.length;i++)
 		{
 			dv.ctx.lineTo(this.args.X[(i+1)%this.args.X.length],this.args.Y[(i+1)%this.args.X.length]);
 		}
@@ -758,7 +786,7 @@ DVPolygon.prototype.draw = function(dv)
 	{
 		dv.ctx.beginPath();
 		dv.ctx.moveTo(this.args.X[0],this.args.Y[0]);
-		for (var i=0;i<this.args.X.length;i++)
+		for (var i=0;i&lt;this.args.X.length;i++)
 		{
 			dv.ctx.lineTo(this.args.X[(i+1)%this.args.X.length],this.args.Y[(i+1)%this.args.X.length]);
 		}	
@@ -768,7 +796,7 @@ DVPolygon.prototype.draw = function(dv)
 		dv.ctx.fillStyle = (new DVColor(this.args.color.r,this.args.color.g,this.args.color.b,0.5)).tostring();
 		dv.ctx.beginPath();
 		dv.ctx.moveTo(this.args.X[0],this.args.Y[0]);
-		for (var i=0;i<this.args.X.length;i++)
+		for (var i=0;i&lt;this.args.X.length;i++)
 		{
 			dv.ctx.lineTo(this.args.X[(i+1)%this.args.X.length],this.args.Y[(i+1)%this.args.X.length]);
 		}		
@@ -849,10 +877,10 @@ function DVCoordinate(args)
 	if (args['yGrid']==null)
 		this.args['yGrid'] = true;
 
-	if (args['xStyle']==null || (args['xStyle']!='value' && args['xStyle']!='class'))
+	if (args['xStyle']==null || (args['xStyle']!='value' &amp;&amp; args['xStyle']!='class'))
 		this.args['xStyle'] = 'value';
 
-	if (args['yStyle']==null || (args['yStyle']!='value' && args['yStyle']!='percentage'))
+	if (args['yStyle']==null || (args['yStyle']!='value' &amp;&amp; args['yStyle']!='percentage'))
 		this.args['yStyle'] = 'value';
 
 	if (args['classes']==null)
@@ -903,9 +931,9 @@ DVCoordinate.prototype.prepare = function(dv)
 		x+=0.5;
 	y = dv.Yinc;
 	//dv.XZoom = 0.01;
-	while (dv.xyTrans(x,y)[0]<dv.oldWidth - 70)
+	while (dv.xyTrans(x,y)[0]&lt;dv.oldWidth - 70)
 	{
-		if (this.args['xStyle']=='class' && x>=this.args.classes.length)
+		if (this.args['xStyle']=='class' &amp;&amp; x>=this.args.classes.length)
 			break;
 		result = dv.xyTrans(x,y);
 		str = x + "";
@@ -917,7 +945,7 @@ DVCoordinate.prototype.prepare = function(dv)
 		if (this.args.xGrid)
 		{
 			color = new DVColor(100,100,100,0.1);
-			if (dv.Xinc<0 && x==0)
+			if (dv.Xinc&lt;0 &amp;&amp; x==0)
 				color = new DVColor(256,0,0,0.3);
 			xgrid_line = {'beginX':result[0],'beginY':result[1],'endX':result[0],'endY':0,'color':color,'shadow':false};
 			this.eles.push(new DVLine(xgrid_line));
@@ -926,7 +954,7 @@ DVCoordinate.prototype.prepare = function(dv)
 		this.eles.push(new DVLine(x_kedu_line_arg));
 
 		x += this.args.xSpan;
-		if (this.args['xStyle']=='class' && x>=this.args.classes.length)
+		if (this.args['xStyle']=='class' &amp;&amp; x>=this.args.classes.length)
 			break;
 	}
 	
@@ -954,7 +982,7 @@ DVCoordinate.prototype.prepare = function(dv)
 		if (this.args.yGrid)
 		{
 			color = new DVColor(100,100,100,0.1);
-			if (dv.Yinc<0 && y==0)
+			if (dv.Yinc&lt;0 &amp;&amp; y==0)
 				color = new DVColor(256,0,0,0.3);
 			ygrid_line = {'beginX':result[0],'beginY':result[1],'endX':result[0]+dv.oldWidth,'endY':result[1],'color':color,'shadow':false};
 			this.eles.push(new DVLine(ygrid_line));
@@ -1014,13 +1042,13 @@ function DVLegend(args)
 	if (args['y']==null)
 		this.args['y'] = 100;
 
-	if (args['style']==null || (args['style']!='rect' && args['style']!='line'  && args['style']!='bubble'))
+	if (args['style']==null || (args['style']!='rect' &amp;&amp; args['style']!='line'  &amp;&amp; args['style']!='bubble'))
 		this.args['style'] = 'rect';
 
 	if (args['outerbox']==null)
 		this.args['outerbox'] = true;
 
-	if (args['direction']==null || (args['direction']!='vertical' && args['direction']!='horizontal') )
+	if (args['direction']==null || (args['direction']!='vertical' &amp;&amp; args['direction']!='horizontal') )
 		this.args['direction'] = 'vertical';
 
 	if (args['height']==null)
@@ -1050,7 +1078,7 @@ DVLegend.prototype.getHeightWidth =function(dv)
  */
 DVLegend.prototype.prepare = function(dv)
 {
-	if (this.args['width']==0 && this.args['height']==0)
+	if (this.args['width']==0 &amp;&amp; this.args['height']==0)
 	{
 		this.args['height'] = this.getHeightWidth(dv)[0];
 		this.args['width'] = this.getHeightWidth(dv)[1];
@@ -1080,18 +1108,18 @@ DVLegend.prototype.prepare = function(dv)
 	dv.ctx.save();
 	dv.ctx.font = font;
 	maxlength = 0;
-	for (var i=0;i<this.args.classes.length;i++)
+	for (var i=0;i&lt;this.args.classes.length;i++)
 	{
 		maxlength = Math.max(maxlength,dv.ctx.measureText(this.args.classes[i]).width);
 	}
-	for (var i=0;i<this.args.classes.length;i++)
+	for (var i=0;i&lt;this.args.classes.length;i++)
 	{
 		paintX = drawLength/10 + drawXinc*i +this.args.x;
 		paintY = TextHeight/6 +drawYinc*i +boxtopy;
 		ratio = 2.0/4;
 		// this.eles.push(new DVRect({'x':paintX,'y':paintY,'width':drawLength,'height':TextHeight,'style':'fill',
 		// 							'color':new DVColor(0,0,0,0.7)}))
-		if (maxlength<drawLength*(1-ratio)*1.0)
+		if (maxlength&lt;drawLength*(1-ratio)*1.0)
 		{
 			ratio = 1 - maxlength*1.0/drawLength;
 		}
@@ -1123,7 +1151,7 @@ DVLegend.prototype.draw = function(dv)
 	{
 		this.prepare(dv);
 	}
-	for (var i=0;i<this.eles.length;i++)
+	for (var i=0;i&lt;this.eles.length;i++)
 		this.eles[i].draw(dv);
 }
 
@@ -1138,7 +1166,7 @@ DVgetRightTextStyle = function(dv,length)
 {
 	dv.ctx.save();
 	i = 0;
-	for (i=1;i<100;i++)
+	for (i=1;i&lt;100;i++)
 	{
 		dv.ctx.font = i+"px Arial";
 		if (dv.ctx.measureText("D").width>length)
@@ -1165,7 +1193,7 @@ DVgetRightTextStyleByStrLenght = function(dv,str,length)
 {
 	dv.ctx.save();
 	i = 0;
-	for (i=1;i<100;i++)
+	for (i=1;i&lt;100;i++)
 	{
 		dv.ctx.font = i+"px Arial";
 		if (dv.ctx.measureText(str).width>length)
@@ -1257,7 +1285,7 @@ DVLineChart.prototype.prepare = function(dv)
 
 	Xs = new Array();
 	Ys = new Array();
-	for (var i=0;i<this.args.X.length;i++)
+	for (var i=0;i&lt;this.args.X.length;i++)
 	{
 		result = dv.xyTrans(this.args.X[i],this.args.Y[i]);
 		Xs.push(result[0]);
@@ -1265,14 +1293,14 @@ DVLineChart.prototype.prepare = function(dv)
 	}
 	if (this.args.style.indexOf('dot')!=-1)
 	{
-		for (var i=0;i<this.args.X.length;i++)
+		for (var i=0;i&lt;this.args.X.length;i++)
 		{
 			this.eles.push(new DVDot({'x':Xs[i],'y':Ys[i],'color':this.args.color}));
 		}
 	}
 	if (this.args.style.indexOf('line')!=-1)
 	{
-		for (var i=0;i<this.args.X.length-1;i++)
+		for (var i=0;i&lt;this.args.X.length-1;i++)
 		{
 			this.eles.push(new DVLine({'beginX':Xs[i],'beginY':Ys[i],'endX':Xs[i+1],'endY':Ys[i+1],'color':this.args.color}));
 		}
@@ -1291,7 +1319,7 @@ DVLineChart.prototype.prepare = function(dv)
 	}
 	if (this.args.style.indexOf('bubble')!=-1)
 	{
-		for (var i=0;i<this.args.X.length;i++)
+		for (var i=0;i&lt;this.args.X.length;i++)
 		{
 			this.eles.push(new DVDot({'x':Xs[i],'y':Ys[i],'color':this.args.color,'style':'bubble','radius':dv.zLenTrans(this.args.bubbleRadius[i])}));
 		}
@@ -1334,7 +1362,7 @@ function DVgetRandomColor(lens,alpha)
 	result = new Array();
 	if (arguments.length==1)
 		alpha = 0.7;
-	for (var i=0;i<lens;i++)
+	for (var i=0;i&lt;lens;i++)
 	{
 		result.push(new DVColor(getrandom(256),getrandom(256),getrandom(256),alpha));
 	}
@@ -1350,8 +1378,8 @@ function DV2dArrMinMax(Xs)
 {
 	mins = 100000;
 	maxx = -10000;
-	for (var i=0;i<Xs.length;i++)
-		for (var j=0;j<Xs[i].length;j++)
+	for (var i=0;i&lt;Xs.length;i++)
+		for (var j=0;j&lt;Xs[i].length;j++)
 		{
 			mins = Math.min(mins,Xs[i][j]);
 			maxx = Math.max(maxx,Xs[i][j]);
@@ -1439,16 +1467,16 @@ DVMulLineChart.prototype.prepare = function(dv)
 	{
 		dv.initialZ(DV2dArrMinMax(this.args.Zs))
 		this.Rs = [];
-		for (var i=0;i<this.args.Zs.length;i++)
+		for (var i=0;i&lt;this.args.Zs.length;i++)
 		{
 			this.Rs.push([])
-			for (var j=0;j<this.args.Zs[i].length;j++)
+			for (var j=0;j&lt;this.args.Zs[i].length;j++)
 			{
 				this.Rs[i].push(dv.zLenTrans(this.args.Zs[i][j]));
 			}
 		}
 	}
-	for (var i=0;i<this.args.classes.length;i++)
+	for (var i=0;i&lt;this.args.classes.length;i++)
 	{
 		line_arg = this.args.cloneAll();
 		line_arg.Xs = null;
@@ -1531,7 +1559,7 @@ function DVBarChart(args)
 	if (args['Y']==null)
 		this.args['Y'] = [];
 
-	if (args['style']==null || (args['style']!='bar' && args['style']!='stacked'))
+	if (args['style']==null || (args['style']!='bar' &amp;&amp; args['style']!='stacked'))
 		this.args['style'] = 'bar';
 
 	if (args['stackedY']==null)
@@ -1586,10 +1614,10 @@ DVBarChart.prototype.prepare = function(dv)
 		else
 		{
 			max_sum = 0;
-			for (var i=0;i<this.args.X.length;i++)
+			for (var i=0;i&lt;this.args.X.length;i++)
 			{
 				sum = 0;
-				for (var j=0;j<this.args.stackedY[i][j];j++)
+				for (var j=0;j&lt;this.args.stackedY[i][j];j++)
 					sum+=this.args.stackedY[i][j];
 				max_sum = Math.max(max_sum,sum)
 			}
@@ -1605,7 +1633,7 @@ DVBarChart.prototype.prepare = function(dv)
 	if (this.args.style=='bar')
 	{
 		dv.ctx.save();
-		for (var i=0;i<this.args.Y.length;i++)
+		for (var i=0;i&lt;this.args.Y.length;i++)
 		{
 			left_most_X = i + 0.5 - 0.3;
 			right_most_X = i + 0.5 - 0.3;
@@ -1625,7 +1653,7 @@ DVBarChart.prototype.prepare = function(dv)
 	}
 	if (this.args.style=='stacked')
 	{
-		for (var i=0;i<this.args.stackedY.length;i++)
+		for (var i=0;i&lt;this.args.stackedY.length;i++)
 		{
 			left_most_X = i + 0.5 - 0.3;
 			right_most_X = i + 0.5 - 0.3;
@@ -1633,7 +1661,7 @@ DVBarChart.prototype.prepare = function(dv)
 			xsec = 0.6/(5*K - 1);
 			xwidth = xsec * 4;
 			tmpy = dv.Yinc;
-			for (var j=0;j<this.args.stackedY[i].length;j++)
+			for (var j=0;j&lt;this.args.stackedY[i].length;j++)
 			{
 				result = dv.xyTrans(left_most_X+xsec*5*(this.args.index-1),tmpy+this.args.stackedY[i][j]);
 				this.eles.push(new DVRect({'x':result[0],'y':result[1],
@@ -1647,7 +1675,7 @@ DVBarChart.prototype.prepare = function(dv)
 	}
 	// Xs = new Array();
 	// Ys = new Array();
-	// for (var i=0;i<this.args.X.length;i++)
+	// for (var i=0;i&lt;this.args.X.length;i++)
 	// {
 	// 	result = dv.xyTrans(this.args.X[i],this.args.Y[i]);
 	// 	Xs.push(result[0]);
@@ -1739,10 +1767,10 @@ DVMulBarChart.prototype.prepare = function(dv)
 		cord_arg = {'xGrid':this.args.xGrid,'yGrid':this.args.yGrid,'xDescript':this.args.xDescript,'yDescript':this.args.yDescript,
 					'xSpan':xSpan,'ySpan':ySpan,'xStyle':'class','classes':this.args.X}
 	this.eles.push(new DVCoordinate(cord_arg));
-	for (var i=0;i<this.args.Z.length;i++)
+	for (var i=0;i&lt;this.args.Z.length;i++)
 	{
 		tmpY = new Array();
-		for (var j=0;j<this.args.X.length;j++)
+		for (var j=0;j&lt;this.args.X.length;j++)
 			tmpY.push(this.args.Ys[j][i]);
 
 		this.eles.push(new DVBarChart({'X':this.args.X,'Y':tmpY,'color':this.args.colors[i],'all':this.args.Z.length,'index':i+1}));
@@ -1797,7 +1825,7 @@ function DVHistChart(args)
 	if (args['sec']==null)
 		this.args['sec'] = this.getsec(this.args.X);
 
-	if (args['yStyle']==null || (this.args['yStyle']!='value' && this.args['yStyle']!='percentage'))
+	if (args['yStyle']==null || (this.args['yStyle']!='value' &amp;&amp; this.args['yStyle']!='percentage'))
 		this.args['yStyle'] = "value";
 
 	if (args['lineWidth']==null)
@@ -1830,18 +1858,18 @@ DVHistChart.prototype.getsec = function(X)
 	if (X.length!=0)
 	{
 		xm = (X.max()-X.min())*1.0;
-		if ((xm/X.max())<0.3)
+		if ((xm/X.max())&lt;0.3)
 			this.incX = Math.floor(X.min())-1;
 		xmargin = X.max()-incX;
-		if (xmargin<=5)
+		if (xmargin&lt;=5)
 			return 0.5;
-		if (xmargin<=10)
+		if (xmargin&lt;=10)
 			return 1;
-		if (xmargin<=50);
+		if (xmargin&lt;=50);
 			return 5;
-		if (xmargin<=100);
+		if (xmargin&lt;=100);
 			return 10;
-		if (xmargin<=500);
+		if (xmargin&lt;=500);
 			return 50;
 	}
 	return 1;
@@ -1855,21 +1883,21 @@ DVHistChart.prototype.getsec = function(X)
 function DVGetSpan(margin)
 {
 	Span = 1;
-	if (margin<0.5)
+	if (margin&lt;0.5)
 		Span = 0.05;
-	else if (margin<1)
+	else if (margin&lt;1)
 		Span = 0.1;
-	else if (margin<5)
+	else if (margin&lt;5)
 		Span = 0.5;
-	else if (margin<15)
+	else if (margin&lt;15)
 		Span = 1;
-	else if (margin<50)
+	else if (margin&lt;50)
 		Span = 5;
-	else if (margin<100)
+	else if (margin&lt;100)
 		Span = 10;
-	else if (margin<500)
+	else if (margin&lt;500)
 		Span = 50;
-	else if (margin<1000)
+	else if (margin&lt;1000)
 		Span = 100;
 	return Span;
 }
@@ -1885,10 +1913,10 @@ DVHistChart.prototype.prepare = function(dv)
 		this.Ysum = new Array();
 
 		//alert((this.args.X.max()-this.incX)/xSpan+1)
-		for (var i=0;i<(this.args.X.max()-this.incX)/xSpan+1;i++)
+		for (var i=0;i&lt;(this.args.X.max()-this.incX)/xSpan+1;i++)
 			this.Ysum.push(0)
 
-		for (var i=0;i<this.args.X.length;i++)
+		for (var i=0;i&lt;this.args.X.length;i++)
 		{
 			this.Ysum[Math.floor((this.args.X[i]-this.incX)*1.0/xSpan)]++;
 		}
@@ -1907,7 +1935,7 @@ DVHistChart.prototype.prepare = function(dv)
 						'xSpan':xSpan,'ySpan':ySpan,'yStyle':this.args.yStyle}
 	
 	this.eles.push(new DVCoordinate(cord_arg));
-	for (var i=0;i<this.Ysum.length;i++)
+	for (var i=0;i&lt;this.Ysum.length;i++)
 	{
 		left = this.incX + i*xSpan;
 		tops = 0;
@@ -1989,7 +2017,7 @@ function DVSector(args)
 	if (args['pop']==null)
 		this.args['pop'] = false;
 
-	if (args['style']==null || (args.style!="fill" && args.style!="stroke" && args.style!="transFill"))
+	if (args['style']==null || (args.style!="fill" &amp;&amp; args.style!="stroke" &amp;&amp; args.style!="transFill"))
 		this.args['style'] = "fill";
 
 	if (args['innerText']==null)
@@ -2055,7 +2083,7 @@ DVSector.prototype.draw = function(dv)
 			r = this.args.radius/(1/Math.sin((this.args.eDeg - this.args.sDeg)/2)+1) //扇形内最大圆半径
 			teststr = this.args.innerText;
 			//alert(teststr.length)
-			if (teststr[teststr.length-1]=="%" && teststr.length<3)
+			if (teststr[teststr.length-1]=="%" &amp;&amp; teststr.length&lt;3)
 				teststr = "12%";
 			font = DVgetRightTextStyleByStrLenght(dv,teststr,Math.min(1.7*r,Math.min(dv.oldWidth,dv.oldHeight)*1.0/10));
 			dv.ctx.font = font;
@@ -2103,11 +2131,11 @@ function DVPieChart(args)
 	if (args['text']==null)
 	{
 		this.args['text'] = new Array();
-		for (var i=0;i<this.args.X.length;i++)
+		for (var i=0;i&lt;this.args.X.length;i++)
 			this.args['text'].push(this.args.X[i]+":"+this.args.Y[i]);
 	}
 
-	if (args['style']==null || (args.style!="empty" && args.style!="showPercentage" && args.style!="showtext"))
+	if (args['style']==null || (args.style!="empty" &amp;&amp; args.style!="showPercentage" &amp;&amp; args.style!="showtext"))
 		this.args['y'] = 'showPercentage';
 	this.eles = new Array();
 }
@@ -2120,12 +2148,12 @@ DVPieChart.prototype.prepare = function(dv)
 {
 	acumDeg = 0;
 	sum = 0;
-	for (var i=0;i<this.args.X.length;i++)
+	for (var i=0;i&lt;this.args.X.length;i++)
 	{
 		sum+=this.args.Y[i];
 	}
 	D = Math.min(dv.oldWidth,dv.oldHeight);
-	for (var i=0;i<this.args.X.length;i++)
+	for (var i=0;i&lt;this.args.X.length;i++)
 	{
 		sDeg = acumDeg;
 		eDeg = sDeg + (this.args.Y[i]*1.0/sum)*(Math.PI*2);
@@ -2213,7 +2241,7 @@ DVRadarChart.prototype.prepare = function(dv)
 	oX = D/2;
 	oY = D/2;
 	r = D*1.0/2/6*5;
-	for (var step=0;step<=5;step++)
+	for (var step=0;step&lt;=5;step++)
 	{
 		tmpX =[]
 		tmpY =[]
@@ -2221,7 +2249,7 @@ DVRadarChart.prototype.prepare = function(dv)
 			color = new DVColor();
 		else
 			color = new DVColor(100,100,100,0.2);
-		for (var i=0;i<this.args.arguments.length;i++)
+		for (var i=0;i&lt;this.args.arguments.length;i++)
 		{
 			nX = oX + Math.cos(Deg*i+1.5*Math.PI)*r/5*step;
 			nY = oY + Math.sin(Deg*i+1.5*Math.PI)*r/5*step;
@@ -2250,11 +2278,11 @@ DVRadarChart.prototype.prepare = function(dv)
 			lineWidth=2;
 		this.eles.push(new DVPolygon({'X':tmpX,'Y':tmpY,'style':'stroke','color':color,'shadow':false,'lineWidth':lineWidth}));
 	}
-	for (var i=0;i<this.args.X.length;i++)
+	for (var i=0;i&lt;this.args.X.length;i++)
 	{
 		tmpX = [];
 		tmpY = [];
-		for (var j=0;j<this.args.arguments.length;j++)
+		for (var j=0;j&lt;this.args.arguments.length;j++)
 		{
 			nX = oX + Math.cos(Deg*j+1.5*Math.PI)*r*(this.args.Y[i][j]-this.args.argumin)/this.args.argumax;
 			nY = oY + Math.sin(Deg*j+1.5*Math.PI)*r*(this.args.Y[i][j]-this.args.argumin)/this.args.argumax;
@@ -2288,3 +2316,26 @@ DVRadarChart.prototype.draw = function(dv)
 
 
 
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="DVBarChart.html">DVBarChart</a></li><li><a href="DVColor.html">DVColor</a></li><li><a href="DVCoordinate.html">DVCoordinate</a></li><li><a href="DVDot.html">DVDot</a></li><li><a href="DVHistChart.html">DVHistChart</a></li><li><a href="DVisual.html">DVisual</a></li><li><a href="DVLegend.html">DVLegend</a></li><li><a href="DVLine.html">DVLine</a></li><li><a href="DVLineChart.html">DVLineChart</a></li><li><a href="DVMulBarChart.html">DVMulBarChart</a></li><li><a href="DVMulLineChart.html">DVMulLineChart</a></li><li><a href="DVPieChart.html">DVPieChart</a></li><li><a href="DVPolygon.html">DVPolygon</a></li><li><a href="DVRadarChart.html">DVRadarChart</a></li><li><a href="DVRect.html">DVRect</a></li><li><a href="DVSector.html">DVSector</a></li><li><a href="DVText.html">DVText</a></li></ul><h3>Global</h3><ul><li><a href="global.html#DV2dArrMinMax">DV2dArrMinMax</a></li><li><a href="global.html#DVgetRandomColor">DVgetRandomColor</a></li><li><a href="global.html#DVgetRightTextStyle">DVgetRightTextStyle</a></li><li><a href="global.html#DVgetRightTextStyleByStrLenght">DVgetRightTextStyleByStrLenght</a></li><li><a href="global.html#DVGetSpan">DVGetSpan</a></li><li><a href="global.html#getEventPosition">getEventPosition</a></li><li><a href="global.html#getrandom">getrandom</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0-dev</a> on Sat Jan 31 2015 10:00:19 GMT+0800 (CST)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

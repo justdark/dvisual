@@ -58,12 +58,35 @@ now we use `Ys` to pass the values,`[[1,2,3],[4,5,6]]` means 2 x-label,each labe
 
 DVLineChart()
 -
+DVLineChart can show `dot`,`line`,`area` and `bubble` chart,and the first three chart can be drawed simultaneously by set the style like `dot|line`,the arguments in args are intuitive,`X` indicate the x value for all node,`Y` for y value.here is a basic example:
 
-todo
+	divisual.addElement(new DVLineChart({'X':[1,2,3,4,5,6],
+										 'Y':[1,2,3,4,5,6],
+										 'style':'dot|line'}));
+	
+<img src="https://raw.githubusercontent.com/justdark/dvisual/master/image/16.png" alt="Drawing" width="400px" />
+
+we can see the red dots and the lines connect them, the default color is red.now we change the style to `dot|line|area`,we can get the area chart with dots and line.
+<img src="https://raw.githubusercontent.com/justdark/dvisual/master/image/17.png" alt="Drawing" width="400px" />
+
+as to the bubble chart,of course the need pass the third degree data,`bubbleRadius`,set the style to `bubble`:
+
+	divisual.addElement(new DVLineChart({'X':[1,2,3,4,5,6],'Y':[1,2,3,4,5,6],
+										'bubbleRadius':[1,2,3,4,5,6],
+										'style':'bubble'}));
+<img src="https://raw.githubusercontent.com/justdark/dvisual/master/image/18.png" alt="Drawing" width="400px" />	
 
 DVMulLineChart()
 -
-todo
+DVMulLineChart is a extension of Line Chart,similar to the MulBarChart,the arguments now we need are `Xs` and `Ys`,if you want to draw `bubble`,`Zs` is also needed,`classes` is a list of string indicate different kind of `dot/line/area/bubble`,here is a example:
+
+	dvisual.addElement(new DVMulLineChart({'Xs':[[1,-2,3,4,5,6],[1,2,3,4,5,6]],
+											'Ys':[[1,2,3,4,3,6],[-3,5,2,7,5,2]],
+											'Zs':[[3,2,1,4,5,7],[3,2,7,6,8,4]],
+											'classes':['A','B'],
+											'style':'bubble'}));
+<img src="https://raw.githubusercontent.com/justdark/dvisual/master/image/18.png" alt="Drawing" width="400px" />	
+we haven't set the color,so it's random,you can set it by pass `colors` an Array of DVColor.ps : the O's coordinates is not (0,0),you must notice that we draw two read line to figure out the zero value.								
 
 DVHistChart()
 -
