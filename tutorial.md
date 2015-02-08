@@ -114,6 +114,12 @@ the data we need is intuitive,`'X'` is a list of string indicate each sector's n
 
 <img src="https://raw.githubusercontent.com/justdark/dvisual/master/image/22.png" alt="Drawing" width="400px" />	
 
+another piechart is DVAreaPieChart(),all the arguments are same with DVPieChart(),but draw the pie in another style:
+
+	dvisual.addElement(new DVAreaPieChart({'X':["ClassA","ClassB","ClassC","ClassD","ClassE","ClassF"],
+										'Y':[2,3,4,5,7,9]}))
+
+<img src="https://raw.githubusercontent.com/justdark/dvisual/master/image/24.png" alt="Drawing" width="400px" />
 
 ##DVRadarChart()
 

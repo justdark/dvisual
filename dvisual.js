@@ -103,6 +103,8 @@ function DVisual(canvasName)
 	this.originX = 25;
 	this.originY = this.oldHeight - 40;
 	this.drawed = false;
+	this.mouseMove = false;
+	this.clickDot = {'X':new Array(),'Y':new Array()};
     // canvasName = this;
     // this.canvas.addEventListener('mousemove', function(e){
     //   p = getEventPosition(e);
@@ -119,6 +121,60 @@ function DVisual(canvasName)
     // }, false);
   
 }
+/**
+ * set the mouseMove to true,you can get the coordinate when you move the mouse on the canvas
+ * @function
+ */
+DVisual.prototype.setMouseMove = function()
+{
+	this.mouseMove = true;
+    var canvasName = this;
+    this.canvas.addEventListener('mousemove', function(e){
+      p = getEventPosition(e);
+      canvasName.ctx.clear();
+      canvasName.draw()
+
+      canvasName.ctx.moveTo(0,p.y);
+      canvasName.ctx.lineTo(canvasName.oldWidth,p.y);
+      canvasName.ctx.moveTo(p.x,0);
+      canvasName.ctx.lineTo(p.x,canvasName.oldHeight);
+      canvasName.ctx.strokeText(canvasName.transXY(p.x,p.y)[0].toFixed(2)+" "+canvasName.transXY(p.x,p.y)[1].toFixed(2),p.x,p.y)
+      canvasName.ctx.stroke();
+      
+    }, false);
+}
+
+/**
+ * set the clickDot to true,you can click the canvas to add a dot on the canvas
+ * @function
+ * @param {DVColor} - the color of the dot you want
+ */
+DVisual.prototype.setClickDot = function(color)
+{
+    var canvasName = this;
+    if (arguments.length==0)
+    	color = DVgetRandomColor(1)[0];
+
+    this.canvas.addEventListener('mouseup', function(e){
+      p = getEventPosition(e);
+      canvasName.ctx.clear();
+      canvasName.addElement(new DVDot({'x':p.x,'y':p.y,'color':color}));
+      canvasName.draw();
+      real = canvasName.transXY(p.x,p.y);
+      canvasName.clickDot.X.push(real[0]);
+      canvasName.clickDot.Y.push(real[1]);
+    }, false);
+}
+/**
+ * return 
+ * @function
+ * @return {return the clicked dot data}
+ */
+DVisual.prototype.getClickDot = function()
+{
+   return this.clickDot;
+}
+
 
 /**
  * The Formated Color Class of DVisual
@@ -2286,5 +2342,96 @@ DVRadarChart.prototype.draw = function(dv)
 
 
 
+
+
+/**
+ * A DVisual graph element indicate a Area Pie Chart,all arguments are same with Pie Chart,bu different style of image
+ * @constructor
+ * @param {Object[]} args - a array contain arguments below
+ * @param {Array(string)} args.X - a series of string,indicate for each component on the pie
+ * @param {Array(double)} args.Y - a series of value,the hist chart will be created by this data
+ * @param {boolean=} [args.legendOuterBox=true] - whether draw the outer box of legend
+ * @param {Array(DVColor)=} [args.colors = DVgetRandomColor(this.args.X.length)] - the colors for each component
+ * @param {Array(string)=} [args.text=!!label+':'+value!!] - a series of string you want to show on each sector on the pie.
+ * @param {string=} [args.style='showPercentage'] - show the value of each bar or the percentage,'empty' or 'showtext' or 'showPercentage'
+ */
+function DVAreaPieChart(args)
+{
+	if (arguments.length==0)
+		args = {};
+
+	this.args = args.cloneAll();
+	if (args['X']==null)
+		this.args['X'] = [];
+
+	if (args['Y']==null)
+		this.args['Y'] = [];
+
+	if (args['legendOuterBox']==null)
+		this.args['legendOuterBox'] = true;
+
+	if (args['colors']==null)
+		this.args['colors'] = DVgetRandomColor(this.args.X.length);
+
+	if (args['text']==null)
+	{
+		this.args['text'] = new Array();
+		for (var i=0;i<this.args.X.length;i++)
+			this.args['text'].push(this.args.X[i]+":"+this.args.Y[i]);
+	}
+
+	if (args['style']==null || (args.style!="empty" && args.style!="showPercentage" && args.style!="showtext"))
+		this.args['y'] = 'showPercentage';
+	this.eles = new Array();
+}
+/**
+ * prepare the needed elements on the first time to draw it
+ * @function
+ * @param {DVisual} dv - the Dvisual instance you want to draw 
+ */
+DVAreaPieChart.prototype.prepare = function(dv)
+{
+	acumDeg = 0;
+	sum = 0;
+	for (var i=0;i<this.args.X.length;i++)
+	{
+		sum+=this.args.Y[i];
+	}
+	D = Math.min(dv.oldWidth,dv.oldHeight);
+	maxR = D*1.0/2/6*5;
+	maxY = this.args.Y.max();
+	for (var i=0;i<this.args.X.length;i++)
+	{
+		sDeg = acumDeg;
+		eDeg = sDeg + (Math.PI*2)/this.args.X.length;
+		str = Math.floor((this.args.Y[i]*1.0/sum).toFixed(2)*100)+"%";
+		r = Math.sqrt(this.args.Y[i]*1.0/maxY)*maxR;
+		//alert(D+" "+r)
+		if (this.args.style=='showtext')
+			str = this.args.text[i];
+		else if (this.args.style=='empty')
+			str = "";
+
+		this.eles.push(new DVSector({'x':D/2-D/15,'y':D/2-D/15,'sDeg':sDeg,'radius':r,'eDeg':eDeg,'innerText':str,'color':this.args.colors[i]}));
+		acumDeg = eDeg;
+	}
+	xs = (7.0/24/1.41+5.0/12+1.0/9);
+	this.eles.push(new DVLegend({'classes':this.args.X,'colors':this.args.colors,'x':xs*D,'y':dv.oldHeight,
+						'height':(1-xs)*D,'width':(1-xs)*D,'outerbox':this.args.legendOuterBox}))
+}
+/**
+ * draw the Pie chart on dv's canvas
+ * @function
+ * @param {DVisual} dv - the Dvisual instance you want to draw 
+ */
+DVAreaPieChart.prototype.draw = function(dv)
+{
+	if (this.eles.length==0)
+	{
+		this.prepare(dv);
+	}
+	for (var i=this.eles.length-1;i>=0;i--)
+		this.eles[i].draw(dv);
+}
 
 

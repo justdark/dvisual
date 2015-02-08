@@ -141,6 +141,14 @@ Examples
 <img src="https://raw.githubusercontent.com/justdark/dvisual/master/image/12.png" alt="Drawing" width="400px" />
 
 
+----------------------------------------------
+
+	s13 = new DVisual("myCanvas13");
+	s13.addElement(new DVAreaPieChart({'X':["ClassA","ClassB","ClassC","ClassD","ClassE","ClassF"],
+										'Y':[2,3,4,5,7,9]}))
+	s13.draw()
+
+<img src="https://raw.githubusercontent.com/justdark/dvisual/master/image/24.png" alt="Drawing" width="400px" />
 
 ----------------------------------------------
 Warning
