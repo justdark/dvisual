@@ -21,6 +21,7 @@
 <canvas id="myCanvas11" height="400px" width ="400px"></canvas>
 <canvas id="myCanvas12" height="400px" width ="400px"></canvas>
 <canvas id="myCanvas13" height="400px" width ="400px"></canvas>
+<canvas id="myCanvas14" height="400px" width ="400px"></canvas>
 
 </table>
 </body>
@@ -171,6 +172,14 @@ s12.draw()
 s13 = new DVisual("myCanvas13");
 s13.addElement(new DVAreaPieChart({'X':["ClassA","ClassB","ClassC","ClassD","ClassE","ClassF"],
 										'Y':[2,3,4,5,7,9]}))
+s13.draw()
+
+
+s13 = new DVisual("myCanvas14");
+s13.addElement(new DVBoxChart({'X':["ClassA","ClassB","ClassC"],
+										'Ys':[[2,3,4,5,7,9,5,6,2,4,6,7,8,3,5,6,3,2],
+											  [5,6,2,4,7,8,3,6,2,7,15,4,8,3,8,9,5,6],
+											  [3,2,4,5,6,7,2,12,11,13,12,10,11,15]]}))
 s13.draw()
 // g1 = {'X':["A","B","C"],'Y':[3,5,6],'all':3,'index':1}
 // g2 = {'X':["A","B","C"],'Y':[3,5,6],'all':3,'index':2}

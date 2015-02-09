@@ -144,10 +144,16 @@ here is an example	:
 <img src="https://raw.githubusercontent.com/justdark/dvisual/master/image/23.png" alt="Drawing" width="400px" />	
 
 
+##DVBoxChart()
 
+The Box Chart is another chart show some statistical value for the data,the input is also intuitive,`'X'` means each box's name,`'Ys'` contains the set of data for each box,It's easy for us to build an box chart as below and judge different data,include the median,Quartile,Bounds and outliers.you can also pass the `'colors'` for each box,of course,random in default.
 
+	dvisual.addElement(new DVBoxChart({'X':["ClassA","ClassB","ClassC"],
+										'Ys':[[2,3,4,5,7,9,5,6,2,4,6,7,8,3,5,6,3,2],
+											  [5,6,2,4,7,8,3,6,2,7,15,4,8,3,8,9,5,6],
+											  [3,2,4,5,6,7,2,12,11,13,12,10,11,15]]}))
 
-
+<img src="https://raw.githubusercontent.com/justdark/dvisual/master/image/25.png" alt="Drawing" width="400px" />	
 
 
 

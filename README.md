@@ -150,6 +150,17 @@ Examples
 
 <img src="https://raw.githubusercontent.com/justdark/dvisual/master/image/24.png" alt="Drawing" width="400px" />
 
+-----------------------------------------------
+
+	s14 = new DVisual("myCanvas14");
+	s14.addElement(new DVBoxChart({'X':["ClassA","ClassB","ClassC"],
+										'Ys':[[2,3,4,5,7,9,5,6,2,4,6,7,8,3,5,6,3,2],
+											  [5,6,2,4,7,8,3,6,2,7,15,4,8,3,8,9,5,6],
+											  [3,2,4,5,6,7,2,12,11,13,12,10,11,15]]}))
+	s14.draw()
+
+<img src="https://raw.githubusercontent.com/justdark/dvisual/master/image/25.png" alt="Drawing" width="400px" />
+
 ----------------------------------------------
 Warning
 ===

@@ -2388,7 +2388,7 @@ function DVAreaPieChart(args)
  * prepare the needed elements on the first time to draw it
  * @function
  * @param {DVisual} dv - the Dvisual instance you want to draw 
- */
+*/
 DVAreaPieChart.prototype.prepare = function(dv)
 {
 	acumDeg = 0;
@@ -2434,4 +2434,207 @@ DVAreaPieChart.prototype.draw = function(dv)
 		this.eles[i].draw(dv);
 }
 
+
+
+
+/**
+ * A DVisual graph element indicate a Box Chart,integrate the normal,stacked bar chart.
+ * @constructor
+ * @param {Object[]} args - a array contain arguments below
+ * @param {Array(string)} args.X - a list of string for each x-label
+ * @param {Array(Array(double))} args.Ys - the value set of each x.
+ * @param {Array(DVColor)} args.colors - a series of DVColor indicate each x.
+
+ * @param {string=} [args.style='bar'] - the style of bar chart,'stacked' or 'bar'
+ * @param {int} args.all - how many bar you want for each X-label
+ * @param {int} args.index - current data is the i-th bar for the each X-label
+ * @param {DVColor=} [args.color = new DVColor(256,0,0,0.8)] - the color of the bar(normal bar)
+ * @param {boolean=} [args.xGrid=false] - whether draw the grid line started from X axes
+ * @param {boolean=} [args.yGrid=true] - whether draw the grid line started from Y axes
+ * @param {string=} [args.xDescript='x'] - the X axes's description
+ * @param {string=} [args.yDescript='y'] - the Y axes's description
+ * @param {boolean=} [args.legendOuterBox=true] - whether draw the outer box of legend
+ */
+function DVBoxChart(args)
+{
+	if (arguments.length==0)
+		args = {};
+
+	this.args = args.cloneAll();
+	if (args['X']==null)
+		this.args['X'] = [];
+
+	if (args['Ys']==null)
+		this.args['Y'] = [];
+
+	if (args['style']==null || (args['style']!='bar' && args['style']!='stacked'))
+		this.args['style'] = 'bar';
+
+	if (args['colors']==null)
+		this.args['colors'] = DVgetRandomColor(this.args['X'].length);
+
+	if (args['lineWidth']==null)
+		this.args['lineWidth'] = 1;
+
+	if (args['xDescript']==null)
+		this.args['xDescript'] = "x";
+
+	if (args['yDescript']==null)
+		this.args['yDescript'] = "y";
+
+	if (args['xGrid']==null)
+		this.args['xGrid'] = false;
+
+	if (args['yGrid']==null)
+		this.args['yGrid'] = false;
+
+	if (args['legendOuterBox']==null)
+		this.args['legendOuterBox'] = true;
+
+	this.eles = new Array();
+}
+/**
+ * calculate the median of an array
+ * @function
+ * @param {Array(double)} Y - the data to be calculate
+ */
+function DVMedian(X)
+{
+	Y = X.slice(0);
+	Y.sort();
+	if (Y.length%2==1)
+		return Y[Math.floor(Y.length/2)];
+	return (Y[Math.floor(Y.length/2)]+Y[Math.floor(Y.length/2)-1])*1.0/2;
+}
+
+/**
+ * calculate the needed value for each box
+ * @function
+ * @param {Array(double)} Y - an array of double.the data needed statistic.
+ * @return {Object} staValue - the value returns
+ * @return {double} staValue.median - the median of Y
+ * @return {double} staValue.upperQuartile - the upper quartile of Y
+ * @return {double} staValue.lowerQuartile - the lower quartile of Y
+ * @return {double} staValue.upperBound - the upper Bound of Y
+ * @return {double} staValue.lowerBound - the lower Bound of Y
+ * @return {Array(double)} staValue.outlier - the outlier bound for the Y,[min,max]
+ */
+DVBoxChart.prototype.statistic = function(Y)
+{
+	if (Y.length==0)
+		return null;
+	staValue = {};
+	Y.sort(function(a,b)
+			{
+				return a - b;
+			});
+	if (Y.length%2==1)
+	{
+		staValue.median = Y[Math.floor(Y.length/2)];
+		staValue.upperQuartile = DVMedian(Y.slice(Math.floor(Y.length/2)+1));
+		staValue.lowerQuartile = DVMedian(Y.slice(0,Math.floor(Y.length/2)));
+	}
+	else
+	{
+		staValue.median = (Y[Math.floor(Y.length/2)]+Y[Math.floor(Y.length/2)-1])*1.0/2;
+		staValue.upperQuartile = DVMedian(Y.slice(Math.floor(Y.length/2)));
+		staValue.lowerQuartile = DVMedian(Y.slice(0,Math.floor(Y.length/2)));
+	}
+	staValue.outlier = [];
+	IQR = (staValue.upperQuartile - staValue.lowerQuartile)*1.0/2;
+	staValue.outlier.push(staValue.median-3*IQR);
+	staValue.outlier.push(staValue.median+3*IQR);
+	staValue.upperBound = -1000000;
+	staValue.lowerBound = 1000000;
+	for (var i=0;i<Y.length;i++)
+	{
+		if (Y[i]>=staValue.outlier[0])
+			staValue.lowerBound = Math.min(staValue.lowerBound,Y[i]);
+		if (Y[i]<=staValue.outlier[1])
+		{
+			staValue.upperBound = Math.max(staValue.upperBound,Y[i]);
+		}
+	}
+	return staValue;
+}
+/**
+ * prepare the needed elements on the first time to draw it
+ * @function
+ * @param {DVisual} dv - the Dvisual instance you want to draw 
+ */
+DVBoxChart.prototype.prepare = function(dv)
+{
+
+	tmpY = DV2dArrMinMax(this.args.Ys);
+	if (this.args.style=='bar')
+		dv.initial([0,this.args.X.length],tmpY);
+
+	ySpan = DVGetSpan(dv.Ymargin)
+	xSpan = 1;	
+	cord_arg = {'xGrid':this.args.xGrid,'yGrid':this.args.yGrid,'xDescript':this.args.xDescript,'yDescript':this.args.yDescript,
+				'xSpan':xSpan,'ySpan':ySpan,'xStyle':'class','classes':this.args.X}
+	this.eles.push(new DVCoordinate(cord_arg));
+	for (var i=0;i<this.args.X.length;i++)
+	{
+		staValue = this.statistic(this.args.Ys[i]);
+		half_len = 0.2;
+		half_rect_width = 0.3;
+		begin = dv.xyTrans(i-half_len+0.5,staValue.lowerBound);
+		end  = dv.xyTrans(i+half_len+0.5,staValue.lowerBound);
+		this.eles.push(new DVLine({'beginX':begin[0],'beginY':begin[1],'endX':end[0],'endY':end[1]}));
+
+		begin = dv.xyTrans(i-half_len+0.5,staValue.upperBound);
+		end  = dv.xyTrans(i+half_len+0.5,staValue.upperBound);
+		this.eles.push(new DVLine({'beginX':begin[0],'beginY':begin[1],'endX':end[0],'endY':end[1]}));
+
+		begin = dv.xyTrans(i-half_rect_width+0.5,staValue.median);
+		end  = dv.xyTrans(i+half_rect_width+0.5,staValue.median);
+		this.eles.push(new DVLine({'beginX':begin[0],'beginY':begin[1],'endX':end[0],'endY':end[1],'lineWidth':2}));
+
+		rectNode = dv.xyTrans(i-half_rect_width+0.5,staValue.upperQuartile);
+		rectWidth = dv.xLenTrans(half_rect_width*2);
+		rectHeight = dv.yLenTrans(staValue.upperQuartile-staValue.lowerQuartile);
+		this.eles.push(new DVRect({'x':rectNode[0],'y':rectNode[1],'width':rectWidth,'height':rectHeight,'color':this.args.colors[i]}));
+
+		begin = dv.xyTrans(i+0.5,staValue.upperBound);
+		end  = dv.xyTrans(i+0.5,staValue.upperQuartile);
+		this.eles.push(new DVLine({'beginX':begin[0],'beginY':begin[1],'endX':end[0],'endY':end[1],'style':'dash'}));	
+
+		begin = dv.xyTrans(i+0.5,staValue.lowerBound);
+		end  = dv.xyTrans(i+0.5,staValue.lowerQuartile);
+		this.eles.push(new DVLine({'beginX':begin[0],'beginY':begin[1],'endX':end[0],'endY':end[1],'style':'dash'}));	
+		for (var j=0;j<this.args.Ys[i].length;j++)
+		{
+			if (this.args.Ys[i][j]<staValue.outlier[0] || this.args.Ys[i][j]>staValue.outlier[1])
+			{
+				dotxy = dv.xyTrans(i+0.5,this.args.Ys[i][j]);
+				this.eles.push(new DVDot({'x':dotxy[0],'y':dotxy[1],'color':this.args.colors[i],'style':'bubble'}))
+			}
+		}
+	}
+	//result = dv.xyTrans(this.args.X.length,dv.Ymargin/20);
+	//	this.eles.push(new DVLegend({'outerbox':this.args.legendOuterBox,'classes':this.args.X,'colors':this.args.colors,'x':result[0],'y':result[1]}))
+	// Xs = new Array();
+	// Ys = new Array();
+	// for (var i=0;i<this.args.X.length;i++)
+	// {
+	// 	result = dv.xyTrans(this.args.X[i],this.args.Y[i]);
+	// 	Xs.push(result[0]);
+	// 	Ys.push(result[1]);
+	// }
+}
+/**
+ * draw the DVBarChart on dv's canvas
+ * @function
+ * @param {DVisual} dv - the Dvisual instance you want to draw 
+ */
+DVBoxChart.prototype.draw = function(dv)
+{
+	if (this.eles.length==0)
+	{
+		this.prepare(dv);
+	}
+	for (var i=this.eles.length-1;i>=0;i--)
+		this.eles[i].draw(dv);
+}
 
