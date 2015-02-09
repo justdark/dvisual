@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Class: DVLineChart</title>
+    <title>JSDoc: Class: DVAreaPieChart</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Class: DVLineChart</h1>
+    <h1 class="page-title">Class: DVAreaPieChart</h1>
 
     
 
@@ -29,7 +29,7 @@
 <header>
     
         <h2>
-        DVLineChart
+        DVAreaPieChart
         </h2>
         
     
@@ -42,14 +42,14 @@
 
     
 
-    <h4 class="name" id="DVLineChart"><span class="type-signature"></span>new DVLineChart<span class="signature">(args)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="DVAreaPieChart"><span class="type-signature"></span>new DVAreaPieChart<span class="signature">(args)</span><span class="type-signature"></span></h4>
 
     
 
 
 
 <div class="description">
-    A DVisual graph element indicate a LineChart,integrate the dot,line,area or bubble  chart for a single path
+    A DVisual graph element indicate a Area Pie Chart,all arguments are same with Pie Chart,bu different style of image
 </div>
 
 
@@ -137,7 +137,7 @@
             <td class="type">
             
                 
-<span class="param-type">Array(double)</span>
+<span class="param-type">Array(string)</span>
 
 
             
@@ -159,7 +159,7 @@
                 </td>
             
 
-            <td class="description last">the set of a series nodes' x value</td>
+            <td class="description last">a series of string,indicate for each component on the pie</td>
         </tr>
 
     
@@ -194,7 +194,124 @@
                 </td>
             
 
-            <td class="description last">the set of a series nodes' y value</td>
+            <td class="description last">a series of value,the hist chart will be created by this data</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>legendOuterBox</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    true
+                
+                </td>
+            
+
+            <td class="description last">whether draw the outer box of legend</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>colors</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Array(DVColor)</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    DVgetRandomColor(this.args.X.length)
+                
+                </td>
+            
+
+            <td class="description last">the colors for each component</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>text</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Array(string)</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    !!label+':'+value!!
+                
+                </td>
+            
+
+            <td class="description last">a series of string you want to show on each sector on the pie.</td>
         </tr>
 
     
@@ -228,281 +345,12 @@
             
                 <td class="default">
                 
-                    'dot|line'
+                    'showPercentage'
                 
                 </td>
             
 
-            <td class="description last">the legend's note shape for each class,'dot','line','area' can be used simultaneously,'bubble' style is unique</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>color</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><a href="DVColor.html">DVColor</a></span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                    new DVColor(256,0,0,0.8)
-                
-                </td>
-            
-
-            <td class="description last">the color of the line/dot/area/bubble</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>lineWidth</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">double</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                    '1'
-                
-                </td>
-            
-
-            <td class="description last">the lineWidth of graph</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>xDescript</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                    'x'
-                
-                </td>
-            
-
-            <td class="description last">the X axes's description</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>yDescript</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                    'y'
-                
-                </td>
-            
-
-            <td class="description last">the Y axes's description</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>xGrid</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">boolean</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                    true
-                
-                </td>
-            
-
-            <td class="description last">whether draw the grid line started from X axes</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>yGrid</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">boolean</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                    true
-                
-                </td>
-            
-
-            <td class="description last">whether draw the grid line started from Y axes</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>bubbleRadius</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Array(double)</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                </td>
-            
-
-            <td class="description last">when the style is bubble,you should indicate the radius for each bubble</td>
+            <td class="description last">show the value of each bar or the percentage,'empty' or 'showtext' or 'showPercentage'</td>
         </tr>
 
     
@@ -550,7 +398,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="dvisual.js.html">dvisual.js</a>, <a href="dvisual.js.html#line1257">line 1257</a>
+        <a href="dvisual.js.html">dvisual.js</a>, <a href="dvisual.js.html#line2358">line 2358</a>
     </li></ul></dd>
     
 
@@ -573,11 +421,6 @@
 
 
 
-
-
-    <h5>Example</h5>
-    
-    <pre class="prettyprint"><code>new DVLineChart({'X':[1,2,3,4,5],'Y':[1,2,3,4,5],'style':'area|dot'});</code></pre>
 
 
 
@@ -611,7 +454,7 @@
 
 
 <div class="description">
-    draw the DVLineChart on dv's canvas
+    draw the Pie chart on dv's canvas
 </div>
 
 
@@ -704,7 +547,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="dvisual.js.html">dvisual.js</a>, <a href="dvisual.js.html#line1361">line 1361</a>
+        <a href="dvisual.js.html">dvisual.js</a>, <a href="dvisual.js.html#line2427">line 2427</a>
     </li></ul></dd>
     
 
@@ -835,7 +678,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="dvisual.js.html">dvisual.js</a>, <a href="dvisual.js.html#line1300">line 1300</a>
+        <a href="dvisual.js.html">dvisual.js</a>, <a href="dvisual.js.html#line2392">line 2392</a>
     </li></ul></dd>
     
 
@@ -883,7 +726,7 @@
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0-dev</a> on Mon Feb 09 2015 15:31:07 GMT+0800 (CST)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0-dev</a> on Mon Feb 09 2015 15:31:06 GMT+0800 (CST)
 </footer>
 
 <script> prettyPrint(); </script>

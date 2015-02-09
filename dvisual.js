@@ -168,7 +168,7 @@ DVisual.prototype.setClickDot = function(color)
 /**
  * return 
  * @function
- * @return {return the clicked dot data}
+ * @return {Objects} clickDot - return the clicked dot data
  */
 DVisual.prototype.getClickDot = function()
 {
