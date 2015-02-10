@@ -2320,7 +2320,7 @@ DVRadarChart.prototype.prepare = function(dv)
 		}
 		this.eles.push(new DVPolygon({'X':tmpX,'Y':tmpY,'style':'fill','color':this.args.colors[i],'shadow':true,'lineWidth':2}));
 	}
-	xs = 0.8;
+	xs = 0.82;
 	this.eles.push(new DVLegend({'classes':this.args.X,'colors':this.args.colors,'x':xs*D,'y':dv.oldHeight,
 						'height':(1-xs)*D,'width':(1-xs)*D,'outerbox':this.args.legendOuterBox}))
 
@@ -2598,11 +2598,11 @@ DVBoxChart.prototype.prepare = function(dv)
 
 		begin = dv.xyTrans(i+0.5,staValue.upperBound);
 		end  = dv.xyTrans(i+0.5,staValue.upperQuartile);
-		this.eles.push(new DVLine({'beginX':begin[0],'beginY':begin[1],'endX':end[0],'endY':end[1],'style':'dash'}));	
+		this.eles.push(new DVLine({'beginX':begin[0],'beginY':begin[1],'endX':end[0],'endY':end[1]-3,'style':'dash'}));	
 
 		begin = dv.xyTrans(i+0.5,staValue.lowerBound);
 		end  = dv.xyTrans(i+0.5,staValue.lowerQuartile);
-		this.eles.push(new DVLine({'beginX':begin[0],'beginY':begin[1],'endX':end[0],'endY':end[1],'style':'dash'}));	
+		this.eles.push(new DVLine({'beginX':begin[0],'beginY':begin[1],'endX':end[0],'endY':end[1]+4,'style':'dash'}));	
 		for (var j=0;j<this.args.Ys[i].length;j++)
 		{
 			if (this.args.Ys[i][j]<staValue.outlier[0] || this.args.Ys[i][j]>staValue.outlier[1])
