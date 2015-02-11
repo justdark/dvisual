@@ -16,7 +16,7 @@ CanvasRenderingContext2D.prototype.sector = function (x, y, radius, sDeg, eDeg) 
 	this.restore();
 	return this;
 }
-CanvasRenderingContext2D.prototype.clear = function () {
+CanvasRenderingContext2D.prototype.clear_canvas = function () {
 	this.clearRect(0,0,10000,10000);
 	return this;
 }
@@ -76,7 +76,7 @@ function DVisual(canvasName)
 		DVCanvasList.push(canvasName);
  	this.canvas = document.getElementById(canvasName);
 	this.ctx = this.canvas.getContext('2d');
-	this.ctx.clear();
+	this.ctx.clear_canvas();
 	this.eles = new Array();
 
 	this.devicePixelRatio = window.devicePixelRatio || 1;
@@ -142,7 +142,7 @@ DVisual.prototype.setMouseMove = function()
     var canvasName = this;
     this.canvas.addEventListener('mousemove', function(e){
       p = getEventPosition(e);
-      canvasName.ctx.clear();
+      canvasName.ctx.clear_canvas();
       canvasName.draw()
 
       canvasName.ctx.moveTo(0,p.y);
@@ -168,7 +168,7 @@ DVisual.prototype.setClickDot = function(color)
 
     this.canvas.addEventListener('mouseup', function(e){
       p = getEventPosition(e);
-      canvasName.ctx.clear();
+      canvasName.ctx.clear_canvas();
       canvasName.addElement(new DVDot({'x':p.x,'y':p.y,'color':color}));
       canvasName.draw();
       real = canvasName.transXY(p.x,p.y);
