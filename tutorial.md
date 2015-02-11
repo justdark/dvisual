@@ -121,6 +121,12 @@ another piechart is DVAreaPieChart(),all the arguments are same with DVPieChart(
 
 <img src="https://raw.githubusercontent.com/justdark/dvisual/master/image/24.png" alt="Drawing" width="400px" />
 
+to get a ring chart,you can set the `ring_ratio` indicate the inner empty core's ratio,for example:
+
+	dvisual.addElement(new DVPieChart({'X':["ClassA","ClassB","ClassC","ClassD"],
+										'Y':[2,3,4,5],
+										'ring_ratio':0.5}))
+<img src="https://raw.githubusercontent.com/justdark/dvisual/master/image/26.png" alt="Drawing" width="400px" />
 ##DVRadarChart()
 
 radar chart is a useful chart when you want to judge two kind of object in more than 3 arguments,let's see what we need:

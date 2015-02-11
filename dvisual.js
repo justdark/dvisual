@@ -17,12 +17,23 @@ CanvasRenderingContext2D.prototype.sector = function (x, y, radius, sDeg, eDeg) 
 	return this;
 }
 CanvasRenderingContext2D.prototype.clear = function () {
-	this.save()
-	this.fillStyle="#ffffff";
-	this.fillRect(0,0,4000,4000);
-	this.restore();
+	this.clearRect(0,0,10000,10000);
 	return this;
 }
+
+CanvasRenderingContext2D.prototype.clear_arc = function() {
+    this.save();
+    this.globalCompositeOperation = 'destination-out';
+    this.fillStyle = 'black';
+    this.fill();
+    this.restore();
+};
+
+CanvasRenderingContext2D.prototype.clearArc = function(x, y, radius, startAngle, endAngle, anticlockwise) {
+    this.beginPath();
+    this.arc(x, y, radius, startAngle, endAngle, anticlockwise);
+    this.clear_arc();
+};
 
 DVChartList = [DVBarChart,DVPieChart,DVLineChart,DVHistChart,DVRadarChart,DVMulLineChart,DVMulBarChart];
 DVCanvasList = [];
@@ -2014,6 +2025,7 @@ DVHistChart.prototype.draw = function(dv)
  * @param {boolean=} [args.shadow =true] - whether draw text's shadow.
  * @param {string=} [args.style ='fill']- the style of this sector,should be one of 'fill','stroke','transFill' means translucent fill.
  * @param {string=} [args.innerText ='']- the text you want to shao in the center of sector
+ * @param {double=} [args.ring_ratio = 0] - the ring ratio,to calculate the text location
  */
 function DVSector(args)
 {
@@ -2041,6 +2053,9 @@ function DVSector(args)
 
 	if (args['shadow']==null)
 		this.args['shadow'] = true;
+
+	if (args['ring_ratio']==null)
+		this.args['ring_ratio'] = 0;
 
 	if (args['pop']==null)
 		this.args['pop'] = false;
@@ -2109,6 +2124,10 @@ DVSector.prototype.draw = function(dv)
 		if (this.innerDV==null)
 		{
 			r = this.args.radius/(1/Math.sin((this.args.eDeg - this.args.sDeg)/2)+1) //扇形内最大圆半径
+			if (r>this.args.radius*(1-this.args.ring_ratio)*1.0/2.2)
+			{
+				r = this.args.radius*(1-this.args.ring_ratio)*1.0/2.2;
+			}
 			teststr = this.args.innerText;
 			//alert(teststr.length)
 			if (teststr[teststr.length-1]=="%" && teststr.length<3)
@@ -2118,6 +2137,11 @@ DVSector.prototype.draw = function(dv)
 			yinc = dv.ctx.measureText('D').width/2;
 			textX = this.args.x + (this.args.radius-r)*Math.cos((this.args.sDeg + this.args.eDeg)*1.0/2);
 			textY = this.args.y + (this.args.radius-r)*Math.sin((this.args.sDeg + this.args.eDeg)*1.0/2)+yinc;
+			if (this.args.ring>0)
+			{
+				textX = this.args.x + (this.args.radius-r)*Math.cos((this.args.sDeg + this.args.eDeg)*1.0/2);
+				textY = this.args.y + (this.args.radius-r)*Math.sin((this.args.sDeg + this.args.eDeg)*1.0/2)+yinc;
+			}
 
 			this.innerDV = new DVText({'maxwidth':1.7*r,'text':this.args.innerText,'x':textX,'y':textY,'textAlign':'center','color':new DVColor(256,256,256,1),'font':font})	
 		}
@@ -2135,8 +2159,9 @@ DVSector.prototype.draw = function(dv)
  * @param {Array(double)} args.Y - a series of value,the hist chart will be created by this data
  * @param {boolean=} [args.legendOuterBox=true] - whether draw the outer box of legend
  * @param {Array(DVColor)=} [args.colors = DVgetRandomColor(this.args.X.length)] - the colors for each component
+ * @param {douboe=} [args.ring_ratio = 0] - the ring ratio of the pie,0 in default,means no ring
  * @param {Array(string)=} [args.text=!!label+':'+value!!] - a series of string you want to show on each sector on the pie.
- * @param {string=} [args.style='showPercentage'] - show the value of each bar or the percentage,'empty' or 'showtext' or 'showPercentage'
+ * @param {string=} [args.style='showPercentage'] - show the value of each bar or the percentage,'empty' or 'showtext' or 'showPercentage',or 'ring' to show a ring chart
  */
 function DVPieChart(args)
 {
@@ -2153,6 +2178,9 @@ function DVPieChart(args)
 	if (args['legendOuterBox']==null)
 		this.args['legendOuterBox'] = true;
 
+	if (args['ring_ratio']==null || args['ring_ratio']>1 || args['ring_ratio']<0)
+		this.args['ring_ratio'] = 0;
+
 	if (args['colors']==null)
 		this.args['colors'] = DVgetRandomColor(this.args.X.length);
 
@@ -2163,7 +2191,7 @@ function DVPieChart(args)
 			this.args['text'].push(this.args.X[i]+":"+this.args.Y[i]);
 	}
 
-	if (args['style']==null || (args.style!="empty" && args.style!="showPercentage" && args.style!="showtext"))
+	if (args['style']==null || (args.style!="empty" && args.style!="showPercentage" && args.style!="showtext" && args.style!="ring"))
 		this.args['y'] = 'showPercentage';
 	this.eles = new Array();
 }
@@ -2180,7 +2208,11 @@ DVPieChart.prototype.prepare = function(dv)
 	{
 		sum+=this.args.Y[i];
 	}
+
 	D = Math.min(dv.oldWidth,dv.oldHeight);
+
+	//this.eles.push(new DVSector({'ring_ratio':this.args.ring_ratio,'x':D/2-D/15,'y':D/2-D/15,'sDeg':0,'radius':D*1.0/6*3*this.args.ring_ratio,'eDeg':Math.PI*2,'color':new DVColor(256,256,256,1)}))
+	
 	for (var i=0;i<this.args.X.length;i++)
 	{
 		sDeg = acumDeg;
@@ -2193,9 +2225,10 @@ DVPieChart.prototype.prepare = function(dv)
 		else if (this.args.style=='empty')
 			str = "";
 
-		this.eles.push(new DVSector({'x':D/2-D/15,'y':D/2-D/15,'sDeg':sDeg,'radius':r,'eDeg':eDeg,'innerText':str,'color':this.args.colors[i]}));
+		this.eles.push(new DVSector({'ring_ratio':this.args.ring_ratio,'x':D/2-D/15,'y':D/2-D/15,'sDeg':sDeg,'radius':r,'eDeg':eDeg,'innerText':str,'color':this.args.colors[i]}));
 		acumDeg = eDeg;
 	}
+
 	xs = (7.0/24/1.41+5.0/12+1.0/9);
 	this.eles.push(new DVLegend({'classes':this.args.X,'colors':this.args.colors,'x':xs*D,'y':dv.oldHeight,
 						'height':(1-xs)*D,'width':(1-xs)*D,'outerbox':this.args.legendOuterBox}))
@@ -2213,6 +2246,8 @@ DVPieChart.prototype.draw = function(dv)
 	}
 	for (var i=this.eles.length-1;i>=0;i--)
 		this.eles[i].draw(dv);
+	D = Math.min(dv.oldWidth,dv.oldHeight);
+	dv.ctx.clearArc(D/2-D/15,D/2-D/15,D*1.0/6*3*this.args.ring_ratio,0,Math.PI*2);
 }
 
 /**
@@ -2400,6 +2435,7 @@ DVAreaPieChart.prototype.prepare = function(dv)
 	D = Math.min(dv.oldWidth,dv.oldHeight);
 	maxR = D*1.0/2/6*5;
 	maxY = this.args.Y.max();
+
 	for (var i=0;i<this.args.X.length;i++)
 	{
 		sDeg = acumDeg;

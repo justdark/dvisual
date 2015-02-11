@@ -162,6 +162,15 @@ Examples
 <img src="https://raw.githubusercontent.com/justdark/dvisual/master/image/25.png" alt="Drawing" width="400px" />
 
 ----------------------------------------------
+
+	s15 = new DVisual("myCanvas15");
+	s15.addElement(new DVPieChart({'X':["ClassA","ClassB","ClassC","ClassD"],
+										'Y':[2,3,4,5],
+										'ring_ratio':0.5}))
+	s15.draw();
+<img src="https://raw.githubusercontent.com/justdark/dvisual/master/image/26.png" alt="Drawing" width="400px" />
+
+----------------------------------------------
 Warning
 ===
 All code have been tested on Chrome（both retina display and ordinary display)
