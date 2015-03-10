@@ -824,6 +824,7 @@ DVCurve.prototype.draw = function(dv)
 	dv.ctx.fillStyle = this.args.color.tostring();
 	dv.ctx.strokeStyle = this.args.color.tostring();
 	dv.ctx.lineWidth = this.args['lineWidth'];
+	dv.ctx.beginPath();
 	dv.ctx.moveTo(this.args.beginX,this.args.beginY);
 	dv.ctx.quadraticCurveTo(this.args.cpx,this.args.cpy,this.args.endX,this.args.endY);
 	dv.ctx.stroke();
@@ -2947,7 +2948,7 @@ function DVDendrogram(args)
  * @param {DVisual} dv - the Dvisual instance you want to draw 
  * @param {elements} tree - the tree you want to draw,can be string at the node,otherwise object
  * @param {DVisual} level - the level of this procedure
- * @return {[double,int]} - return the width and base level from the bottom
+ * @return {object} - return the width and base level from the bottom,[double,int]
  */
 DVDendrogram.prototype.recurrencePrepare = function(dv,tree,level)
 {
@@ -3081,10 +3082,15 @@ DVDendrogram.prototype.draw = function(dv)
  * A DVisual graph element indicate a Dendrogram,which can show some combination rule for the data
  * @constructor
  * @param {Object[]} args - a array contain arguments below
- * @param {object[]} args.tree - a set indicate the tree you want to draw,the base element is string,for example:["A",["B","C"]]
- * @param {DVColor=} [args.color = DVgetRandomColor(1)[0]] - the color for bubble
- * @param {string=} [args.style='bubble'] - the tree base element style,'bubble' or 'text'
- * @param {double} height - the height of the passed level 
+ * @param {Object[]} args.nodes - indicate a set of nodes,the elements is a string.
+ * @param {Object[]} args.edges - indicate a set of edges,the elements is a tuple with two index,eg: [[0,1]] means an edge connect 0-th node and 1-th node
+ * @param {Object=} [args.edgesValue = empty] - can be empty,to change the curve's width to show more infomation
+ * @param {DVColor=} [args.CurveColor = DVgetRandomColor(1)[0]] - the Curve's Color 
+ * @param {DVColor=} [args.NodeColor = new DVColor()] - the Node's Color 
+ * @param {string=} [args.style='bubble'] - the node element style,'bubble' or 'text'
+ * @param {boolean=} [args.bubble = true] - whether add a bubble to each node 
+ * @param {int=} [args.bubbleRadius = 2] - the radius of the added bubble
+ * @param {double=} [args.lineWidth = 2] - the lineWidth of curve,when the edgesValue is not empty,lineWidth indicate the maxium Curve Width.
  */
 function DVCircleConnectChart(args)
 {
@@ -3098,20 +3104,23 @@ function DVCircleConnectChart(args)
 	if (args['edges']==null)
 		this.args['edges'] = [];
 
+	if (args['edgesValue']==null)
+		this.args['edgesValue'] = [];
+
 	if (args['NodeColor']==null)
 		this.args['NodeColor'] = new DVColor();
 
 	if (args['CurveColor']==null)
 		this.args['CurveColor'] = DVgetRandomColor(1)[0];
 
-	if (args['style']==null || (args.style!="bubble" && args.style!="text"))
-		this.args['style'] = 'bubble';
-
 	if (args['bubble']==null)
 		this.args['bubble'] = true;
 
 	if (args['bubbleRadius']==null)
 		this.args['bubbleRadius'] = 2;
+
+	if (args['lineWidth']==null)
+		this.args['lineWidth'] = 2;
 
 	this.eles = new Array();
 }
@@ -3159,8 +3168,18 @@ DVCircleConnectChart.prototype.prepare = function(dv)
 		}
 		cpx = mid +  Math.cos(ang)*R*(1-cp_ratio);
 		cpy = mid +  Math.sin(ang)*R*(1-cp_ratio);
+		lineWidth = this.args.lineWidth;
+		if (this.args.edgesValue.length>0)
+		{
+			if (this.args.edgesValue.length!=this.args.edges.length)
+			{
+				console.log("ERROR! in DVCircleConnectChart,the edgesValue's length is not the same as edges' length")
+				break;
+			}
+			lineWidth = lineWidth * this.args.edgesValue[i]/this.args.edgesValue.max(); 
+		}
 		this.eles.push(new DVCurve({'beginX':nodelocation[a][0],'beginY':nodelocation[a][1],'endX':nodelocation[b][0],'endY':nodelocation[b][1],
-									'cpx':cpx,'cpy':cpy,'color':curveColor,'lineWidth':1}));
+									'cpx':cpx,'cpy':cpy,'color':curveColor,'lineWidth':lineWidth}));
 	}
 	
 }

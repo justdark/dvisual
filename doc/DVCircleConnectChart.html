@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Class: DVBoxChart</title>
+    <title>JSDoc: Class: DVCircleConnectChart</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Class: DVBoxChart</h1>
+    <h1 class="page-title">Class: DVCircleConnectChart</h1>
 
     
 
@@ -29,7 +29,7 @@
 <header>
     
         <h2>
-        DVBoxChart
+        DVCircleConnectChart
         </h2>
         
     
@@ -42,14 +42,14 @@
 
     
 
-    <h4 class="name" id="DVBoxChart"><span class="type-signature"></span>new DVBoxChart<span class="signature">(args)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="DVCircleConnectChart"><span class="type-signature"></span>new DVCircleConnectChart<span class="signature">(args)</span><span class="type-signature"></span></h4>
 
     
 
 
 
 <div class="description">
-    A DVisual graph element indicate a Box Chart,integrate the normal,stacked bar chart.
+    A DVisual graph element indicate a Dendrogram,which can show some combination rule for the data
 </div>
 
 
@@ -131,13 +131,13 @@
 
         <tr>
             
-                <td class="name"><code>X</code></td>
+                <td class="name"><code>nodes</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">Array(string)</span>
+<span class="param-type">Array.&lt;Object></span>
 
 
             
@@ -159,20 +159,20 @@
                 </td>
             
 
-            <td class="description last">a list of string for each x-label</td>
+            <td class="description last">indicate a set of nodes,the elements is a string.</td>
         </tr>
 
     
 
         <tr>
             
-                <td class="name"><code>Ys</code></td>
+                <td class="name"><code>edges</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">Array(Array(double))</span>
+<span class="param-type">Array.&lt;Object></span>
 
 
             
@@ -194,55 +194,20 @@
                 </td>
             
 
-            <td class="description last">the value set of each x.</td>
+            <td class="description last">indicate a set of edges,the elements is a tuple with two index,eg: [[0,1]] means an edge connect 0-th node and 1-th node</td>
         </tr>
 
     
 
         <tr>
             
-                <td class="name"><code>colors</code></td>
+                <td class="name"><code>edgesValue</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">Array(DVColor)</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                </td>
-            
-
-            <td class="description last">a series of DVColor indicate each x.</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>xGrid</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">boolean</span>
+<span class="param-type">Object</span>
 
 
             
@@ -263,25 +228,25 @@
             
                 <td class="default">
                 
-                    false
+                    empty
                 
                 </td>
             
 
-            <td class="description last">whether draw the grid line started from X axes</td>
+            <td class="description last">can be empty,to change the curve's width to show more infomation</td>
         </tr>
 
     
 
         <tr>
             
-                <td class="name"><code>yGrid</code></td>
+                <td class="name"><code>CurveColor</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">boolean</span>
+<span class="param-type"><a href="DVColor.html">DVColor</a></span>
 
 
             
@@ -302,19 +267,58 @@
             
                 <td class="default">
                 
-                    false
+                    DVgetRandomColor(1)[0]
                 
                 </td>
             
 
-            <td class="description last">whether draw the grid line started from Y axes</td>
+            <td class="description last">the Curve's Color</td>
         </tr>
 
     
 
         <tr>
             
-                <td class="name"><code>xDescript</code></td>
+                <td class="name"><code>NodeColor</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="DVColor.html">DVColor</a></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    new DVColor()
+                
+                </td>
+            
+
+            <td class="description last">the Node's Color</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>style</code></td>
             
 
             <td class="type">
@@ -341,58 +345,19 @@
             
                 <td class="default">
                 
-                    'x'
+                    'bubble'
                 
                 </td>
             
 
-            <td class="description last">the X axes's description</td>
+            <td class="description last">the node element style,'bubble' or 'text'</td>
         </tr>
 
     
 
         <tr>
             
-                <td class="name"><code>yDescript</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                    'y'
-                
-                </td>
-            
-
-            <td class="description last">the Y axes's description</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>legendOuterBox</code></td>
+                <td class="name"><code>bubble</code></td>
             
 
             <td class="type">
@@ -424,7 +389,85 @@
                 </td>
             
 
-            <td class="description last">whether draw the outer box of legend</td>
+            <td class="description last">whether add a bubble to each node</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>bubbleRadius</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">int</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    2
+                
+                </td>
+            
+
+            <td class="description last">the radius of the added bubble</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>lineWidth</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">double</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    2
+                
+                </td>
+            
+
+            <td class="description last">the lineWidth of curve,when the edgesValue is not empty,lineWidth indicate the maxium Curve Width.</td>
         </tr>
 
     
@@ -472,7 +515,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="dvisual.js.html">dvisual.js</a>, <a href="dvisual.js.html#line2583">line 2583</a>
+        <a href="dvisual.js.html">dvisual.js</a>, <a href="dvisual.js.html#line3095">line 3095</a>
     </li></ul></dd>
     
 
@@ -528,7 +571,7 @@
 
 
 <div class="description">
-    draw the DVBarChart on dv's canvas
+    draw the Dendrogram on dv's canvas
 </div>
 
 
@@ -621,7 +664,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="dvisual.js.html">dvisual.js</a>, <a href="dvisual.js.html#line2746">line 2746</a>
+        <a href="dvisual.js.html">dvisual.js</a>, <a href="dvisual.js.html#line3192">line 3192</a>
     </li></ul></dd>
     
 
@@ -752,7 +795,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="dvisual.js.html">dvisual.js</a>, <a href="dvisual.js.html#line2690">line 2690</a>
+        <a href="dvisual.js.html">dvisual.js</a>, <a href="dvisual.js.html#line3134">line 3134</a>
     </li></ul></dd>
     
 
@@ -775,279 +818,6 @@
 
 
 
-
-
-
-        
-            
-
-    
-
-    <h4 class="name" id="statistic"><span class="type-signature"></span>statistic<span class="signature">(Y)</span><span class="type-signature"> &rarr; {Object|double|double|double|double|double|Array(double)}</span></h4>
-
-    
-
-
-
-<div class="description">
-    calculate the needed value for each box
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>Y</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Array(double)</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">an array of double.the data needed statistic.</td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="dvisual.js.html">dvisual.js</a>, <a href="dvisual.js.html#line2647">line 2647</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-<h5>Returns:</h5>
-<ul>
-        <li>
-<div class="param-desc">
-    staValue - the value returns
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">Object</span>
-
-
-    </dd>
-</dl>
-</li>
-    
-        <li>
-<div class="param-desc">
-    staValue.median - the median of Y
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">double</span>
-
-
-    </dd>
-</dl>
-</li>
-    
-        <li>
-<div class="param-desc">
-    staValue.upperQuartile - the upper quartile of Y
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">double</span>
-
-
-    </dd>
-</dl>
-</li>
-    
-        <li>
-<div class="param-desc">
-    staValue.lowerQuartile - the lower quartile of Y
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">double</span>
-
-
-    </dd>
-</dl>
-</li>
-    
-        <li>
-<div class="param-desc">
-    staValue.upperBound - the upper Bound of Y
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">double</span>
-
-
-    </dd>
-</dl>
-</li>
-    
-        <li>
-<div class="param-desc">
-    staValue.lowerBound - the lower Bound of Y
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">double</span>
-
-
-    </dd>
-</dl>
-</li>
-    
-        <li>
-<div class="param-desc">
-    staValue.outlier - the outlier bound for the Y,[min,max]
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">Array(double)</span>
-
-
-    </dd>
-</dl>
-</li>
-    </ul>
 
 
 

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Class: DVBoxChart</title>
+    <title>JSDoc: Class: DVGraph</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Class: DVBoxChart</h1>
+    <h1 class="page-title">Class: DVGraph</h1>
 
     
 
@@ -29,7 +29,7 @@
 <header>
     
         <h2>
-        DVBoxChart
+        DVGraph
         </h2>
         
     
@@ -42,14 +42,14 @@
 
     
 
-    <h4 class="name" id="DVBoxChart"><span class="type-signature"></span>new DVBoxChart<span class="signature">(args)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="DVGraph"><span class="type-signature"></span>new DVGraph<span class="signature">(args)</span><span class="type-signature"></span></h4>
 
     
 
 
 
 <div class="description">
-    A DVisual graph element indicate a Box Chart,integrate the normal,stacked bar chart.
+    A DVisual graph element indicate a Pie Chart
 </div>
 
 
@@ -159,20 +159,20 @@
                 </td>
             
 
-            <td class="description last">a list of string for each x-label</td>
+            <td class="description last">a series of string,indicate for each component on the pie</td>
         </tr>
 
     
 
         <tr>
             
-                <td class="name"><code>Ys</code></td>
+                <td class="name"><code>Y</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">Array(Array(double))</span>
+<span class="param-type">Array(double)</span>
 
 
             
@@ -194,198 +194,7 @@
                 </td>
             
 
-            <td class="description last">the value set of each x.</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>colors</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Array(DVColor)</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                </td>
-            
-
-            <td class="description last">a series of DVColor indicate each x.</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>xGrid</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">boolean</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                    false
-                
-                </td>
-            
-
-            <td class="description last">whether draw the grid line started from X axes</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>yGrid</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">boolean</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                    false
-                
-                </td>
-            
-
-            <td class="description last">whether draw the grid line started from Y axes</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>xDescript</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                    'x'
-                
-                </td>
-            
-
-            <td class="description last">the X axes's description</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>yDescript</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                    'y'
-                
-                </td>
-            
-
-            <td class="description last">the Y axes's description</td>
+            <td class="description last">a series of value,the hist chart will be created by this data</td>
         </tr>
 
     
@@ -425,6 +234,162 @@
             
 
             <td class="description last">whether draw the outer box of legend</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>colors</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Array(DVColor)</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    DVgetRandomColor(this.args.X.length)
+                
+                </td>
+            
+
+            <td class="description last">the colors for each component</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>ring_ratio</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">douboe</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    0
+                
+                </td>
+            
+
+            <td class="description last">the ring ratio of the pie,0 in default,means no ring</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>text</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Array(string)</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    !!label+':'+value!!
+                
+                </td>
+            
+
+            <td class="description last">a series of string you want to show on each sector on the pie.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>style</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    'showPercentage'
+                
+                </td>
+            
+
+            <td class="description last">show the value of each bar or the percentage,'empty' or 'showtext' or 'showPercentage',or 'ring' to show a ring chart</td>
         </tr>
 
     
@@ -472,7 +437,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="dvisual.js.html">dvisual.js</a>, <a href="dvisual.js.html#line2583">line 2583</a>
+        <a href="dvisual.js.html">dvisual.js</a>, <a href="dvisual.js.html#line2772">line 2772</a>
     </li></ul></dd>
     
 
@@ -528,7 +493,7 @@
 
 
 <div class="description">
-    draw the DVBarChart on dv's canvas
+    draw the Pie chart on dv's canvas
 </div>
 
 
@@ -621,7 +586,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="dvisual.js.html">dvisual.js</a>, <a href="dvisual.js.html#line2746">line 2746</a>
+        <a href="dvisual.js.html">dvisual.js</a>, <a href="dvisual.js.html#line2906">line 2906</a>
     </li></ul></dd>
     
 
@@ -752,7 +717,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="dvisual.js.html">dvisual.js</a>, <a href="dvisual.js.html#line2690">line 2690</a>
+        <a href="dvisual.js.html">dvisual.js</a>, <a href="dvisual.js.html#line2887">line 2887</a>
     </li></ul></dd>
     
 
@@ -775,279 +740,6 @@
 
 
 
-
-
-
-        
-            
-
-    
-
-    <h4 class="name" id="statistic"><span class="type-signature"></span>statistic<span class="signature">(Y)</span><span class="type-signature"> &rarr; {Object|double|double|double|double|double|Array(double)}</span></h4>
-
-    
-
-
-
-<div class="description">
-    calculate the needed value for each box
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>Y</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Array(double)</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">an array of double.the data needed statistic.</td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="dvisual.js.html">dvisual.js</a>, <a href="dvisual.js.html#line2647">line 2647</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-<h5>Returns:</h5>
-<ul>
-        <li>
-<div class="param-desc">
-    staValue - the value returns
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">Object</span>
-
-
-    </dd>
-</dl>
-</li>
-    
-        <li>
-<div class="param-desc">
-    staValue.median - the median of Y
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">double</span>
-
-
-    </dd>
-</dl>
-</li>
-    
-        <li>
-<div class="param-desc">
-    staValue.upperQuartile - the upper quartile of Y
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">double</span>
-
-
-    </dd>
-</dl>
-</li>
-    
-        <li>
-<div class="param-desc">
-    staValue.lowerQuartile - the lower quartile of Y
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">double</span>
-
-
-    </dd>
-</dl>
-</li>
-    
-        <li>
-<div class="param-desc">
-    staValue.upperBound - the upper Bound of Y
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">double</span>
-
-
-    </dd>
-</dl>
-</li>
-    
-        <li>
-<div class="param-desc">
-    staValue.lowerBound - the lower Bound of Y
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">double</span>
-
-
-    </dd>
-</dl>
-</li>
-    
-        <li>
-<div class="param-desc">
-    staValue.outlier - the outlier bound for the Y,[min,max]
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">Array(double)</span>
-
-
-    </dd>
-</dl>
-</li>
-    </ul>
 
 
 

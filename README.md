@@ -173,12 +173,26 @@ Examples
 ----------------------------------------------
 
 	s16 = new DVisual("myCanvas17");
-	s16.addElement(new DVDendrogram({'style':'text','tree':[["A",[[["S",[[[[[["A","B"],"B"],"B"],"B"],"B"],"TM"]],"VB"],"ASD"]],["B","C"]]}))
+	s16.addElement(new DVDendrogram({'style':'bubble','tree':[["A",[[["S",[[[[[["A","B"],"B"],"B"],"B"],"B"],"TM"]],"VB"],"ASD"]],["B","C"]]}))
 	s16.draw();
 
 <img src="https://raw.githubusercontent.com/justdark/dvisual/master/image/27.png" alt="Drawing" width="400px" />
 
 ----------------------------------------------
+
+	s16 = new DVisual("myCanvas18");
+	s16.addElement(new DVCircleConnectChart({'nodes':["AAAA","BBBB","CCCC","DDDD","EEEE","FFFF","GGGGGGG","HHHH","IIII","JJJJ","KKKK",'LLLL','MMMM','NNNN','OOOO','PPPP','QQQQ','RRR','SSS','TTT','UUU','VVV','WWW','XXX','YYY','ZZZ',"AAAA","BBBB","CCCC","DDDD","EEEE","FFFF","GGGGGGG","HHHH","IIII","JJJJ","KKKK",'LLLL','MMMM','NNNN','OOOO','PPPP','QQQQ','RRR','SSS','TTT','UUU','VVV','WWW','XXX','YYY','ZZZ']
+									,'edges':getMulRandomtuple(51,50) //random edges
+									,'bubbleRadius':5
+									,'edgesValue':getMulRandomSet(10,50) //random edge value
+									,'lineWidth':2
+									,'CurveColor':new DVColor(14,110,179)}))
+	s16.draw();
+
+<img src="https://raw.githubusercontent.com/justdark/dvisual/master/image/28.png" alt="Drawing" width="400px" />
+
+----------------------------------------------
+
 Warning
 ===
 All code have been tested on Chrome（both retina display and ordinary display)

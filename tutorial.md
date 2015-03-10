@@ -162,12 +162,20 @@ The Box Chart is another chart show some statistical value for the data,the inpu
 <img src="https://raw.githubusercontent.com/justdark/dvisual/master/image/25.png" alt="Drawing" width="400px" />	
 
 ##DVDendrogram()
-The Dendrogram chart can intepret a tree ,for example a hierarchical clustering result,the most important you should pass is the `'tree'` elements,an array contains the structure of tree,`["A",["B","C"]]` for example.you can determined the  base elements' style by pass the `'style'` with 'text' or 'bubble',you can also appoint the bubble's color by pass the `'color'` arguments.
+The Dendrogram chart can intepret a tree ,for example a hierarchical clustering result,the most important you should pass is the `'tree'` elements,an array contains the structure of tree,`["A",["B","C"]]` for example.you can determined the  base elements' style by pass the `'style'` with 'text' or 'bubble',you can also appoint the bubble's color by pass the `'color'` argument.
 
-	dvisual.addElement(new DVDendrogram({'style':'text','tree':[["A",[[["S",[[[[[["A","B"],"B"],"B"],"B"],"B"],"TM"]],"VB"],"ASD"]],["B","C"]]}))
+	dvisual.addElement(new DVDendrogram({'style':'bubble','tree':[["A",[[["S",[[[[[["A","B"],"B"],"B"],"B"],"B"],"TM"]],"VB"],"ASD"]],["B","C"]]}))
 
 <img src="https://raw.githubusercontent.com/justdark/dvisual/master/image/27.png" alt="Drawing" width="400px" />	
 
+##DVCircleConnectChart()
+Sometime we want to show some nodes' connecting relationships,so the DVCircleConnectChart will be useful.by pass the `'nodes'` and `'edges'` to this DVisual element,you can get a well organized picture,more optinal arguments can make the chart more personality.here is an example.
 
-
-
+	dvisual.addElement(new DVCircleConnectChart({'nodes':["AAAA","BBBB","CCCC","DDDD","EEEE","FFFF","GGGGGGG","HHHH","IIII","JJJJ","KKKK",'LLLL','MMMM','NNNN','OOOO','PPPP','QQQQ','RRR','SSS','TTT','UUU','VVV','WWW','XXX','YYY','ZZZ',"AAAA","BBBB","CCCC","DDDD","EEEE","FFFF","GGGGGGG","HHHH","IIII","JJJJ","KKKK",'LLLL','MMMM','NNNN','OOOO','PPPP','QQQQ','RRR','SSS','TTT','UUU','VVV','WWW','XXX','YYY','ZZZ']
+									,'edges':getMulRandomtuple(51,50) //random data
+									,'bubbleRadius':5 
+									,'edgesValue':getMulRandomSet(10,50) //random data
+									,'lineWidth':2 // maxium curve width.
+									,'CurveColor':new DVColor(14,110,179) //color of the curve
+									}))
+<img src="https://raw.githubusercontent.com/justdark/dvisual/master/image/28.png" alt="Drawing" width="400px" />	
