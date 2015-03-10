@@ -171,6 +171,14 @@ Examples
 <img src="https://raw.githubusercontent.com/justdark/dvisual/master/image/26.png" alt="Drawing" width="400px" />
 
 ----------------------------------------------
+
+	s16 = new DVisual("myCanvas17");
+	s16.addElement(new DVDendrogram({'style':'text','tree':[["A",[[["S",[[[[[["A","B"],"B"],"B"],"B"],"B"],"TM"]],"VB"],"ASD"]],["B","C"]]}))
+	s16.draw();
+
+<img src="https://raw.githubusercontent.com/justdark/dvisual/master/image/27.png" alt="Drawing" width="400px" />
+
+----------------------------------------------
 Warning
 ===
 All code have been tested on Chrome（both retina display and ordinary display)

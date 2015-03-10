@@ -23,6 +23,9 @@
 <canvas id="myCanvas13" height="400px" width ="400px"></canvas>
 <canvas id="myCanvas14" height="400px" width ="400px"></canvas>
 <canvas id="myCanvas15" height="400px" width ="400px"></canvas>
+<canvas id="myCanvas16" height="400px" width ="400px"></canvas>
+<canvas id="myCanvas17" height="400px" width ="400px"></canvas>
+<canvas id="myCanvas18" height="400px" width ="400px"></canvas>
 
 </table>
 </body>
@@ -191,6 +194,52 @@ s15.addElement(new DVPieChart({'X':["ClassA","ClassB","ClassC","ClassD"],
 										'ring_ratio':0.5}))
 s15.draw();
 
+
+s15 = new DVisual("myCanvas16");
+s15.addElement(new DVGraph({'nodes':["A","B","C","D","E","F","G","H","I","J","K","L","M","Ns"],
+							'edges':[[0,1],[1,2],[2,3],[3,4],[4,5],[5,6],[6,7],[7,8],[8,9],[9,10],[10,11],[11,12],[12,13]],
+							'style':'undirected',
+							'distance':'median'}))
+s15.draw();
+
+
+
+s16 = new DVisual("myCanvas17");
+s16.addElement(new DVDendrogram({'style':'text','tree':[["A",[[["S",[[[[[["A","B"],"B"],"B"],"B"],"B"],"TM"]],"VB"],"ASD"]],["B","C"]]}))
+s16.draw();
+
+
+function getrandom(N)
+{
+	return Math.floor(Math.random() * ( N + 1));
+}
+function getrandomtuple(N)
+{
+	var result = []
+	result.push(getrandom(N));
+	var p = getrandom(N);
+	while (p==result[0])
+		p = getrandom(N);
+	result.push(p);
+	return result;
+}
+function getMulRandomtuple(N,C)
+{
+	var result = [];
+	for (var i = 0;i<C;i++)
+	{
+		result.push(getrandomtuple(N));
+	}
+	return result;
+}
+s16 = new DVisual("myCanvas18");
+//getMulRandomtuple(25,30)
+s16.addElement(new DVCircleConnectChart({'nodes':["AAAA","BBBB","CCCC","DDDD","EEEE","FFFF","GGGGGGG","HHHH","IIII","JJJJ","KKKK",'LLLL','MMMM','NNNN','OOOO','PPPP','QQQQ','RRR','SSS','TTT','UUU','VVV','WWW','XXX','YYY','ZZZ']
+									,'edges':getMulRandomtuple(25,30)
+									,'bubbleRadius':4
+									,'lineWidth':3
+									,'CurveColor':new DVColor(14,110,179)}))
+s16.draw();
 // g1 = {'X':["A","B","C"],'Y':[3,5,6],'all':3,'index':1}
 // g2 = {'X':["A","B","C"],'Y':[3,5,6],'all':3,'index':2}
 // g3 = {'X':["A","B","C"],'Y':[3,5,6],'all':3,'index':3}

@@ -408,6 +408,7 @@ DVisual.prototype.draw = function()
  * @param {double} args.y - the y value of the dot,0 in default
  * @param {DVColor=} [args.color = new DVColor()] - the color of the dot,black in default
  * @param {string=} [args.style ='fill']- the style of this dot,should be one of 'fill','stroke' and 'bubble'
+ * @param {string=} [args.bubbleText ='']- the text show in the bubble
  * @param {boolean=} [args.shadow ='true'] - whether draw dot's shadow.
  * @param {double=} [args.radius = '2'] - the radius of this dot(a circle)
  * @param {double=} [args.lineWidth = '1'] - the lineWidth of this dot(a circle)
@@ -430,6 +431,9 @@ function DVDot(args)
 
 	if (args['style']==null || (args.style!="fill" && args.style!="stroke" && args.style!="bubble" ))
 		this.args['style'] = "fill";
+
+	if (args['bubbleText']==null)
+		this.args['bubbleText'] = "";
 
 	if (args['shadow']==null)
 		this.args['shadow'] = true;
@@ -488,6 +492,17 @@ DVDot.prototype.draw = function(dv)
 		dv.ctx.fillStyle = (new DVColor(this.args.color.r,this.args.color.g,this.args.color.b,a)).tostring();
 		dv.ctx.sector(this.args.x,this.args.y,this.args.radius,0,2*Math.PI);
 		dv.ctx.fill();
+		if (this.args.bubbleText!="")
+		{
+			testStr = this.args.bubbleText;
+			if (dv.ctx.measureText("D").width>dv.ctx.measureText("testStr").width)
+				teststr = 'D';
+			rightfont = DVgetRightTextStyleByStrLenght(dv,teststr,this.args.radius*1.8);
+			dv.ctx.font = rightfont;
+			dv.ctx.textAlign = 'center';
+			dv.ctx.fillStyle = '#FFF';
+			dv.ctx.fillText(this.args.bubbleText,this.args.x,this.args.y+dv.ctx.measureText("D").width*1.0/2);
+		}
 	}
 	dv.ctx.restore();
 }
@@ -509,6 +524,7 @@ DVDot.prototype.draw = function(dv)
  * @param {string=} [args.textAlign = 'left'] - the text align of printed text position
  * @param {string=} [args.direction = 'horizontal'] - the direction of text:horizontal or vertical
  * @param {double=} [args.lineWidth = '1'] - the lineWidth of text
+ * @param {double=} [args.rotate = 0] - the lineWidth of text
  */
 function DVText(args)
 {
@@ -541,6 +557,9 @@ function DVText(args)
 
 	if (args['lineWidth']==null)
 		this.args['lineWidth'] = 1;
+
+	if (args['rotate']==null)
+		this.args['rotate'] = 0;
 
 	if (args['textAlign']==null)
 		this.args['textAlign'] = 'left';
@@ -585,6 +604,14 @@ DVText.prototype.draw = function(dv)
 		x = -y;
 		y = tmp;
 	}
+	if (this.args.rotate!=0)
+	{
+		
+		dv.ctx.translate(x,y);
+		x = 0;
+		y = 0;
+		dv.ctx.rotate(this.args.rotate);
+	}
 	if (this.args['style']=='stroke')
 	{
 		if (this.args['maxwidth']==-1)
@@ -599,9 +626,14 @@ DVText.prototype.draw = function(dv)
 		else
 			dv.ctx.fillText(this.args.text,x,y,this.args['maxwidth']);
 	}
-	if (this.direction=='vertical')
+	if (this.args.direction=='vertical')
 	{
 		dv.ctx.rotate(Math.PI/2);
+	}
+	if (this.args.rotate!=0)
+	{
+		dv.ctx.rotate(-this.args.rotate);
+		dv.ctx.translate(-this.args.x,-this.args.y);
 	}
 	dv.ctx.restore();
 }
@@ -719,6 +751,7 @@ DVLine.prototype.draw = function(dv)
 		yinc = this.args['endY'] - this.args['beginY'];
 		length = Math.sqrt(xinc*xinc+yinc*yinc);
 		doted = Math.max(length*1.0/50,5);
+
 		xinc*=doted/length;
 		yinc*=doted/length;
 		x = this.args['beginX'];
@@ -737,6 +770,66 @@ DVLine.prototype.draw = function(dv)
 	}
 	dv.ctx.restore();
 }
+
+
+
+
+/**
+ * A DVisual graph element indicate a quadratic Curve
+ * @constructor
+ * @example new DVLine({'beginX':100,'beginY':100,'endX':20,'endY':20,'style':'dash'});
+ * @param {Object[]} args - a array contain arguments below
+ * @param {double} args.beginX - the x value of the start node
+ * @param {double} args.beginY - the y value of the start node
+ * @param {double} args.endX - the x value of the stop node
+ * @param {double} args.endY - the y value of the stop node
+ * @param {double} args.cpx - the x value of the control node
+ * @param {double} args.cpy - the y value of the control node
+ * @param {DVColor=} [args.color = new DVColor()] - the color of the dot,black in default
+ * @param {double=} [args.lineWidth = '1'] - the lineWidth of line
+ */
+function DVCurve(args)
+{
+	if (arguments.length==0)
+		args = {};
+	this.args = args.cloneAll();
+	if (args['beginX']==null)
+		this.args['beginX'] = 0;
+
+	if (args['beginY']==null)
+		this.args['beginY'] = 0;
+
+	if (args['endX']==null)
+		this.args['endX'] = 0;
+
+	if (args['endY']==null)
+		this.args['endY'] = 0;
+
+	if (args['color']==null)
+		this.args['color'] = new DVColor();
+
+	if (args['lineWidth']==null)
+		this.args['lineWidth'] = 1;
+}
+
+
+/**
+ * draw the curve on dv's canvas
+ * @function
+ * @param {DVisual} dv - the Dvisual instance you want to draw 
+ */
+DVCurve.prototype.draw = function(dv)
+{
+	dv.ctx.save();
+	dv.ctx.fillStyle = this.args.color.tostring();
+	dv.ctx.strokeStyle = this.args.color.tostring();
+	dv.ctx.lineWidth = this.args['lineWidth'];
+	dv.ctx.moveTo(this.args.beginX,this.args.beginY);
+	dv.ctx.quadraticCurveTo(this.args.cpx,this.args.cpy,this.args.endX,this.args.endY);
+	dv.ctx.stroke();
+	dv.ctx.restore();
+}
+
 
 
 /**
@@ -2192,7 +2285,7 @@ function DVPieChart(args)
 	}
 
 	if (args['style']==null || (args.style!="empty" && args.style!="showPercentage" && args.style!="showtext" && args.style!="ring"))
-		this.args['y'] = 'showPercentage';
+		this.args['style'] = 'showPercentage';
 	this.eles = new Array();
 }
 /**
@@ -2416,7 +2509,7 @@ function DVAreaPieChart(args)
 	}
 
 	if (args['style']==null || (args.style!="empty" && args.style!="showPercentage" && args.style!="showtext"))
-		this.args['y'] = 'showPercentage';
+		this.args['style'] = 'showPercentage';
 	this.eles = new Array();
 }
 /**
@@ -2480,13 +2573,8 @@ DVAreaPieChart.prototype.draw = function(dv)
  * @param {Array(string)} args.X - a list of string for each x-label
  * @param {Array(Array(double))} args.Ys - the value set of each x.
  * @param {Array(DVColor)} args.colors - a series of DVColor indicate each x.
-
- * @param {string=} [args.style='bar'] - the style of bar chart,'stacked' or 'bar'
- * @param {int} args.all - how many bar you want for each X-label
- * @param {int} args.index - current data is the i-th bar for the each X-label
- * @param {DVColor=} [args.color = new DVColor(256,0,0,0.8)] - the color of the bar(normal bar)
  * @param {boolean=} [args.xGrid=false] - whether draw the grid line started from X axes
- * @param {boolean=} [args.yGrid=true] - whether draw the grid line started from Y axes
+ * @param {boolean=} [args.yGrid=false] - whether draw the grid line started from Y axes
  * @param {string=} [args.xDescript='x'] - the X axes's description
  * @param {string=} [args.yDescript='y'] - the Y axes's description
  * @param {boolean=} [args.legendOuterBox=true] - whether draw the outer box of legend
@@ -2648,16 +2736,6 @@ DVBoxChart.prototype.prepare = function(dv)
 			}
 		}
 	}
-	//result = dv.xyTrans(this.args.X.length,dv.Ymargin/20);
-	//	this.eles.push(new DVLegend({'outerbox':this.args.legendOuterBox,'classes':this.args.X,'colors':this.args.colors,'x':result[0],'y':result[1]}))
-	// Xs = new Array();
-	// Ys = new Array();
-	// for (var i=0;i<this.args.X.length;i++)
-	// {
-	// 	result = dv.xyTrans(this.args.X[i],this.args.Y[i]);
-	// 	Xs.push(result[0]);
-	// 	Ys.push(result[1]);
-	// }
 }
 /**
  * draw the DVBarChart on dv's canvas
@@ -2673,4 +2751,435 @@ DVBoxChart.prototype.draw = function(dv)
 	for (var i=this.eles.length-1;i>=0;i--)
 		this.eles[i].draw(dv);
 }
+
+
+
+
+
+/**
+ * A DVisual graph element indicate a Pie Chart
+ * @constructor
+ * @param {Object[]} args - a array contain arguments below
+ * @param {Array(string)} args.X - a series of string,indicate for each component on the pie
+ * @param {Array(double)} args.Y - a series of value,the hist chart will be created by this data
+ * @param {boolean=} [args.legendOuterBox=true] - whether draw the outer box of legend
+ * @param {Array(DVColor)=} [args.colors = DVgetRandomColor(this.args.X.length)] - the colors for each component
+ * @param {douboe=} [args.ring_ratio = 0] - the ring ratio of the pie,0 in default,means no ring
+ * @param {Array(string)=} [args.text=!!label+':'+value!!] - a series of string you want to show on each sector on the pie.
+ * @param {string=} [args.style='showPercentage'] - show the value of each bar or the percentage,'empty' or 'showtext' or 'showPercentage',or 'ring' to show a ring chart
+ */
+function DVGraph(args)
+{
+	if (arguments.length==0)
+		args = {};
+
+	this.args = args.cloneAll();
+	if (args['nodes']==null)
+		this.args['nodes'] = [];
+
+	if (args['edges']==null)
+		this.args['edges'] = [];
+
+
+	if (args['color']==null)
+		this.args['color'] = DVgetRandomColor(1)[0];
+
+
+	if (args['style']==null || (args.style!="undirected" && args.style!="directed"))
+		this.args['style'] = 'undirected';
+
+	this.eles = new Array();
+}
+
+DVGraph.prototype.isLinked = function(i,j)
+{
+	for (var k =0;k<this.args.edges.length;k++)
+	{
+		if (this.args.edges[k][0]==i && this.args.edges[k][1]==j) 
+			return true;
+		if (this.args.edges[k][1]==i && this.args.edges[k][0]==j) 
+			return true;
+	}
+	return false;
+}
+
+DVGraph.prototype.distance = function(i,j)
+{
+	return Math.sqrt(Math.pow((this.eles[i].args.x - this.eles[j].args.x),2)+Math.pow((this.eles[i].args.y - this.eles[j].args.y),2))
+}
+
+DVGraph.prototype.rerange = function(label)
+{
+	force = []
+	degree = []
+	for (var i=0;i<this.args.nodes.length;i++)
+	{
+		force.push([0,0]);
+		degree.push(0);
+	}
+	for (var k =0;k<this.args.edges.length;k++)
+	{
+		degree[this.args.edges[k][0]]++;
+		degree[this.args.edges[k][1]]++;
+	}
+	edgeLength = 50;
+	for (var step=0;step<100;step++)
+	{
+		for (var k =0;k<this.args.edges.length;k++)
+		{
+			vi = this.args.edges[k][0];
+			vj = this.args.edges[k][1];
+			tension = 0;
+			if (this.distance(vi,vj)>edgeLength)
+				tension =- 1*(edgeLength-this.distance(vi,vj));
+			flagx = 1;
+			flagy = 1;
+			if (this.eles[vi].args['x']>this.eles[vj].args['x'])
+				flagx = -1;
+			if (this.eles[vi].args['y']>this.eles[vj].args['y'])
+				flagy = -1;
+			//alert(tension)
+			force[vi][0]+=flagx*tension*0.7
+			force[vi][1]+=flagy*tension*0.7
+			force[vj][0]-=flagx*tension*0.7
+			force[vj][1]-=flagy*tension*0.7
+		}
+		for (var i=0;i<this.eles.length;i++)
+			for (var j=0;j<this.eles.length;j++)
+				if (i!=j)
+				{
+					repulsion = getrandom(50)-25;
+
+					
+					flagx = 1;
+					flagy = 1;
+					if (this.distance(i,j)>1)
+					{
+						repulsion = edgeLength*edgeLength/3*degree[i]*degree[j]/(this.distance(i,j)*this.distance(i,j));
+						if (this.eles[i].args['x']<this.eles[j].args['x'])
+						flagx = -1;
+						if (this.eles[i].args['y']<this.eles[j].args['y'])
+						flagy = -1;
+					}
+					
+					force[i][0] += flagx*repulsion*0.7;
+					force[i][1] += flagy*repulsion*0.7;
+				}
+		for (var i=0;i<this.eles.length;i++)
+		{
+			this.eles[i].args['x']+=0.001*force[i][0]*1.0/degree[i]
+			this.eles[i].args['x'] = Math.max(this.eles[i].args['x'],20);
+			this.eles[i].args['x'] = Math.min(this.eles[i].args['x'],380);
+
+			this.eles[i].args['y']+=0.001*force[i][1]*1.0/degree[i]
+			this.eles[i].args['y'] = Math.max(this.eles[i].args['y'],20);
+			this.eles[i].args['y'] = Math.min(this.eles[i].args['y'],380);
+		}
+	}
+	//alert(this.eles[0].args['x']+" "+this.eles[0].args['y'])
+}
+/**
+ * prepare the needed elements on the first time to draw it
+ * @function
+ * @param {DVisual} dv - the Dvisual instance you want to draw 
+ */
+DVGraph.prototype.prepare = function(dv)
+{
+	for (var i=0;i<this.args.nodes.length;i++)
+	{
+		this.eles.push(new DVDot({'color':this.args.color,'x':getrandom(dv.oldWidth-40)+20,'y':getrandom(dv.oldHeight-40)+20,'style':'bubble','radius':10,'bubbleText':this.args.nodes[i]}))
+	}
+	this.rerange('x');
+	for (var i=0;i<this.args.edges.length;i++)
+	{
+		this.eles.push(new DVLine({'beginX':this.eles[this.args.edges[i][0]].args.x,'beginY':this.eles[this.args.edges[i][0]].args.y,
+						'endX':this.eles[this.args.edges[i][1]].args.x,'endY':this.eles[this.args.edges[i][1]].args.y}))
+	}
+	//this.rerange('y');
+}
+/**
+ * draw the Pie chart on dv's canvas
+ * @function
+ * @param {DVisual} dv - the Dvisual instance you want to draw 
+ */
+DVGraph.prototype.draw = function(dv)
+{
+	if (this.eles.length==0)
+	{
+		this.prepare(dv);
+	}
+	for (var i=this.eles.length-1;i>=0;i--)
+		this.eles[i].draw(dv);
+}
+
+
+/**
+ * A DVisual graph element indicate a Dendrogram,which can show some combination rule for the data
+ * @constructor
+ * @param {Object[]} args - a array contain arguments below
+ * @param {object[]} args.tree - a set indicate the tree you want to draw,the base element is string,for example:["A",["B","C"]]
+ * @param {DVColor=} [args.color = DVgetRandomColor(1)[0]] - the color for bubble
+ * @param {string=} [args.style='bubble'] - the tree base element style,'bubble' or 'text'
+ */
+function DVDendrogram(args)
+{
+	if (arguments.length==0)
+		args = {};
+
+	this.args = args.cloneAll();
+	if (args['tree']==null)
+		this.args['tree'] = [];
+
+	if (args['color']==null)
+		this.args['color'] = DVgetRandomColor(1)[0];
+
+	if (args['style']==null || (args.style!="bubble" && args.style!="text"))
+		this.args['style'] = 'bubble';
+
+	this.eles = new Array();
+	this.baseEleCount = 0;
+	this.baseIndex = 0;
+}
+
+/**
+ * recurrence prepare the needed elements
+ * @function
+ * @param {DVisual} dv - the Dvisual instance you want to draw 
+ * @param {elements} tree - the tree you want to draw,can be string at the node,otherwise object
+ * @param {DVisual} level - the level of this procedure
+ * @return {[double,int]} - return the width and base level from the bottom
+ */
+DVDendrogram.prototype.recurrencePrepare = function(dv,tree,level)
+{
+
+	if (typeof(tree)=="object")
+	{
+		var children = new Array();
+		var levels = new Array();
+		for (var i=0;i<tree.length;i++)
+		{
+			tmp = this.recurrencePrepare(dv,tree[i],level+1);
+			children.push(tmp[0]);
+			levels.push(tmp[1]);
+			//alert(level + "   " +children);
+		}
+		nowHeight = this.calHeight(dv,levels.min()-1);
+		this.eles.push(new DVLine({'beginX':children[0],'beginY':nowHeight,'endX':children[children.length-1],'endY':nowHeight}));
+
+		var radius = Math.min((dv.oldWidth-40)*0.9/(this.baseEleCount)*1.0/2,18);
+
+		for (var i=0;i<levels.length;i++)
+		{
+			var IsNode = radius;
+			if (levels[i]!=this.maxlevel)
+				IsNode = 0;
+			this.eles.push(new DVLine({'beginX':children[i],'beginY':nowHeight,
+										'endX':children[i],'endY':this.calHeight(dv,levels[i])-IsNode}));
+		}
+		return [(children[children.length-1] + children[0])*1.0/2,levels.min()-1];
+	}
+	if (typeof(tree)=="string")
+	{
+		nowHeight = this.calHeight(dv,this.maxlevel);
+		nowWidth = this.baseIndex*(dv.oldWidth-40)*1.0/(this.baseEleCount-1)+20;
+		radius = Math.min((dv.oldWidth-40)*0.9/(this.baseEleCount)*1.0/2,18);
+		if (this.args.style=='bubble')
+		{
+			this.eles.push(new DVDot({'x':nowWidth,'y':nowHeight,'color':this.args.color,'style':'bubble','radius':radius,'bubbleText':tree}));
+		}
+		else
+		{
+			this.eles.push(new DVText({'text':tree,'x':nowWidth,'y':nowHeight,
+						'maxwidth':Math.min((dv.oldWidth-40)*0.9/(this.baseEleCount)*1.0/2,40),'textAlign':'center','direction':'horizontal'}));
+		}
+		//this.eles.push(new DVLine({'beginX':nowWidth,'beginY':nowHeight-radius,'endX':nowWidth,'endY':this.levelHeight*(this.maxlevel-1)+20}));
+
+		this.baseIndex += 1;
+		return [nowWidth,this.maxlevel];
+	}
+
+	//this.rerange('y');
+}
+
+/**
+ * recurrently calculate the depth of the tree
+ * @function
+ * @param {object} tree - tree you want to calculate
+ * @return {int} level - the depth of the tree
+ */
+DVDendrogram.prototype.calMaxLevel = function(tree)
+{
+	if (typeof(tree)=="object")
+	{
+		var maxx = 0;
+		for (var i=0;i<tree.length;i++)
+		{
+			maxx = Math.max(this.calMaxLevel(tree[i]),maxx)
+		}
+		return maxx+1;
+	}
+	if (typeof(tree)=="string")
+	{
+		this.baseEleCount += 1;
+	}
+	return 1;
+	//this.rerange('y');
+}
+
+/**
+ * calculate the height of instance level,use L2 function to make the chart more beautiful
+ * @function
+ * @param {DVisual} dv - the Dvisual instance you want to draw 
+ * @param {int} level - the level
+ * @param {double} height - the height of the passed level 
+ */
+DVDendrogram.prototype.calHeight = function(dv,level)
+{
+
+	//return this.levelHeight*level+20;
+	var radius = Math.min((dv.oldWidth-40)*0.9/(this.baseEleCount)*1.0/2,18)+5;
+	if (level!=this.maxlevel)
+		radius = 0;
+	return -(level-this.maxlevel)*(level-this.maxlevel)*((dv.oldHeight - 80)*1.0)/(this.maxlevel*this.maxlevel) + (dv.oldHeight - 60) + radius + 20
+}
+
+
+/**
+ * prepare the needed elements on the first time to draw it
+ * @function
+ * @param {DVisual} dv - the Dvisual instance you want to draw 
+ */
+DVDendrogram.prototype.prepare = function(dv)
+{
+	this.maxlevel = this.calMaxLevel(this.args.tree)-1;
+	this.levelHeight = (dv.oldHeight-60)/this.maxlevel;
+	this.baseIndex = 0;
+	this.recurrencePrepare(dv,this.args.tree,0);
+	//this.rerange('y');
+}
+
+/**
+ * draw the Dendrogram on dv's canvas
+ * @function
+ * @param {DVisual} dv - the Dvisual instance you want to draw 
+ */
+DVDendrogram.prototype.draw = function(dv)
+{
+	if (this.eles.length==0)
+	{
+		this.prepare(dv);
+	}
+	for (var i=this.eles.length-1;i>=0;i--)
+		this.eles[i].draw(dv);
+}
+
+
+
+
+
+/**
+ * A DVisual graph element indicate a Dendrogram,which can show some combination rule for the data
+ * @constructor
+ * @param {Object[]} args - a array contain arguments below
+ * @param {object[]} args.tree - a set indicate the tree you want to draw,the base element is string,for example:["A",["B","C"]]
+ * @param {DVColor=} [args.color = DVgetRandomColor(1)[0]] - the color for bubble
+ * @param {string=} [args.style='bubble'] - the tree base element style,'bubble' or 'text'
+ * @param {double} height - the height of the passed level 
+ */
+function DVCircleConnectChart(args)
+{
+	if (arguments.length==0)
+		args = {};
+
+	this.args = args.cloneAll();
+	if (args['nodes']==null)
+		this.args['nodes'] = [];
+
+	if (args['edges']==null)
+		this.args['edges'] = [];
+
+	if (args['NodeColor']==null)
+		this.args['NodeColor'] = new DVColor();
+
+	if (args['CurveColor']==null)
+		this.args['CurveColor'] = DVgetRandomColor(1)[0];
+
+	if (args['style']==null || (args.style!="bubble" && args.style!="text"))
+		this.args['style'] = 'bubble';
+
+	if (args['bubble']==null)
+		this.args['bubble'] = true;
+
+	if (args['bubbleRadius']==null)
+		this.args['bubbleRadius'] = 2;
+
+	this.eles = new Array();
+}
+
+
+/**
+ * prepare the needed elements on the first time to draw it
+ * @function
+ * @param {DVisual} dv - the Dvisual instance you want to draw 
+ */
+DVCircleConnectChart.prototype.prepare = function(dv)
+{
+
+	R = (Math.min(dv.oldHeight,dv.oldWidth) - 60)/2;
+	mid = Math.min(dv.oldHeight,dv.oldWidth)/2;
+	addang = Math.asin(dv.ctx.measureText('D').width*1.0/2/R);
+	nodelocation = []
+	angs = []
+	for (var i=0;i<this.args.nodes.length;i++)
+	{
+		ang = Math.PI*2/this.args.nodes.length*i;
+		TextR = R;
+		if (this.args['bubble'])
+			TextR = TextR + this.args['bubbleRadius']*1.2;
+		tmpx = mid + Math.cos(ang+addang)*TextR;
+		tmpy = mid + Math.sin(ang+addang)*TextR;
+		this.eles.push(new DVText({'text':this.args.nodes[i],'x':tmpx,'y':tmpy,'rotate':ang,'maxwidth':30}));
+		nodelocation.push([mid + Math.cos(ang)*R,mid + Math.sin(ang)*R]);
+		angs.push(ang);
+		if (this.args['bubble'])
+			this.eles.push(new DVDot({'color':this.args.NodeColor,'x':mid + Math.cos(ang)*R,'y':mid + Math.sin(ang)*R,'style':'bubble','radius':this.args['bubbleRadius']}))
+		//this.eles.push(new DVLine({'beginX':mid,'beginY':mid,'endX':mid + Math.cos(ang)*R,'endY':mid + Math.sin(ang)*R}));
+	}
+	curveColor = this.args.CurveColor;
+	for (var i=0;i<this.args.edges.length;i++)
+	{
+		node = this.args.edges[i];
+		a = node[0];
+		b = node[1];
+		cp_ratio = Math.sqrt((nodelocation[a][0]-nodelocation[b][0])*(nodelocation[a][0]-nodelocation[b][0])+(nodelocation[a][1]-nodelocation[b][1])*(nodelocation[a][1]-nodelocation[b][1]))/2/R; 
+		ang = (angs[a]+angs[b])*1.0/2;
+		if (Math.abs(angs[a]-angs[b])>Math.PI)
+		{
+			ang = ang + Math.PI;
+		}
+		cpx = mid +  Math.cos(ang)*R*(1-cp_ratio);
+		cpy = mid +  Math.sin(ang)*R*(1-cp_ratio);
+		this.eles.push(new DVCurve({'beginX':nodelocation[a][0],'beginY':nodelocation[a][1],'endX':nodelocation[b][0],'endY':nodelocation[b][1],
+									'cpx':cpx,'cpy':cpy,'color':curveColor,'lineWidth':1}));
+	}
+	
+}
+
+/**
+ * draw the Dendrogram on dv's canvas
+ * @function
+ * @param {DVisual} dv - the Dvisual instance you want to draw 
+ */
+DVCircleConnectChart.prototype.draw = function(dv)
+{
+	if (this.eles.length==0)
+	{
+		this.prepare(dv);
+	}
+	//for (var i=0;i<this.eles.length;i++)
+	//	this.eles[i].draw(dv);
+	 for (var i=this.eles.length-1;i>=0;i--)
+	 	this.eles[i].draw(dv);
+}
+
 

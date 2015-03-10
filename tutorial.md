@@ -121,7 +121,7 @@ another piechart is DVAreaPieChart(),all the arguments are same with DVPieChart(
 
 <img src="https://raw.githubusercontent.com/justdark/dvisual/master/image/24.png" alt="Drawing" width="400px" />
 
-to get a ring chart,you can set the `ring_ratio` indicate the inner empty core's ratio,for example:
+to get a Donut chart,you can set the `ring_ratio` indicate the inner empty core's radius ratio of the outer circle,for example:
 
 	dvisual.addElement(new DVPieChart({'X':["ClassA","ClassB","ClassC","ClassD"],
 										'Y':[2,3,4,5],
@@ -161,7 +161,12 @@ The Box Chart is another chart show some statistical value for the data,the inpu
 
 <img src="https://raw.githubusercontent.com/justdark/dvisual/master/image/25.png" alt="Drawing" width="400px" />	
 
+##DVDendrogram()
+The Dendrogram chart can intepret a tree ,for example a hierarchical clustering result,the most important you should pass is the `'tree'` elements,an array contains the structure of tree,`["A",["B","C"]]` for example.you can determined the  base elements' style by pass the `'style'` with 'text' or 'bubble',you can also appoint the bubble's color by pass the `'color'` arguments.
 
+	dvisual.addElement(new DVDendrogram({'style':'text','tree':[["A",[[["S",[[[[[["A","B"],"B"],"B"],"B"],"B"],"TM"]],"VB"],"ASD"]],["B","C"]]}))
+
+<img src="https://raw.githubusercontent.com/justdark/dvisual/master/image/27.png" alt="Drawing" width="400px" />	
 
 
 
