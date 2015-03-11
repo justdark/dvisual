@@ -194,6 +194,14 @@ Examples
 
 ----------------------------------------------
 
+	s19 = new DVisual("myCanvas19");
+	s19.addElement(new DVParallelCoordinate({'Xs':getMulRandomMatrix(20,100,5) // random data
+										,'arguments':['AAAA','BBBBB','CCCCC','DDDDD','EEEEE'],
+										'ColorPattern':[[new DVColor(255,0,0,0.8),	36],[new DVColor(15,38,237,0.8),6]]}));
+	s19.draw();
+<img src="https://raw.githubusercontent.com/justdark/dvisual/master/image/29.png" alt="Drawing" width="400px" />
+
+----------------------------------------------
 Warning
 ===
 All code have been tested on Chrome（both retina display and ordinary display)

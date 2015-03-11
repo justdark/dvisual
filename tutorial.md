@@ -179,3 +179,12 @@ Sometime we want to show some nodes' connecting relationships,so the DVCircleCon
 									,'CurveColor':new DVColor(14,110,179) //color of the curve
 									}))
 <img src="https://raw.githubusercontent.com/justdark/dvisual/master/image/28.png" alt="Drawing" width="400px" />	
+
+##DVParallelCoordinate()
+the Parallel Coordinate plot is also a very important chart to show high-dimension data,the input format is also intuitive,`'arguments'` is an array of each feature,`'Xs'` is an two dimensional array and Xs[0] indicate the first data which length is same as the arguments.length,to project the specific data,you can appoint the `'ColorPattern'`,the format is `[[DVColor1,indexs1,indexs2...],[DVColor2,indexs11,indexs12...]]`,the color of appointed index data will be the DVColor at the first position of the array.here is an example
+
+	dvisual.addElement(new DVParallelCoordinate({'Xs':getMulRandomMatrix(20,100,5) //random data
+										,'arguments':['AAAA','BBBBB','CCCCC','DDDDD','EEEEE'],
+										'ColorPattern':[[new DVColor(255,0,0,0.8),36],[new DVColor(15,38,237,0.8),6]]}));
+										
+<img src="https://raw.githubusercontent.com/justdark/dvisual/master/image/29.png" alt="Drawing" width="400px" />	

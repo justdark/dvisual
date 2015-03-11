@@ -25,6 +25,7 @@
 <canvas id="myCanvas15" height="400px" width ="400px"></canvas>
 <canvas id="myCanvas17" height="400px" width ="400px"></canvas>
 <canvas id="myCanvas18" height="400px" width ="400px"></canvas>
+<canvas id="myCanvas19" height="300px" width ="600px"></canvas>
 
 </table>
 </body>
@@ -205,6 +206,8 @@ s15.draw();
 
 s16 = new DVisual("myCanvas17");
 s16.addElement(new DVDendrogram({'style':'bubble','tree':[["A",[[["S",[[[[[["A","B"],"B"],"B"],"B"],"B"],"TM"]],"VB"],"ASD"]],["B","C"]]}))
+//s16.addElement(new DVDendrogram({'style':'bubble','tree':[[[['A'],['B']],[['C'],['D']]],[[['E'],['F']],[['G'],['H']]]]}))
+
 s16.draw();
 
 
@@ -236,10 +239,21 @@ function getMulRandomSet(N,C)
 	var result = [];
 	for (var i = 0;i<C;i++)
 	{
-		result.push(getrandom(N));
+		result.push(Math.random() * ( N + 1));
 	}
 	return result;
 }
+
+function getMulRandomMatrix(N,X,Y)
+{
+	var result = [];
+	for (var i = 0;i<X;i++)
+	{
+		result.push(getMulRandomSet(N,Y));
+	}
+	return result;
+}
+
 
 s16 = new DVisual("myCanvas18");
 //getMulRandomtuple(25,30)
@@ -250,6 +264,12 @@ s16.addElement(new DVCircleConnectChart({'nodes':["AAAA","BBBB","CCCC","DDDD","E
 									,'lineWidth':2
 									,'CurveColor':new DVColor(14,110,179)}))
 s16.draw();
+
+
+s19 = new DVisual("myCanvas19");
+s19.addElement(new DVParallelCoordinate({'Xs':getMulRandomMatrix(20,100,5),'arguments':['AAAA','BBBBB','CCCCC','DDDDD','EEEEE'],
+										'ColorPattern':[[new DVColor(255,0,0,0.8),36],[new DVColor(15,38,237,0.8),6]]}));
+s19.draw();
 // g1 = {'X':["A","B","C"],'Y':[3,5,6],'all':3,'index':1}
 // g2 = {'X':["A","B","C"],'Y':[3,5,6],'all':3,'index':2}
 // g3 = {'X':["A","B","C"],'Y':[3,5,6],'all':3,'index':3}

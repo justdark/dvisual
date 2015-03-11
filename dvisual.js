@@ -58,6 +58,7 @@ Array.prototype.min = function()
 { 
 	return Math.min.apply({},this) 
 } 
+
 /**
  * The Main Class of DVisual
  * @constructor
@@ -2983,7 +2984,7 @@ DVDendrogram.prototype.recurrencePrepare = function(dv,tree,level)
 	{
 		nowHeight = this.calHeight(dv,this.maxlevel);
 		nowWidth = this.baseIndex*(dv.oldWidth-40)*1.0/(this.baseEleCount-1)+20;
-		radius = Math.min((dv.oldWidth-40)*0.9/(this.baseEleCount)*1.0/2,18);
+		radius = Math.min((dv.oldWidth-40)*0.9/(this.baseEleCount)*1.0/2,15);
 		if (this.args.style=='bubble')
 		{
 			this.eles.push(new DVDot({'x':nowWidth,'y':nowHeight,'color':this.args.color,'style':'bubble','radius':radius,'bubbleText':tree}));
@@ -3190,6 +3191,154 @@ DVCircleConnectChart.prototype.prepare = function(dv)
  * @param {DVisual} dv - the Dvisual instance you want to draw 
  */
 DVCircleConnectChart.prototype.draw = function(dv)
+{
+	if (this.eles.length==0)
+	{
+		this.prepare(dv);
+	}
+	//for (var i=0;i<this.eles.length;i++)
+	//	this.eles[i].draw(dv);
+	 for (var i=this.eles.length-1;i>=0;i--)
+	 	this.eles[i].draw(dv);
+}
+
+
+/**
+ * A DVisual graph element indicate a Parallel coordinate
+ * @constructor
+ * @param {Object[]} args - a array contain arguments below
+ * @param {Array(Array(double))} args.Xs - the set of multiple series nodes' x value,the length of Xs is the instance's number you want to draw,the elements' length is same with the arguments' length
+ * @param {Array(string)} args.arguments - the arguments' name
+ * @param {DVColor=} [args.color = new DVColor(100,100,100,0.3)] - the lines' default color,the more color optional can be configured in ColorPattern arguments
+ * @param {Object[]} [args.ColorPattern = empty] - the color pattern of lines,the element is [[DVColor1,indexs1,indexs2...],[DVColor2,indexs11,indexs12...]]
+ */
+function DVParallelCoordinate(args)
+{
+	if (arguments.length==0)
+		args = {};
+	this.args = args.cloneAll();
+
+	if (args['Xs']==null)
+		this.args['Xs'] = [];
+
+	if (args['arguments']==null)
+		this.args['arguments'] = [];
+
+	if (args['classes']==null)
+		this.args['classes'] = [];
+
+	if (args['style']==null)
+		this.args['style'] = 'dot|line';
+
+	if (args['color']==null)
+		this.args['color'] = new DVColor(100,100,100,0.3);
+
+	if (args['ColorPattern']==null)
+		this.args['ColorPattern'] = {};
+
+	if (args['xGrid']==null)
+		this.args['xGrid'] = true;
+
+	if (args['yGrid']==null)
+		this.args['yGrid'] = true;
+
+	if (args['lineWidth']==null)
+		this.args['lineWidth'] = 1;
+
+	this.eles = new Array();
+}
+/**
+ * prepare the needed elements on the first time to draw it
+ * @function
+ * @param {DVisual} dv - the Dvisual instance you want to draw 
+ */
+DVParallelCoordinate.prototype.prepare = function(dv)
+{
+
+	coordinate = (dv.oldWidth*1.0)/(this.args.arguments.length);
+	yupper =  20;
+	ybottom = dv.oldHeight - 30;
+
+	var ydrawMargin = ybottom - yupper;
+	var maxx = [];
+	var minn = [];
+	var colors = [];
+	for (var i =0;i<this.args.Xs.length;i++)
+	{
+		colors.push(this.args.color);
+		if (this.args.Xs[i].length!=this.args.arguments.length)
+		{
+			console.log("ERROR! the Xs and arugument length in DVParallelCoordinate can not match");
+			return -1;
+		}
+		for (var j=0;j<this.args.arguments.length;j++)
+		{
+			if (i==0)
+			{
+				maxx.push(this.args.Xs[i][j]);
+				minn.push(this.args.Xs[i][j]);
+			} else
+			{
+				maxx[j] = Math.max(maxx[j],this.args.Xs[i][j]);
+				minn[j] = Math.min(minn[j],this.args.Xs[i][j]);
+			}
+		}
+	}
+	for (var j=0;j<this.args.arguments.length;j++)
+	{
+		maxx[j] = Math.ceil(maxx[j]);
+		minn[j] = Math.floor(minn[j]);	
+	}
+	for (var i=0;i<this.args.arguments.length;i++)
+	{
+		nowx = i*coordinate + coordinate/2;
+		this.eles.push(new DVLine({'beginX':nowx,'beginY':yupper,'endX':nowx,'endY':ybottom,'lineWidth':2}));
+		texty = ybottom  + 29;
+		this.eles.push(new DVText({'text':this.args.arguments[i],'x':nowx,'y':texty,'font':'12px Arial','textAlign':'center','maxwidth':coordinate*0.8}))
+		this.eles.push(new DVText({'text':minn[i].toFixed(1),'x':nowx,'y':texty-22,'textAlign':'center','maxwidth':coordinate*0.8}))
+		this.eles.push(new DVText({'text':maxx[i].toFixed(1),'x':nowx,'y':18,'textAlign':'center','maxwidth':coordinate*0.8}))
+	}
+
+	for (var j=0;j<this.args.ColorPattern.length;j++)
+	{
+		s = this.args.ColorPattern[j]
+		for (var i=1;i<s.length;i++)
+		{
+			colors[s[i]] = s[0];
+		}
+	}
+	var nowx = 0;
+	var nowy = 0;
+	var oldx = 0;
+	var oldy = 0;
+	
+
+	for (var i=0;i<this.args.Xs.length;i++)
+	{
+		for (var j=0;j<this.args.arguments.length;j++)
+		{
+			nowy = ybottom - (this.args.Xs[i][j] - minn[j])*1.0/(maxx[j] - minn[j])*ydrawMargin
+			nowx = j*coordinate + coordinate/2;
+			color = colors[i];
+			add = 0;
+			if (color.tostring()!=this.args.color.tostring())
+				add = 0.3;
+			if (j!=0)
+			{
+				this.eles.push(new DVLine({'beginX':oldx,'beginY':oldy,'endX':nowx,'endY':nowy,'lineWidth':this.args.lineWidth+add,'color':color,'shadow':false}))
+			}
+			oldx = nowx;
+			oldy = nowy;
+		}
+	}
+}
+
+/**
+ * draw the Dendrogram on dv's canvas
+ * @function
+ * @param {DVisual} dv - the Dvisual instance you want to draw 
+ */
+DVParallelCoordinate.prototype.draw = function(dv)
 {
 	if (this.eles.length==0)
 	{
