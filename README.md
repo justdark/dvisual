@@ -199,7 +199,7 @@ Examples
 										,'arguments':['AAAA','BBBBB','CCCCC','DDDDD','EEEEE'],
 										'ColorPattern':[[new DVColor(255,0,0,0.8),	36],[new DVColor(15,38,237,0.8),6]]}));
 	s19.draw();
-<img src="https://raw.githubusercontent.com/justdark/dvisual/master/image/29.png" alt="Drawing" width="400px" />
+<img src="https://raw.githubusercontent.com/justdark/dvisual/master/image/29.png" alt="Drawing" width="600px" />
 
 ----------------------------------------------
 Warning
