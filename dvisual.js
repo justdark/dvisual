@@ -994,6 +994,7 @@ DVRect.prototype.draw = function(dv)
  * @param {string=} [args.xStyle='value'] - the X axes's style,'value' or 'class'
  * @param {string=} [args.yStyle='value'] - the Y axes's style,'value' or 'percentage%'
  * @param {Array(string)} args.classes - when x's Style is 'class',you need this argument to show the texts of each class on the X-axes
+ * @param {Array(string)} args.yClass - to make the horizental chart
  * @param {string=} [args.xDescript='x'] - the X axes's description
  * @param {string=} [args.yDescript='y'] - the Y axes's description
  * @param {double} args.xSpan - the increment on x value in each grid,(data space)
@@ -1014,11 +1015,14 @@ function DVCoordinate(args)
 	if (args['xStyle']==null || (args['xStyle']!='value' && args['xStyle']!='class'))
 		this.args['xStyle'] = 'value';
 
-	if (args['yStyle']==null || (args['yStyle']!='value' && args['yStyle']!='percentage'))
+	if (args['yStyle']==null || (args['yStyle']!='value' && args['yStyle']!='percentage' && args['yStyle']!='class'))
 		this.args['yStyle'] = 'value';
 
 	if (args['classes']==null)
 		this.args['classes'] = ["A",'B','C'];
+
+	if (args['yClasses']==null)
+		this.args['yClasses'] = ["A",'B','C'];
 
 	if (args['xDescript']==null)
 		this.args['xDescript'] = "";
@@ -1103,13 +1107,18 @@ DVCoordinate.prototype.prepare = function(dv)
 	}
 	x = dv.Xinc;
 	y = dv.Yinc;
+	count = 0;
 	while (dv.xyTrans(x,y)[1]>70)
 	{
 		result = dv.xyTrans(x,y);
 		if (this.args.yStyle=='value')
 			str = y+"";
-		else
+		else if (this.args.yStyle=='percentage')
 			str = y.toFixed(2)*100+"%";
+		else if (this.args.yStyle=='class' && count<this.args.yClasses.length)
+			str = this.args.yClasses[count];
+		count++;
+
 		metrics = dv.ctx.measureText(str);
 		y_kedu_arg = {'x':result[0]-metrics.width-2,'y':result[1]+dv.ctx.measureText("D").width/2,'text':str};
 		y_kedu_line_arg = {'beginX':result[0],'beginY':result[1],'endX':result[0]+5,'endY':result[1]};
@@ -3334,7 +3343,7 @@ DVParallelCoordinate.prototype.prepare = function(dv)
 }
 
 /**
- * draw the Dendrogram on dv's canvas
+ * draw the Parallel Coordinate on dv's canvas
  * @function
  * @param {DVisual} dv - the Dvisual instance you want to draw 
  */
