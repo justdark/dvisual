@@ -1,17 +1,17 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 <head>
 	<title>Leaflet Quick Start Guide Example</title>
 </head>
-<script type="text/javascript" src="dvisual_map.js">
-</script>
+<script type="text/javascript" src="dvisual_map.js"></script>
 <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.css" />
-<script type="text/javascript" src="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js">
-</script>
-<script type="text/javascript" src="china.js">
-</script>
+<script type="text/javascript" src="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>
+<script type="text/javascript" src="https://raw.githubusercontent.com/justdark/dvisual/master/dvmap/china.js"></script>
+
 <body>
-	<div id="map" style="width: 1200px; height: 600px"></div>
+	<div id="map" style="width: 1200px; height: 700px"></div>
+</br>
+	<div id="map2" style="width: 1200px; height: 700px"></div>
 </body>
 </html>
 <script>
@@ -2599,15 +2599,17 @@
 ,[47.26,85.53]];
 
 	as = new DVisualMap('map');
-	for (var i = 0;i<100;i++)
+	//as.setChinaJson();
+	for (var i = 0;i<1;i++)
 		{
 			color = 'red'
-			if (lat[i%2500][0]<35)
-				color = 'green'
-			as.addDot({'position':new DVisualGeoPosition(lat[i%2500][0],lat[i%2500][1]),'text':'xx','color':color})
+			//if (lat[i%2500][0]<35)
+			//	color = 'green'
+			as.addDot({'position':new DVisualGeoPosition(lat[i%2500][0],lat[i%2500][1]),'text':" "+ i,'color':color})
 			//as.addDot({'position':new DVisualGeoPosition(0,i/1000),'text':'xx','color':color})
 		}
-	as.setChinaJson();
+	as.addLegend([['#f00','AAA'],['#0f0','BBBB'],['#00f','CC']]);
+	//as.setChinaJson();
 	//as.addDots(lat[2])
 	//as.addDot({'position':new DVisualGeoPosition(lat[0][0],lat[0][1]),'style':'bubble','text':'xx','color':'#0f0','radius':1000});
 		// L.circle([51.508, -0.11], 500, {
@@ -2615,7 +2617,32 @@
 		// 	fillColor: '#f03',
 		// 	fillOpacity: 0.5
 		// }).addTo(map).bindPopup("I am a circle.");
-	as.addLines(lat.slice(50,55),'#0f0')
+	as.addDot(0,0,'ssss')
+	t = 563//;Math.floor(Math.random()*2500)
+
+	for (var i = 100;i<2500;i++)
+	{
+		if (Math.random()<=0.02)
+		{
+			as.addLines([lat[t],lat[i]],'#0f0');
+			as.addDot({'position':new DVisualGeoPosition(lat[i%2500][0],lat[i%2500][1]),'text':" "+ i,'color':color})
+		}
+	}
+	as.map.setView(lat[t],5)
+	
+	ps = function(pro){
+		return String(pro)+":"+ String(pro).length;}
+	co = function(prov)
+		{
+			if (String(prov)==String('四川'))
+			{
+				return 'rgb(255,0,0)';
+			}
+			return 'rgb(32,140,248)'
+		}
+	as = new DVisualMap('map2');
+	as.setChinaJson(co,ps,[['#f00','AAA'],['#0f0','BBBBBBBBBBbbbB'],['#00f','CC']]);
+	as.map.setView(lat[t],5)
 
 </script>
 
