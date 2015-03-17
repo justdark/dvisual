@@ -56,15 +56,16 @@ The DVisualMap is a package based on [Leaflet](http://leafletjs.com/index.html) 
 ##e . 点线的例子
 在网上随便找了一份中国城市的经纬坐标图，将所有点绘制上去，效果如下(大概2500个，这个工具在绘制10000个点以下的个数的时候不灰太卡)
 
-![ss](https://raw.githubusercontent.com/justdark/dvisual/master/dvmap/dvmap_image/dot.png)
+<img src="https://raw.githubusercontent.com/justdark/dvisual/master/dvmap/dvmap_image/dot.png" alt="Drawing" width="800px" />
 
 局部放大的效果(点击显示了其中一个弹出文字，这里是设置的数据的行号，无实际意义):
 
-![ss](https://raw.githubusercontent.com/justdark/dvisual/master/dvmap/dvmap_image/dot_local.png)
+<img src="https://raw.githubusercontent.com/justdark/dvisual/master/dvmap/dvmap_image/dot_local.png" alt="Drawing" width="400px" />
+
 
 随机选了一些点和靠近上海的一个点连接起来：
 
-![ss](https://raw.githubusercontent.com/justdark/dvisual/master/dvmap/dvmap_image/line.png)
+<img src="https://raw.githubusercontent.com/justdark/dvisual/master/dvmap/dvmap_image/line.png" alt="Drawing" width="800px" />
 
 ##f . 加入颜色图例
 有时我们需要一些图例来显示不同的数据，`addLegend()`方法可以做到这一点，传入参数是一个数组，分别表示每一类的颜色和名称`[[color1,class_name_1],[color2,class_name_2]...]`,如：
@@ -96,7 +97,7 @@ The DVisualMap is a package based on [Leaflet](http://leafletjs.com/index.html) 
 		}
 即是在省份名称是四川的时候返回红色，其他时候返回默认颜色；效果图：
 
-![ss](https://raw.githubusercontent.com/justdark/dvisual/master/dvmap/dvmap_image/sichuan.png)
+<img src="https://raw.githubusercontent.com/justdark/dvisual/master/dvmap/dvmap_image/sichuan.png" alt="Drawing" width="800px" />
 
 通过这个方法你可以对不同省份的等级数据指定不同的颜色，从而达到相应的显示效果，就像[这个例子](http://leafletjs.com/examples/choropleth.html)里的美国人口图一样
 
@@ -105,7 +106,8 @@ The DVisualMap is a package based on [Leaflet](http://leafletjs.com/index.html) 
 	infomation_function = function(pro){
 			return String(pro)+":"+ String(pro).length;
 		}
-![ss](https://raw.githubusercontent.com/justdark/dvisual/master/dvmap/dvmap_image/info.png)
+<img src="https://raw.githubusercontent.com/justdark/dvisual/master/dvmap/dvmap_image/info.png" alt="Drawing" width="400px" />
+
 实际上这个函数返回的字符串是加入到innerHTML中的，所以你可以使用任意的html格式标签使其按格式显示更丰富的数据数据。
 
 
