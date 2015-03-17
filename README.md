@@ -20,6 +20,8 @@ How to use DVisual
 
 [API document](http://justdark.github.io/dvisual/doc/)
 
+[DVisualMap Tutorial](https://github.com/justdark/dvisual/blob/master/dvmap/dvmap_tutorial.md)
+
 ----------------------------------------------
 <script type="text/javascript" src="dv.js">
 </script>

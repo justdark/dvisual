@@ -9,7 +9,7 @@ The DVisualMap is a package based on [Leaflet](http://leafletjs.com/index.html) 
 ##b . 初始化
 你的html文件必须添加四行引用，分别是：
 
-	<script type="text/javascript" src="dvisual_map.js"></script>
+	<script type="text/javascript" src="https://github.com/justdark/dvisual/raw/master/dvmap/dvisual_map.js"></script>
 	<link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.css" />
 	<script type="text/javascript" src="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>
 	<script type="text/javascript" src="https://raw.githubusercontent.com/justdark/dvisual/master/dvmap/china.js"></script>
@@ -111,3 +111,5 @@ The DVisualMap is a package based on [Leaflet](http://leafletjs.com/index.html) 
 实际上这个函数返回的字符串是加入到innerHTML中的，所以你可以使用任意的html格式标签使其按格式显示更丰富的数据数据。
 
 
+##总结
+因为Leaflet实在是异常好用，所以我只简单封装了其中一些东西，如果你有更深入的需要，请直接使用Leaflet，我这里就不便使用别人的东西来借花献佛了。
