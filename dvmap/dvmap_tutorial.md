@@ -52,8 +52,14 @@ The DVisualMap is a package based on [Leaflet](http://leafletjs.com/index.html) 
 	
 	dvmap.addLines([lat[t],lat[i]],'#0f0')
 
+##e . 面
+面当然就是多边形的面了，通过addPolygon(arr,color,text)进行添加，其中color默认为红色，text默认为空(点击多边形弹出的文字)，一个简单的例子：
+	
+	dvmap.addPolygon([[0,0],[10,0],[10,10],[0,10]])
 
-##e . 点线的例子
+<img src="https://raw.githubusercontent.com/justdark/dvisual/master/dvmap/dvmap_image/polygon.png" alt="Drawing" width="800px" />
+
+##f . 点线的例子
 在网上随便找了一份中国城市的经纬坐标图，将所有点绘制上去，效果如下(大概2500个，这个工具在绘制10000个点以下的个数的时候不灰太卡)
 
 <img src="https://raw.githubusercontent.com/justdark/dvisual/master/dvmap/dvmap_image/dot.png" alt="Drawing" width="800px" />
@@ -67,14 +73,14 @@ The DVisualMap is a package based on [Leaflet](http://leafletjs.com/index.html) 
 
 <img src="https://raw.githubusercontent.com/justdark/dvisual/master/dvmap/dvmap_image/line.png" alt="Drawing" width="800px" />
 
-##f . 加入颜色图例
+##g . 加入颜色图例
 有时我们需要一些图例来显示不同的数据，`addLegend()`方法可以做到这一点，传入参数是一个数组，分别表示每一类的颜色和名称`[[color1,class_name_1],[color2,class_name_2]...]`,如：
 	
 	dvmap.addLegend([['#f00','AAA'],['#0f0','BBBB'],['#00f','CC']]);
 
 ![ss](https://raw.githubusercontent.com/justdark/dvisual/master/dvmap/dvmap_image/legend.png)
 
-##f . 中国区域图
+##h . 中国区域图
 
 这是用来封装的一个适用于中国不同省份地区的数据展示工具，其实就是Leaflet上面的一个实例，只不过我将其特殊化为了中国区域的图罢了。如果你有其他需求的话请参考[Leaflet](http://leafletjs.com/index.html)
 中国区域图方法：

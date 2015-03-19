@@ -253,7 +253,24 @@ DVisualMap.prototype.addDots = function(arr)
 	this.map.setView([sumlong/arr.length,sumlati/arr.length],6);
 }
 
-DVisualMap.prototype.addLines = function(array,color,smooth)
+DVisualMap.prototype.addPolygon = function(array,color,text)
+{
+	if (arguments.length<3)
+	{
+		text = "";
+	}
+	if (arguments.length<2)
+	{
+		color = 'red';
+	}
+	array.push(array[0]);
+	if (text!="")
+		L.polygon(array,{'color':color,'weight':2,'fillOpacity':0.7}).bindPopup(text).addTo(this.map);
+	else
+		L.polygon(array,{'color':color,'weight':2,'fillOpacity':0.7}).addTo(this.map);
+}
+
+DVisualMap.prototype.addLines = function(array,color)
 {
 	if (arguments.length<3)
 	{

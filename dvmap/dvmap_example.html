@@ -3,7 +3,7 @@
 <head>
 	<title>Leaflet Quick Start Guide Example</title>
 </head>
-<script type="text/javascript" src="https://github.com/justdark/dvisual/raw/master/dvmap/dvisual_map.js"></script>
+<script type="text/javascript" src="dvisual_map.js"></script>
 <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.css" />
 <script type="text/javascript" src="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>
 <script type="text/javascript" src="https://raw.githubusercontent.com/justdark/dvisual/master/dvmap/china.js"></script>
@@ -2628,21 +2628,23 @@
 			as.addDot({'position':new DVisualGeoPosition(lat[i%2500][0],lat[i%2500][1]),'text':" "+ i,'color':color})
 		}
 	}
-	as.map.setView(lat[t],5)
+	as.addPolygon([[0,0],[10,0],[10,10],[0,10]])
 	
-	ps = function(pro){
-		return String(pro)+":"+ String(pro).length;}
-	co = function(prov)
-		{
-			if (String(prov)==String('四川'))
-			{
-				return 'rgb(255,0,0)';
-			}
-			return 'rgb(32,140,248)'
-		}
-	as = new DVisualMap('map2');
-	as.setChinaJson(co,ps,[['#f00','AAA'],['#0f0','BBBBBBBBBBbbbB'],['#00f','CC']]);
-	as.map.setView(lat[t],5)
+	// as.map.setView(lat[t],5)
+	
+	// ps = function(pro){
+	// 	return String(pro)+":"+ String(pro).length;}
+	// co = function(prov)
+	// 	{
+	// 		if (String(prov)==String('四川'))
+	// 		{
+	// 			return 'rgb(255,0,0)';
+	// 		}
+	// 		return 'rgb(32,140,248)'
+	// 	}
+	// as = new DVisualMap('map2');
+	// as.setChinaJson(co,ps,[['#f00','AAA'],['#0f0','BBBBBBBBBBbbbB'],['#00f','CC']]);
+	// as.map.setView(lat[t],5)
 
 </script>
 
