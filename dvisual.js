@@ -2825,7 +2825,7 @@ DVGraph.prototype.distance = function(i,j)
 DVGraph.prototype.rerange = function(dv,V,E)
 {
 	var area = (dv.oldWidth-40)*(dv.oldHeight-40)*0.5;
-	var k = Math.sqrt(area/V.length);
+	var k = Math.sqrt(area/(E.length+V.length));
 	fa = function(x)
 	{
 		return x*x*1.0/k;
@@ -2835,7 +2835,7 @@ DVGraph.prototype.rerange = function(dv,V,E)
 		return k*k*1.0/x;
 	}
 	var t = 10;
-	for (var step=0;step<200;step++)
+	for (var step=0;step<400;step++)
 	{
 		for (var i=0;i<V.length;i++)
 		{
@@ -2871,7 +2871,7 @@ DVGraph.prototype.rerange = function(dv,V,E)
 			V[i].x = Math.min(dv.oldWidth-20,Math.max(20,V[i].x));
 			V[i].y = Math.min(dv.oldHeight-20,Math.max(20,V[i].y));
 		}
-		t = t*0.99;
+		t = t*0.995;
 	}
 	return V;
 	//alert(this.eles[0].args['x']+" "+this.eles[0].args['y'])

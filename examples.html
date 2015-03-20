@@ -196,12 +196,7 @@ s15.addElement(new DVPieChart({'X':["ClassA","ClassB","ClassC","ClassD"],
 s15.draw();
 
 
-s15 = new DVisual("myCanvas16");
-s15.addElement(new DVGraph({'nodes':["A","B","C","D","E","F","G","H","I","J","K","L","M","Ns","O","P","Q"],
-							'edges':[[0,1],[1,3],[2,1],[1,4],[1,5],[1,6],[1,7],[1,8],[1,9],[1,10],[1,11],[1,12],[7,13],[3,5],[4,7],[7,2],[7,14],[7,15],[7,16],[1,1]],
-							'style':'directed',
-							'distance':'median'}))
-s15.draw();
+
 
 
 
@@ -271,6 +266,22 @@ s19 = new DVisual("myCanvas19");
 s19.addElement(new DVParallelCoordinate({'Xs':getMulRandomMatrix(20,100,5),'arguments':['AAAA','BBBBB','CCCCC','DDDDD','EEEEE'],
 										'ColorPattern':[[new DVColor(255,0,0,0.8),36],[new DVColor(15,38,237,0.8),6]]}));
 s19.draw();
+
+
+s15 = new DVisual("myCanvas16");
+// ks = []
+// for (var i=0;i<50;i++)
+// 	ks.push(i+"");
+// edge = []
+// for (var i=0;i<80;i++)
+// 	edge.push([Math.floor(Math.random()*50),Math.floor(Math.random()*50)])
+s15.addElement(new DVGraph({'nodes':["A","B","C","D","E","F","G","H","I","J","K","L","M","Ns","O","P","Q","R","S","T","U","V","W","X","Y","Z"],
+							'edges':[[0,1],[1,3],[2,1],[1,4],[1,5],[1,6],[1,7],[1,8],[1,9],[1,10],[1,11],[1,12],[7,13],[3,5],[4,7],[7,2],[7,14],[7,15],[7,16],[1,1],[1,25],[16,17],[16,18],[16,19],[16,20],[20,21],[16,22],[16,23],[16,24],[16,25]],
+							'style':'directed',
+							'distance':'median'}))
+
+s15.draw();
+
 // g1 = {'X':["A","B","C"],'Y':[3,5,6],'all':3,'index':1}
 // g2 = {'X':["A","B","C"],'Y':[3,5,6],'all':3,'index':2}
 // g3 = {'X':["A","B","C"],'Y':[3,5,6],'all':3,'index':3}
