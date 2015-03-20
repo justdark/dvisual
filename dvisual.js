@@ -2923,9 +2923,9 @@ DVGraph.prototype.prepare = function(dv)
 			if (eex>=bbx)
 				basic = Math.PI;
 			basic = basic + Math.atan((bby-eey)/(bbx-eex));
-			this.eles.push(new DVLine({'beginX':eex+Math.cos(basic+theta)*r,'beginY':eey+Math.sin(basic+theta)*r,
+			this.eles.push(new DVLine({'shadow':false,'beginX':eex+Math.cos(basic+theta)*r,'beginY':eey+Math.sin(basic+theta)*r,
 						'endX':eex,'endY':eey}))
-			this.eles.push(new DVLine({'beginX':eex+Math.cos(basic-theta)*r,'beginY':eey+Math.sin(basic-theta)*r,
+			this.eles.push(new DVLine({'shadow':false,'beginX':eex+Math.cos(basic-theta)*r,'beginY':eey+Math.sin(basic-theta)*r,
 						'endX':eex,'endY':eey}))
 			
 		}
