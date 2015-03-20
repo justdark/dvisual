@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Class: DVText</title>
+    <title>JSDoc: Class: DVCircleConnectChart</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Class: DVText</h1>
+    <h1 class="page-title">Class: DVCircleConnectChart</h1>
 
     
 
@@ -29,7 +29,7 @@
 <header>
     
         <h2>
-        DVText
+        DVCircleConnectChart
         </h2>
         
     
@@ -42,14 +42,14 @@
 
     
 
-    <h4 class="name" id="DVText"><span class="type-signature"></span>new DVText<span class="signature">(args)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="DVCircleConnectChart"><span class="type-signature"></span>new DVCircleConnectChart<span class="signature">(args)</span><span class="type-signature"></span></h4>
 
     
 
 
 
 <div class="description">
-    A DVisual graph element indicate a text
+    A DVisual graph element indicate a Dendrogram,which can show some combination rule for the data
 </div>
 
 
@@ -131,13 +131,13 @@
 
         <tr>
             
-                <td class="name"><code>x</code></td>
+                <td class="name"><code>nodes</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">double</span>
+<span class="param-type">Array.&lt;Object></span>
 
 
             
@@ -159,20 +159,20 @@
                 </td>
             
 
-            <td class="description last">the x value of the dot</td>
+            <td class="description last">indicate a set of nodes,the elements is a string.</td>
         </tr>
 
     
 
         <tr>
             
-                <td class="name"><code>y</code></td>
+                <td class="name"><code>edges</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">double</span>
+<span class="param-type">Array.&lt;Object></span>
 
 
             
@@ -194,55 +194,20 @@
                 </td>
             
 
-            <td class="description last">the y value of the dot,0 in default</td>
+            <td class="description last">indicate a set of edges,the elements is a tuple with two index,eg: [[0,1]] means an edge connect 0-th node and 1-th node</td>
         </tr>
 
     
 
         <tr>
             
-                <td class="name"><code>text</code></td>
+                <td class="name"><code>edgesValue</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                </td>
-            
-
-            <td class="description last">the text content you want to draw</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>font</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
+<span class="param-type">Object</span>
 
 
             
@@ -263,19 +228,58 @@
             
                 <td class="default">
                 
-                    "8px Arial"
+                    empty
                 
                 </td>
             
 
-            <td class="description last">the text's font</td>
+            <td class="description last">can be empty,to change the curve's width to show more infomation</td>
         </tr>
 
     
 
         <tr>
             
-                <td class="name"><code>color</code></td>
+                <td class="name"><code>CurveColor</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="DVColor.html">DVColor</a></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    DVgetRandomColor(1)[0]
+                
+                </td>
+            
+
+            <td class="description last">the Curve's Color</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>NodeColor</code></td>
             
 
             <td class="type">
@@ -307,7 +311,7 @@
                 </td>
             
 
-            <td class="description last">the color of the dot,black in default</td>
+            <td class="description last">the Node's Color</td>
         </tr>
 
     
@@ -341,19 +345,19 @@
             
                 <td class="default">
                 
-                    'fill'
+                    'bubble'
                 
                 </td>
             
 
-            <td class="description last">the style of this dot,should be one of 'fill','stroke'</td>
+            <td class="description last">the node element style,'bubble' or 'text'</td>
         </tr>
 
     
 
         <tr>
             
-                <td class="name"><code>shadow</code></td>
+                <td class="name"><code>bubble</code></td>
             
 
             <td class="type">
@@ -385,20 +389,20 @@
                 </td>
             
 
-            <td class="description last">whether draw text's shadow.</td>
+            <td class="description last">whether add a bubble to each node</td>
         </tr>
 
     
 
         <tr>
             
-                <td class="name"><code>maxwidth</code></td>
+                <td class="name"><code>bubbleRadius</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">double</span>
+<span class="param-type">int</span>
 
 
             
@@ -419,90 +423,12 @@
             
                 <td class="default">
                 
-                    -1
+                    2
                 
                 </td>
             
 
-            <td class="description last">the limited width of printed text,-1 means no limit</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>textAlign</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                    'left'
-                
-                </td>
-            
-
-            <td class="description last">the text align of printed text position</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>direction</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                    'horizontal'
-                
-                </td>
-            
-
-            <td class="description last">the direction of text:horizontal or vertical</td>
+            <td class="description last">the radius of the added bubble</td>
         </tr>
 
     
@@ -536,51 +462,12 @@
             
                 <td class="default">
                 
-                    '1'
+                    2
                 
                 </td>
             
 
-            <td class="description last">the lineWidth of text</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>rotate</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">double</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                    0
-                
-                </td>
-            
-
-            <td class="description last">the lineWidth of text</td>
+            <td class="description last">the lineWidth of curve,when the edgesValue is not empty,lineWidth indicate the maxium Curve Width.</td>
         </tr>
 
     
@@ -628,7 +515,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="dvisual.js.html">dvisual.js</a>, <a href="dvisual.js.html#line530">line 530</a>
+        <a href="dvisual.js.html">dvisual.js</a>, <a href="dvisual.js.html#line3125">line 3125</a>
     </li></ul></dd>
     
 
@@ -651,11 +538,6 @@
 
 
 
-
-
-    <h5>Example</h5>
-    
-    <pre class="prettyprint"><code>new DVDot({'x':100,'y':100,'font'="13px Arial"});</code></pre>
 
 
 
@@ -689,7 +571,7 @@
 
 
 <div class="description">
-    draw the text on dv's canvas
+    draw the Dendrogram on dv's canvas
 </div>
 
 
@@ -782,7 +664,138 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="dvisual.js.html">dvisual.js</a>, <a href="dvisual.js.html#line577">line 577</a>
+        <a href="dvisual.js.html">dvisual.js</a>, <a href="dvisual.js.html#line3222">line 3222</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="prepare"><span class="type-signature"></span>prepare<span class="signature">(dv)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+<div class="description">
+    prepare the needed elements on the first time to draw it
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>dv</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="DVisual.html">DVisual</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">the Dvisual instance you want to draw</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="dvisual.js.html">dvisual.js</a>, <a href="dvisual.js.html#line3164">line 3164</a>
     </li></ul></dd>
     
 
@@ -830,7 +843,7 @@
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0-dev</a> on Fri Mar 20 2015 19:11:23 GMT+0800 (CST)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0-dev</a> on Fri Mar 20 2015 19:11:22 GMT+0800 (CST)
 </footer>
 
 <script> prettyPrint(); </script>

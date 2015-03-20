@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Class: DVSector</title>
+    <title>JSDoc: Class: DVParallelCoordinate</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Class: DVSector</h1>
+    <h1 class="page-title">Class: DVParallelCoordinate</h1>
 
     
 
@@ -29,7 +29,7 @@
 <header>
     
         <h2>
-        DVSector
+        DVParallelCoordinate
         </h2>
         
     
@@ -42,14 +42,14 @@
 
     
 
-    <h4 class="name" id="DVSector"><span class="type-signature"></span>new DVSector<span class="signature">(args)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="DVParallelCoordinate"><span class="type-signature"></span>new DVParallelCoordinate<span class="signature">(args)</span><span class="type-signature"></span></h4>
 
     
 
 
 
 <div class="description">
-    A DVisual graph element indicate a sector
+    A DVisual graph element indicate a Parallel coordinate
 </div>
 
 
@@ -131,13 +131,13 @@
 
         <tr>
             
-                <td class="name"><code>x</code></td>
+                <td class="name"><code>Xs</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">double</span>
+<span class="param-type">Array(Array(double))</span>
 
 
             
@@ -159,20 +159,20 @@
                 </td>
             
 
-            <td class="description last">the center's x value</td>
+            <td class="description last">the set of multiple series nodes' x value,the length of Xs is the instance's number you want to draw,the elements' length is same with the arguments' length</td>
         </tr>
 
     
 
         <tr>
             
-                <td class="name"><code>y</code></td>
+                <td class="name"><code>arguments</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">double</span>
+<span class="param-type">Array(string)</span>
 
 
             
@@ -194,112 +194,7 @@
                 </td>
             
 
-            <td class="description last">the center's y value</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>radius</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">double</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                </td>
-            
-
-            <td class="description last">the radius of sector</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>sDeg</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">double</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                </td>
-            
-
-            <td class="description last">the stared angle Degree</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>eDeg</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">double</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                </td>
-            
-
-            <td class="description last">the end angle Degree</td>
+            <td class="description last">the arguments' name</td>
         </tr>
 
     
@@ -333,25 +228,25 @@
             
                 <td class="default">
                 
-                    DVgetRandomColor(1,0.6)[0]
+                    new DVColor(100,100,100,0.3)
                 
                 </td>
             
 
-            <td class="description last">the color of the dot,random in default</td>
+            <td class="description last">the lines' default color,the more color optional can be configured in ColorPattern arguments</td>
         </tr>
 
     
 
         <tr>
             
-                <td class="name"><code>pop</code></td>
+                <td class="name"><code>ColorPattern</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">boolean</span>
+<span class="param-type">Array.&lt;Object></span>
 
 
             
@@ -372,168 +267,12 @@
             
                 <td class="default">
                 
-                    false
+                    empty
                 
                 </td>
             
 
-            <td class="description last">whether poo out this sector</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>shadow</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">boolean</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                    true
-                
-                </td>
-            
-
-            <td class="description last">whether draw text's shadow.</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>style</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                    'fill'
-                
-                </td>
-            
-
-            <td class="description last">the style of this sector,should be one of 'fill','stroke','transFill' means translucent fill.</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>innerText</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                    ''
-                
-                </td>
-            
-
-            <td class="description last">the text you want to shao in the center of sector</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>ring_ratio</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">double</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                    0
-                
-                </td>
-            
-
-            <td class="description last">the ring ratio,to calculate the text location</td>
+            <td class="description last">the color pattern of lines,the element is [[DVColor1,indexs1,indexs2...],[DVColor2,indexs11,indexs12...]]</td>
         </tr>
 
     
@@ -581,7 +320,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="dvisual.js.html">dvisual.js</a>, <a href="dvisual.js.html#line2134">line 2134</a>
+        <a href="dvisual.js.html">dvisual.js</a>, <a href="dvisual.js.html#line3244">line 3244</a>
     </li></ul></dd>
     
 
@@ -637,7 +376,7 @@
 
 
 <div class="description">
-    draw the sector on dv's canvas
+    draw the Parallel Coordinate on dv's canvas
 </div>
 
 
@@ -730,7 +469,138 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="dvisual.js.html">dvisual.js</a>, <a href="dvisual.js.html#line2187">line 2187</a>
+        <a href="dvisual.js.html">dvisual.js</a>, <a href="dvisual.js.html#line3370">line 3370</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="prepare"><span class="type-signature"></span>prepare<span class="signature">(dv)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+<div class="description">
+    prepare the needed elements on the first time to draw it
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>dv</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="DVisual.html">DVisual</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">the Dvisual instance you want to draw</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="dvisual.js.html">dvisual.js</a>, <a href="dvisual.js.html#line3284">line 3284</a>
     </li></ul></dd>
     
 
@@ -778,7 +648,7 @@
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0-dev</a> on Fri Mar 20 2015 19:11:23 GMT+0800 (CST)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0-dev</a> on Fri Mar 20 2015 19:11:22 GMT+0800 (CST)
 </footer>
 
 <script> prettyPrint(); </script>

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Class: DVText</title>
+    <title>JSDoc: Class: DVCurve</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Class: DVText</h1>
+    <h1 class="page-title">Class: DVCurve</h1>
 
     
 
@@ -29,7 +29,7 @@
 <header>
     
         <h2>
-        DVText
+        DVCurve
         </h2>
         
     
@@ -42,14 +42,14 @@
 
     
 
-    <h4 class="name" id="DVText"><span class="type-signature"></span>new DVText<span class="signature">(args)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="DVCurve"><span class="type-signature"></span>new DVCurve<span class="signature">(args)</span><span class="type-signature"></span></h4>
 
     
 
 
 
 <div class="description">
-    A DVisual graph element indicate a text
+    A DVisual graph element indicate a quadratic Curve
 </div>
 
 
@@ -131,7 +131,7 @@
 
         <tr>
             
-                <td class="name"><code>x</code></td>
+                <td class="name"><code>beginX</code></td>
             
 
             <td class="type">
@@ -159,14 +159,14 @@
                 </td>
             
 
-            <td class="description last">the x value of the dot</td>
+            <td class="description last">the x value of the start node</td>
         </tr>
 
     
 
         <tr>
             
-                <td class="name"><code>y</code></td>
+                <td class="name"><code>beginY</code></td>
             
 
             <td class="type">
@@ -194,20 +194,20 @@
                 </td>
             
 
-            <td class="description last">the y value of the dot,0 in default</td>
+            <td class="description last">the y value of the start node</td>
         </tr>
 
     
 
         <tr>
             
-                <td class="name"><code>text</code></td>
+                <td class="name"><code>endX</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">string</span>
+<span class="param-type">double</span>
 
 
             
@@ -229,20 +229,20 @@
                 </td>
             
 
-            <td class="description last">the text content you want to draw</td>
+            <td class="description last">the x value of the stop node</td>
         </tr>
 
     
 
         <tr>
             
-                <td class="name"><code>font</code></td>
+                <td class="name"><code>endY</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">string</span>
+<span class="param-type">double</span>
 
 
             
@@ -250,8 +250,6 @@
 
             
                 <td class="attributes">
-                
-                    &lt;optional><br>
                 
 
                 
@@ -263,12 +261,80 @@
             
                 <td class="default">
                 
-                    "8px Arial"
+                </td>
+            
+
+            <td class="description last">the y value of the stop node</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>cpx</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">double</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
                 
                 </td>
             
 
-            <td class="description last">the text's font</td>
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last">the x value of the control node</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>cpy</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">double</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last">the y value of the control node</td>
         </tr>
 
     
@@ -314,201 +380,6 @@
 
         <tr>
             
-                <td class="name"><code>style</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                    'fill'
-                
-                </td>
-            
-
-            <td class="description last">the style of this dot,should be one of 'fill','stroke'</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>shadow</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">boolean</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                    true
-                
-                </td>
-            
-
-            <td class="description last">whether draw text's shadow.</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>maxwidth</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">double</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                    -1
-                
-                </td>
-            
-
-            <td class="description last">the limited width of printed text,-1 means no limit</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>textAlign</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                    'left'
-                
-                </td>
-            
-
-            <td class="description last">the text align of printed text position</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>direction</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                    'horizontal'
-                
-                </td>
-            
-
-            <td class="description last">the direction of text:horizontal or vertical</td>
-        </tr>
-
-    
-
-        <tr>
-            
                 <td class="name"><code>lineWidth</code></td>
             
 
@@ -541,46 +412,7 @@
                 </td>
             
 
-            <td class="description last">the lineWidth of text</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>rotate</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">double</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                    0
-                
-                </td>
-            
-
-            <td class="description last">the lineWidth of text</td>
+            <td class="description last">the lineWidth of line</td>
         </tr>
 
     
@@ -628,7 +460,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="dvisual.js.html">dvisual.js</a>, <a href="dvisual.js.html#line530">line 530</a>
+        <a href="dvisual.js.html">dvisual.js</a>, <a href="dvisual.js.html#line792">line 792</a>
     </li></ul></dd>
     
 
@@ -655,7 +487,7 @@
 
     <h5>Example</h5>
     
-    <pre class="prettyprint"><code>new DVDot({'x':100,'y':100,'font'="13px Arial"});</code></pre>
+    <pre class="prettyprint"><code>new DVLine({'beginX':100,'beginY':100,'endX':20,'endY':20,'style':'dash'});</code></pre>
 
 
 
@@ -689,7 +521,7 @@
 
 
 <div class="description">
-    draw the text on dv's canvas
+    draw the curve on dv's canvas
 </div>
 
 
@@ -782,7 +614,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="dvisual.js.html">dvisual.js</a>, <a href="dvisual.js.html#line577">line 577</a>
+        <a href="dvisual.js.html">dvisual.js</a>, <a href="dvisual.js.html#line822">line 822</a>
     </li></ul></dd>
     
 
@@ -830,7 +662,7 @@
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0-dev</a> on Fri Mar 20 2015 19:11:23 GMT+0800 (CST)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0-dev</a> on Fri Mar 20 2015 19:11:22 GMT+0800 (CST)
 </footer>
 
 <script> prettyPrint(); </script>
