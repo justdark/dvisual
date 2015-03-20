@@ -86,7 +86,7 @@ function DVisual(canvasName)
                                              this.ctx.msBackingStorePixelRatio ||
                                              this.ctx.oBackingStorePixelRatio ||
                                              this.ctx.backingStorePixelRatio || 1;
-    this.ratio = this.devicePixelRatio / this.backingStorePixelRatio;
+    this.ratio =  this.devicePixelRatio / this.backingStorePixelRatio;
     if (reshape_flag)
     {
     	this.oldWidth = this.canvas.width;
@@ -493,16 +493,17 @@ DVDot.prototype.draw = function(dv)
 		dv.ctx.fillStyle = (new DVColor(this.args.color.r,this.args.color.g,this.args.color.b,a)).tostring();
 		dv.ctx.sector(this.args.x,this.args.y,this.args.radius,0,2*Math.PI);
 		dv.ctx.fill();
-		if (this.args.bubbleText!="")
+		if (this.args.bubbleText.length>0)
 		{
 			testStr = this.args.bubbleText;
 			if (dv.ctx.measureText("D").width>dv.ctx.measureText("testStr").width)
 				teststr = 'D';
-			rightfont = DVgetRightTextStyleByStrLenght(dv,teststr,this.args.radius*1.8);
+			rightfont = DVgetRightTextStyleByStrLenght(dv,teststr,this.args.radius*1.5);
 			dv.ctx.font = rightfont;
 			dv.ctx.textAlign = 'center';
 			dv.ctx.fillStyle = '#FFF';
 			dv.ctx.fillText(this.args.bubbleText,this.args.x,this.args.y+dv.ctx.measureText("D").width*1.0/2);
+			dv.ctx.closePath();
 		}
 	}
 	dv.ctx.restore();
@@ -1336,7 +1337,7 @@ DVgetRightTextStyleByStrLenght = function(dv,str,length)
 {
 	dv.ctx.save();
 	i = 0;
-	for (i=1;i<100;i++)
+	for (i=7;i<100;i++)
 	{
 		dv.ctx.font = i+"px Arial";
 		if (dv.ctx.measureText(str).width>length)
@@ -3168,7 +3169,7 @@ function DVCircleConnectChart(args)
 DVCircleConnectChart.prototype.prepare = function(dv)
 {
 
-	R = (Math.min(dv.oldHeight,dv.oldWidth) - 60)/2;
+	R = (Math.min(dv.oldHeight,dv.oldWidth) - 70)/2;
 	mid = Math.min(dv.oldHeight,dv.oldWidth)/2;
 	addang = Math.asin(dv.ctx.measureText('D').width*1.0/2/R);
 	nodelocation = []
@@ -3181,7 +3182,7 @@ DVCircleConnectChart.prototype.prepare = function(dv)
 			TextR = TextR + this.args['bubbleRadius']*1.2;
 		tmpx = mid + Math.cos(ang+addang)*TextR;
 		tmpy = mid + Math.sin(ang+addang)*TextR;
-		this.eles.push(new DVText({'text':this.args.nodes[i],'x':tmpx,'y':tmpy,'rotate':ang,'maxwidth':30}));
+		this.eles.push(new DVText({'text':this.args.nodes[i],'x':tmpx,'y':tmpy,'rotate':ang,'maxwidth':18*dv.ratio}));
 		nodelocation.push([mid + Math.cos(ang)*R,mid + Math.sin(ang)*R]);
 		angs.push(ang);
 		if (this.args['bubble'])
