@@ -2768,16 +2768,13 @@ DVBoxChart.prototype.draw = function(dv)
 
 
 /**
- * A DVisual graph element indicate a Pie Chart
+ * A DVisual graph element indicate a General Graph
  * @constructor
  * @param {Object[]} args - a array contain arguments below
- * @param {Array(string)} args.X - a series of string,indicate for each component on the pie
- * @param {Array(double)} args.Y - a series of value,the hist chart will be created by this data
- * @param {boolean=} [args.legendOuterBox=true] - whether draw the outer box of legend
- * @param {Array(DVColor)=} [args.colors = DVgetRandomColor(this.args.X.length)] - the colors for each component
- * @param {douboe=} [args.ring_ratio = 0] - the ring ratio of the pie,0 in default,means no ring
- * @param {Array(string)=} [args.text=!!label+':'+value!!] - a series of string you want to show on each sector on the pie.
- * @param {string=} [args.style='showPercentage'] - show the value of each bar or the percentage,'empty' or 'showtext' or 'showPercentage',or 'ring' to show a ring chart
+ * @param {Array(string)} args.nodes - a series of string,indicate for each node's text actualy
+ * @param {Array(Array())} args.edges - a series of tuple,which contain two index number for the edge.example[[0,1],[1,2]]
+ * @param {Array(DVColor)=} [args.color = random] - the color of the node
+ * @param {string=} [args.style='undirected'] - the graph style.'undirected' or 'directed'
  */
 function DVGraph(args)
 {
@@ -2818,7 +2815,13 @@ DVGraph.prototype.distance = function(i,j)
 {
 	return Math.sqrt(Math.pow((this.eles[i].args.x - this.eles[j].args.x),2)+Math.pow((this.eles[i].args.y - this.eles[j].args.y),2))
 }
-
+/**
+ * using the layout algorithm to appoint the location for each node
+ * @function
+ * @param {DVisual} dv - the Dvisual instance you want to draw 
+ * @param {Array(Object)} V - the vertice array
+ * @param {Array(Object)} E - the edges array
+ */
 DVGraph.prototype.rerange = function(dv,V,E)
 {
 	var area = (dv.oldWidth-40)*(dv.oldHeight-40)*0.5;
@@ -2889,7 +2892,11 @@ DVGraph.prototype.prepare = function(dv)
 				,'dispy':0})
 		//this.eles.push(new DVDot({'color':this.args.color,'x':getrandom(dv.oldWidth-40)+20,'y':getrandom(dv.oldHeight-40)+20,'style':'bubble','radius':10,'bubbleText':this.args.nodes[i]}))
 	}
-	V = this.rerange(dv,V,this.args.edges);
+	var E = []
+	for (var i=0;i<this.args.edges.length;i++)
+		if (this.args.edges[i][0]!=this.args.edges[i][1])
+			E.push(this.args.edges[i]);
+	V = this.rerange(dv,V,E);
 	for (var i=0;i<this.args.nodes.length;i++)
 	{
 		this.eles.push(new DVDot({'color':this.args.color,'x':V[i].x,'y':V[i].y,'style':'bubble','radius':10,'bubbleText':this.args.nodes[i]}))
@@ -2905,7 +2912,7 @@ DVGraph.prototype.prepare = function(dv)
 		eey = tmp*by + (1-tmp)*ey;
 		bbx = tmp*ex + (1-tmp)*bx;
 		bby = tmp*ey + (1-tmp)*by;
-		this.eles.push(new DVLine({'beginX':bbx,'beginY':bby,
+		this.eles.push(new DVLine({'shadow':false,'beginX':bbx,'beginY':bby,
 						'endX':eex,'endY':eey}))
 		if (this.args.style=='directed')
 		{

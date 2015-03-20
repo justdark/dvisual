@@ -44,12 +44,14 @@
 
     <section>
         <article><h1>dvisual</h1><p>dvisual is a visualization toolkit based on html's canvas and Javascript</p>
+<p><img src="https://raw.githubusercontent.com/justdark/dvisual/master/example.png" alt="Drawing"  /></p>
 <hr>
 <h1>Code Files</h1><p><code>./dvisual.js</code> -the main js file</p>
 <p><code>./example.html</code> -the test html file</p>
 <hr>
 <h1>How to use DVisual</h1><p><a href="https://github.com/justdark/dvisual/blob/master/tutorial.md">The Tutorial</a></p>
 <p><a href="http://justdark.github.io/dvisual/doc/">API document</a></p>
+<p><a href="https://github.com/justdark/dvisual/blob/master/dvmap/dvmap_tutorial.md">DVisualMap Tutorial</a></p>
 <hr>
 <p><script type="text/javascript" src="dv.js">
 </script></p>
@@ -158,6 +160,19 @@ s16.addElement(new DVCircleConnectChart({'nodes':[&quot;AAAA&quot;,&quot;BBBB&qu
                                 ,'CurveColor':new DVColor(14,110,179)}))
 s16.draw();</code></pre><p><img src="https://raw.githubusercontent.com/justdark/dvisual/master/image/28.png" alt="Drawing" width="400px" /></p>
 <hr>
+<pre class="prettyprint source"><code>s19 = new DVisual(&quot;myCanvas19&quot;);
+s19.addElement(new DVParallelCoordinate({'Xs':getMulRandomMatrix(20,100,5) // random data
+                                    ,'arguments':['AAAA','BBBBB','CCCCC','DDDDD','EEEEE'],
+                                    'ColorPattern':[[new DVColor(255,0,0,0.8),    36],[new DVColor(15,38,237,0.8),6]]}));
+s19.draw();</code></pre><p><img src="https://raw.githubusercontent.com/justdark/dvisual/master/image/29.png" alt="Drawing" width="600px" /></p>
+<hr>
+<pre class="prettyprint source"><code>s15 = new DVisual(&quot;myCanvas16&quot;);
+s15.addElement(new DVGraph({'nodes':[&quot;A&quot;,&quot;B&quot;,&quot;C&quot;,&quot;D&quot;,&quot;E&quot;,&quot;F&quot;,&quot;G&quot;,&quot;H&quot;,&quot;I&quot;,&quot;J&quot;,&quot;K&quot;,&quot;L&quot;,&quot;M&quot;,&quot;Ns&quot;,&quot;O&quot;,&quot;P&quot;,&quot;Q&quot;],
+                        'edges':[[0,1],[1,3],[2,1],[1,4],[1,5],[1,6],[1,7],[1,8],[1,9],[1,10],[1,11],[1,12],[7,13],[3,5],[4,7],[7,2],[7,14],[7,15],[7,16]],
+                        'style':'directed',
+                        'distance':'median'}))
+s15.draw();</code></pre><p><img src="https://raw.githubusercontent.com/justdark/dvisual/master/image/30.png" alt="Drawing" width="600px" /></p>
+<hr>
 <h1>Warning</h1><p>All code have been tested on Chrome（both retina display and ordinary display)</p>
 <hr>
 <h1>License</h1><p><a href="http://www.wtfpl.net/">WTFPL</a></p></article>
@@ -171,13 +186,13 @@ s16.draw();</code></pre><p><img src="https://raw.githubusercontent.com/justdark/
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="DVAreaPieChart.html">DVAreaPieChart</a></li><li><a href="DVBarChart.html">DVBarChart</a></li><li><a href="DVBoxChart.html">DVBoxChart</a></li><li><a href="DVCircleConnectChart.html">DVCircleConnectChart</a></li><li><a href="DVColor.html">DVColor</a></li><li><a href="DVCoordinate.html">DVCoordinate</a></li><li><a href="DVCurve.html">DVCurve</a></li><li><a href="DVDendrogram.html">DVDendrogram</a></li><li><a href="DVDot.html">DVDot</a></li><li><a href="DVGraph.html">DVGraph</a></li><li><a href="DVHistChart.html">DVHistChart</a></li><li><a href="DVisual.html">DVisual</a></li><li><a href="DVLegend.html">DVLegend</a></li><li><a href="DVLine.html">DVLine</a></li><li><a href="DVLineChart.html">DVLineChart</a></li><li><a href="DVMulBarChart.html">DVMulBarChart</a></li><li><a href="DVMulLineChart.html">DVMulLineChart</a></li><li><a href="DVPieChart.html">DVPieChart</a></li><li><a href="DVPolygon.html">DVPolygon</a></li><li><a href="DVRadarChart.html">DVRadarChart</a></li><li><a href="DVRect.html">DVRect</a></li><li><a href="DVSector.html">DVSector</a></li><li><a href="DVText.html">DVText</a></li></ul><h3>Global</h3><ul><li><a href="global.html#DV2dArrMinMax">DV2dArrMinMax</a></li><li><a href="global.html#DVgetRandomColor">DVgetRandomColor</a></li><li><a href="global.html#DVgetRightTextStyle">DVgetRightTextStyle</a></li><li><a href="global.html#DVgetRightTextStyleByStrLenght">DVgetRightTextStyleByStrLenght</a></li><li><a href="global.html#DVGetSpan">DVGetSpan</a></li><li><a href="global.html#DVMedian">DVMedian</a></li><li><a href="global.html#getEventPosition">getEventPosition</a></li><li><a href="global.html#getrandom">getrandom</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="DVAreaPieChart.html">DVAreaPieChart</a></li><li><a href="DVBarChart.html">DVBarChart</a></li><li><a href="DVBoxChart.html">DVBoxChart</a></li><li><a href="DVCircleConnectChart.html">DVCircleConnectChart</a></li><li><a href="DVColor.html">DVColor</a></li><li><a href="DVCoordinate.html">DVCoordinate</a></li><li><a href="DVCurve.html">DVCurve</a></li><li><a href="DVDendrogram.html">DVDendrogram</a></li><li><a href="DVDot.html">DVDot</a></li><li><a href="DVGraph.html">DVGraph</a></li><li><a href="DVHistChart.html">DVHistChart</a></li><li><a href="DVisual.html">DVisual</a></li><li><a href="DVLegend.html">DVLegend</a></li><li><a href="DVLine.html">DVLine</a></li><li><a href="DVLineChart.html">DVLineChart</a></li><li><a href="DVMulBarChart.html">DVMulBarChart</a></li><li><a href="DVMulLineChart.html">DVMulLineChart</a></li><li><a href="DVParallelCoordinate.html">DVParallelCoordinate</a></li><li><a href="DVPieChart.html">DVPieChart</a></li><li><a href="DVPolygon.html">DVPolygon</a></li><li><a href="DVRadarChart.html">DVRadarChart</a></li><li><a href="DVRect.html">DVRect</a></li><li><a href="DVSector.html">DVSector</a></li><li><a href="DVText.html">DVText</a></li></ul><h3>Global</h3><ul><li><a href="global.html#DV2dArrMinMax">DV2dArrMinMax</a></li><li><a href="global.html#DVgetRandomColor">DVgetRandomColor</a></li><li><a href="global.html#DVgetRightTextStyle">DVgetRightTextStyle</a></li><li><a href="global.html#DVgetRightTextStyleByStrLenght">DVgetRightTextStyleByStrLenght</a></li><li><a href="global.html#DVGetSpan">DVGetSpan</a></li><li><a href="global.html#DVMedian">DVMedian</a></li><li><a href="global.html#getEventPosition">getEventPosition</a></li><li><a href="global.html#getrandom">getrandom</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0-dev</a> on Tue Mar 10 2015 15:13:01 GMT+0800 (CST)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0-dev</a> on Fri Mar 20 2015 19:11:21 GMT+0800 (CST)
 </footer>
 
 <script> prettyPrint(); </script>

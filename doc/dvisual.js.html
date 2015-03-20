@@ -86,6 +86,7 @@ Array.prototype.min = function()
 { 
 	return Math.min.apply({},this) 
 } 
+
 /**
  * The Main Class of DVisual
  * @constructor
@@ -1021,6 +1022,7 @@ DVRect.prototype.draw = function(dv)
  * @param {string=} [args.xStyle='value'] - the X axes's style,'value' or 'class'
  * @param {string=} [args.yStyle='value'] - the Y axes's style,'value' or 'percentage%'
  * @param {Array(string)} args.classes - when x's Style is 'class',you need this argument to show the texts of each class on the X-axes
+ * @param {Array(string)} args.yClass - to make the horizental chart
  * @param {string=} [args.xDescript='x'] - the X axes's description
  * @param {string=} [args.yDescript='y'] - the Y axes's description
  * @param {double} args.xSpan - the increment on x value in each grid,(data space)
@@ -1041,11 +1043,14 @@ function DVCoordinate(args)
 	if (args['xStyle']==null || (args['xStyle']!='value' &amp;&amp; args['xStyle']!='class'))
 		this.args['xStyle'] = 'value';
 
-	if (args['yStyle']==null || (args['yStyle']!='value' &amp;&amp; args['yStyle']!='percentage'))
+	if (args['yStyle']==null || (args['yStyle']!='value' &amp;&amp; args['yStyle']!='percentage' &amp;&amp; args['yStyle']!='class'))
 		this.args['yStyle'] = 'value';
 
 	if (args['classes']==null)
 		this.args['classes'] = ["A",'B','C'];
+
+	if (args['yClasses']==null)
+		this.args['yClasses'] = ["A",'B','C'];
 
 	if (args['xDescript']==null)
 		this.args['xDescript'] = "";
@@ -1130,13 +1135,18 @@ DVCoordinate.prototype.prepare = function(dv)
 	}
 	x = dv.Xinc;
 	y = dv.Yinc;
+	count = 0;
 	while (dv.xyTrans(x,y)[1]>70)
 	{
 		result = dv.xyTrans(x,y);
 		if (this.args.yStyle=='value')
 			str = y+"";
-		else
+		else if (this.args.yStyle=='percentage')
 			str = y.toFixed(2)*100+"%";
+		else if (this.args.yStyle=='class' &amp;&amp; count&lt;this.args.yClasses.length)
+			str = this.args.yClasses[count];
+		count++;
+
 		metrics = dv.ctx.measureText(str);
 		y_kedu_arg = {'x':result[0]-metrics.width-2,'y':result[1]+dv.ctx.measureText("D").width/2,'text':str};
 		y_kedu_line_arg = {'beginX':result[0],'beginY':result[1],'endX':result[0]+5,'endY':result[1]};
@@ -2786,16 +2796,13 @@ DVBoxChart.prototype.draw = function(dv)
 
 
 /**
- * A DVisual graph element indicate a Pie Chart
+ * A DVisual graph element indicate a General Graph
  * @constructor
  * @param {Object[]} args - a array contain arguments below
- * @param {Array(string)} args.X - a series of string,indicate for each component on the pie
- * @param {Array(double)} args.Y - a series of value,the hist chart will be created by this data
- * @param {boolean=} [args.legendOuterBox=true] - whether draw the outer box of legend
- * @param {Array(DVColor)=} [args.colors = DVgetRandomColor(this.args.X.length)] - the colors for each component
- * @param {douboe=} [args.ring_ratio = 0] - the ring ratio of the pie,0 in default,means no ring
- * @param {Array(string)=} [args.text=!!label+':'+value!!] - a series of string you want to show on each sector on the pie.
- * @param {string=} [args.style='showPercentage'] - show the value of each bar or the percentage,'empty' or 'showtext' or 'showPercentage',or 'ring' to show a ring chart
+ * @param {Array(string)} args.nodes - a series of string,indicate for each node's text actualy
+ * @param {Array(Array())} args.edges - a series of tuple,which contain two index number for the edge.example[[0,1],[1,2]]
+ * @param {Array(DVColor)=} [args.color = random] - the color of the node
+ * @param {string=} [args.style='undirected'] - the graph style.'undirected' or 'directed'
  */
 function DVGraph(args)
 {
@@ -2836,75 +2843,65 @@ DVGraph.prototype.distance = function(i,j)
 {
 	return Math.sqrt(Math.pow((this.eles[i].args.x - this.eles[j].args.x),2)+Math.pow((this.eles[i].args.y - this.eles[j].args.y),2))
 }
-
-DVGraph.prototype.rerange = function(label)
+/**
+ * using the layout algorithm to appoint the location for each node
+ * @function
+ * @param {DVisual} dv - the Dvisual instance you want to draw 
+ * @param {Array(Object)} V - the vertice array
+ * @param {Array(Object)} E - the edges array
+ */
+DVGraph.prototype.rerange = function(dv,V,E)
 {
-	force = []
-	degree = []
-	for (var i=0;i&lt;this.args.nodes.length;i++)
+	var area = (dv.oldWidth-40)*(dv.oldHeight-40)*0.5;
+	var k = Math.sqrt(area/V.length);
+	fa = function(x)
 	{
-		force.push([0,0]);
-		degree.push(0);
+		return x*x*1.0/k;
 	}
-	for (var k =0;k&lt;this.args.edges.length;k++)
+	fr = function(x)
 	{
-		degree[this.args.edges[k][0]]++;
-		degree[this.args.edges[k][1]]++;
+		return k*k*1.0/x;
 	}
-	edgeLength = 50;
-	for (var step=0;step&lt;100;step++)
+	var t = 10;
+	for (var step=0;step&lt;200;step++)
 	{
-		for (var k =0;k&lt;this.args.edges.length;k++)
+		for (var i=0;i&lt;V.length;i++)
 		{
-			vi = this.args.edges[k][0];
-			vj = this.args.edges[k][1];
-			tension = 0;
-			if (this.distance(vi,vj)>edgeLength)
-				tension =- 1*(edgeLength-this.distance(vi,vj));
-			flagx = 1;
-			flagy = 1;
-			if (this.eles[vi].args['x']>this.eles[vj].args['x'])
-				flagx = -1;
-			if (this.eles[vi].args['y']>this.eles[vj].args['y'])
-				flagy = -1;
-			//alert(tension)
-			force[vi][0]+=flagx*tension*0.7
-			force[vi][1]+=flagy*tension*0.7
-			force[vj][0]-=flagx*tension*0.7
-			force[vj][1]-=flagy*tension*0.7
-		}
-		for (var i=0;i&lt;this.eles.length;i++)
-			for (var j=0;j&lt;this.eles.length;j++)
+			V[i].dispx = 0;
+			V[i].dispy = 0;
+			for (var j=0;j&lt;V.length;j++)
 				if (i!=j)
 				{
-					repulsion = getrandom(50)-25;
-
-					
-					flagx = 1;
-					flagy = 1;
-					if (this.distance(i,j)>1)
-					{
-						repulsion = edgeLength*edgeLength/3*degree[i]*degree[j]/(this.distance(i,j)*this.distance(i,j));
-						if (this.eles[i].args['x']&lt;this.eles[j].args['x'])
-						flagx = -1;
-						if (this.eles[i].args['y']&lt;this.eles[j].args['y'])
-						flagy = -1;
-					}
-					
-					force[i][0] += flagx*repulsion*0.7;
-					force[i][1] += flagy*repulsion*0.7;
+					tmpx = V[i].x - V[j].x;
+					tmpy = V[i].y - V[j].y;
+					tmp = Math.sqrt(tmpx*tmpx+tmpy*tmpy);
+					V[i].dispx+=tmpx*1.0/tmp*fr(tmp)
+					V[i].dispy+=tmpy*1.0/tmp*fr(tmp)
 				}
-		for (var i=0;i&lt;this.eles.length;i++)
-		{
-			this.eles[i].args['x']+=0.001*force[i][0]*1.0/degree[i]
-			this.eles[i].args['x'] = Math.max(this.eles[i].args['x'],20);
-			this.eles[i].args['x'] = Math.min(this.eles[i].args['x'],380);
-
-			this.eles[i].args['y']+=0.001*force[i][1]*1.0/degree[i]
-			this.eles[i].args['y'] = Math.max(this.eles[i].args['y'],20);
-			this.eles[i].args['y'] = Math.min(this.eles[i].args['y'],380);
 		}
+		for (var e=0;e&lt;E.length;e++)
+		{
+			tmpx = V[E[e][0]].x - V[E[e][1]].x;
+			tmpy = V[E[e][0]].y - V[E[e][1]].y;
+			tmp = Math.sqrt(tmpx*tmpx+tmpy*tmpy);
+			V[E[e][0]].dispx-=tmpx*1.0/tmp*fa(tmp);
+			V[E[e][0]].dispy-=tmpy*1.0/tmp*fa(tmp);
+			V[E[e][1]].dispx+=tmpx*1.0/tmp*fa(tmp);
+			V[E[e][1]].dispy+=tmpy*1.0/tmp*fa(tmp);
+		}
+
+		for (var i=0;i&lt;V.length;i++)
+		{
+			vdisp = Math.sqrt(V[i].dispy*V[i].dispy+V[i].dispx*V[i].dispx);
+
+			V[i].x += V[i].dispx*1.0/vdisp*Math.min(vdisp,t);
+			V[i].y += V[i].dispy*1.0/vdisp*Math.min(vdisp,t);
+			V[i].x = Math.min(dv.oldWidth-20,Math.max(20,V[i].x));
+			V[i].y = Math.min(dv.oldHeight-20,Math.max(20,V[i].y));
+		}
+		t = t*0.99;
 	}
+	return V;
 	//alert(this.eles[0].args['x']+" "+this.eles[0].args['y'])
 }
 /**
@@ -2914,15 +2911,48 @@ DVGraph.prototype.rerange = function(label)
  */
 DVGraph.prototype.prepare = function(dv)
 {
+	var V = []
 	for (var i=0;i&lt;this.args.nodes.length;i++)
 	{
-		this.eles.push(new DVDot({'color':this.args.color,'x':getrandom(dv.oldWidth-40)+20,'y':getrandom(dv.oldHeight-40)+20,'style':'bubble','radius':10,'bubbleText':this.args.nodes[i]}))
+		V.push({'x':getrandom(dv.oldWidth-40)+20
+				,'y':getrandom(dv.oldHeight-40)+20
+				,'dispx':0
+				,'dispy':0})
+		//this.eles.push(new DVDot({'color':this.args.color,'x':getrandom(dv.oldWidth-40)+20,'y':getrandom(dv.oldHeight-40)+20,'style':'bubble','radius':10,'bubbleText':this.args.nodes[i]}))
 	}
-	this.rerange('x');
+	V = this.rerange(dv,V,this.args.edges);
+	for (var i=0;i&lt;this.args.nodes.length;i++)
+	{
+		this.eles.push(new DVDot({'color':this.args.color,'x':V[i].x,'y':V[i].y,'style':'bubble','radius':10,'bubbleText':this.args.nodes[i]}))
+	}
 	for (var i=0;i&lt;this.args.edges.length;i++)
 	{
-		this.eles.push(new DVLine({'beginX':this.eles[this.args.edges[i][0]].args.x,'beginY':this.eles[this.args.edges[i][0]].args.y,
-						'endX':this.eles[this.args.edges[i][1]].args.x,'endY':this.eles[this.args.edges[i][1]].args.y}))
+		bx = this.eles[this.args.edges[i][0]].args.x;
+		by = this.eles[this.args.edges[i][0]].args.y;
+		ex = this.eles[this.args.edges[i][1]].args.x;
+		ey = this.eles[this.args.edges[i][1]].args.y;
+		tmp = 10/Math.sqrt((bx-ex)*(bx-ex)+(by-ey)*(by-ey));
+		eex = tmp*bx + (1-tmp)*ex;
+		eey = tmp*by + (1-tmp)*ey;
+		bbx = tmp*ex + (1-tmp)*bx;
+		bby = tmp*ey + (1-tmp)*by;
+		this.eles.push(new DVLine({'beginX':bbx,'beginY':bby,
+						'endX':eex,'endY':eey}))
+		if (this.args.style=='directed')
+		{
+			theta = 30.0/180*Math.PI;
+			r = 5;
+			basic = 0;
+			if (eex>=bbx)
+				basic = Math.PI;
+			basic = basic + Math.atan((bby-eey)/(bbx-eex));
+			this.eles.push(new DVLine({'beginX':eex+Math.cos(basic+theta)*r,'beginY':eey+Math.sin(basic+theta)*r,
+						'endX':eex,'endY':eey}))
+			this.eles.push(new DVLine({'beginX':eex+Math.cos(basic-theta)*r,'beginY':eey+Math.sin(basic-theta)*r,
+						'endX':eex,'endY':eey}))
+			
+		}
+
 	}
 	//this.rerange('y');
 }
@@ -3011,7 +3041,7 @@ DVDendrogram.prototype.recurrencePrepare = function(dv,tree,level)
 	{
 		nowHeight = this.calHeight(dv,this.maxlevel);
 		nowWidth = this.baseIndex*(dv.oldWidth-40)*1.0/(this.baseEleCount-1)+20;
-		radius = Math.min((dv.oldWidth-40)*0.9/(this.baseEleCount)*1.0/2,18);
+		radius = Math.min((dv.oldWidth-40)*0.9/(this.baseEleCount)*1.0/2,15);
 		if (this.args.style=='bubble')
 		{
 			this.eles.push(new DVDot({'x':nowWidth,'y':nowHeight,'color':this.args.color,'style':'bubble','radius':radius,'bubbleText':tree}));
@@ -3230,6 +3260,154 @@ DVCircleConnectChart.prototype.draw = function(dv)
 }
 
 
+/**
+ * A DVisual graph element indicate a Parallel coordinate
+ * @constructor
+ * @param {Object[]} args - a array contain arguments below
+ * @param {Array(Array(double))} args.Xs - the set of multiple series nodes' x value,the length of Xs is the instance's number you want to draw,the elements' length is same with the arguments' length
+ * @param {Array(string)} args.arguments - the arguments' name
+ * @param {DVColor=} [args.color = new DVColor(100,100,100,0.3)] - the lines' default color,the more color optional can be configured in ColorPattern arguments
+ * @param {Object[]} [args.ColorPattern = empty] - the color pattern of lines,the element is [[DVColor1,indexs1,indexs2...],[DVColor2,indexs11,indexs12...]]
+ */
+function DVParallelCoordinate(args)
+{
+	if (arguments.length==0)
+		args = {};
+	this.args = args.cloneAll();
+
+	if (args['Xs']==null)
+		this.args['Xs'] = [];
+
+	if (args['arguments']==null)
+		this.args['arguments'] = [];
+
+	if (args['classes']==null)
+		this.args['classes'] = [];
+
+	if (args['style']==null)
+		this.args['style'] = 'dot|line';
+
+	if (args['color']==null)
+		this.args['color'] = new DVColor(100,100,100,0.3);
+
+	if (args['ColorPattern']==null)
+		this.args['ColorPattern'] = {};
+
+	if (args['xGrid']==null)
+		this.args['xGrid'] = true;
+
+	if (args['yGrid']==null)
+		this.args['yGrid'] = true;
+
+	if (args['lineWidth']==null)
+		this.args['lineWidth'] = 1;
+
+	this.eles = new Array();
+}
+/**
+ * prepare the needed elements on the first time to draw it
+ * @function
+ * @param {DVisual} dv - the Dvisual instance you want to draw 
+ */
+DVParallelCoordinate.prototype.prepare = function(dv)
+{
+
+	coordinate = (dv.oldWidth*1.0)/(this.args.arguments.length);
+	yupper =  20;
+	ybottom = dv.oldHeight - 30;
+
+	var ydrawMargin = ybottom - yupper;
+	var maxx = [];
+	var minn = [];
+	var colors = [];
+	for (var i =0;i&lt;this.args.Xs.length;i++)
+	{
+		colors.push(this.args.color);
+		if (this.args.Xs[i].length!=this.args.arguments.length)
+		{
+			console.log("ERROR! the Xs and arugument length in DVParallelCoordinate can not match");
+			return -1;
+		}
+		for (var j=0;j&lt;this.args.arguments.length;j++)
+		{
+			if (i==0)
+			{
+				maxx.push(this.args.Xs[i][j]);
+				minn.push(this.args.Xs[i][j]);
+			} else
+			{
+				maxx[j] = Math.max(maxx[j],this.args.Xs[i][j]);
+				minn[j] = Math.min(minn[j],this.args.Xs[i][j]);
+			}
+		}
+	}
+	for (var j=0;j&lt;this.args.arguments.length;j++)
+	{
+		maxx[j] = Math.ceil(maxx[j]);
+		minn[j] = Math.floor(minn[j]);	
+	}
+	for (var i=0;i&lt;this.args.arguments.length;i++)
+	{
+		nowx = i*coordinate + coordinate/2;
+		this.eles.push(new DVLine({'beginX':nowx,'beginY':yupper,'endX':nowx,'endY':ybottom,'lineWidth':2}));
+		texty = ybottom  + 29;
+		this.eles.push(new DVText({'text':this.args.arguments[i],'x':nowx,'y':texty,'font':'12px Arial','textAlign':'center','maxwidth':coordinate*0.8}))
+		this.eles.push(new DVText({'text':minn[i].toFixed(1),'x':nowx,'y':texty-22,'textAlign':'center','maxwidth':coordinate*0.8}))
+		this.eles.push(new DVText({'text':maxx[i].toFixed(1),'x':nowx,'y':18,'textAlign':'center','maxwidth':coordinate*0.8}))
+	}
+
+	for (var j=0;j&lt;this.args.ColorPattern.length;j++)
+	{
+		s = this.args.ColorPattern[j]
+		for (var i=1;i&lt;s.length;i++)
+		{
+			colors[s[i]] = s[0];
+		}
+	}
+	var nowx = 0;
+	var nowy = 0;
+	var oldx = 0;
+	var oldy = 0;
+	
+
+	for (var i=0;i&lt;this.args.Xs.length;i++)
+	{
+		for (var j=0;j&lt;this.args.arguments.length;j++)
+		{
+			nowy = ybottom - (this.args.Xs[i][j] - minn[j])*1.0/(maxx[j] - minn[j])*ydrawMargin
+			nowx = j*coordinate + coordinate/2;
+			color = colors[i];
+			add = 0;
+			if (color.tostring()!=this.args.color.tostring())
+				add = 0.3;
+			if (j!=0)
+			{
+				this.eles.push(new DVLine({'beginX':oldx,'beginY':oldy,'endX':nowx,'endY':nowy,'lineWidth':this.args.lineWidth+add,'color':color,'shadow':false}))
+			}
+			oldx = nowx;
+			oldy = nowy;
+		}
+	}
+}
+
+/**
+ * draw the Parallel Coordinate on dv's canvas
+ * @function
+ * @param {DVisual} dv - the Dvisual instance you want to draw 
+ */
+DVParallelCoordinate.prototype.draw = function(dv)
+{
+	if (this.eles.length==0)
+	{
+		this.prepare(dv);
+	}
+	//for (var i=0;i&lt;this.eles.length;i++)
+	//	this.eles[i].draw(dv);
+	 for (var i=this.eles.length-1;i>=0;i--)
+	 	this.eles[i].draw(dv);
+}
+
+
 </code></pre>
         </article>
     </section>
@@ -3240,13 +3418,13 @@ DVCircleConnectChart.prototype.draw = function(dv)
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="DVAreaPieChart.html">DVAreaPieChart</a></li><li><a href="DVBarChart.html">DVBarChart</a></li><li><a href="DVBoxChart.html">DVBoxChart</a></li><li><a href="DVCircleConnectChart.html">DVCircleConnectChart</a></li><li><a href="DVColor.html">DVColor</a></li><li><a href="DVCoordinate.html">DVCoordinate</a></li><li><a href="DVCurve.html">DVCurve</a></li><li><a href="DVDendrogram.html">DVDendrogram</a></li><li><a href="DVDot.html">DVDot</a></li><li><a href="DVGraph.html">DVGraph</a></li><li><a href="DVHistChart.html">DVHistChart</a></li><li><a href="DVisual.html">DVisual</a></li><li><a href="DVLegend.html">DVLegend</a></li><li><a href="DVLine.html">DVLine</a></li><li><a href="DVLineChart.html">DVLineChart</a></li><li><a href="DVMulBarChart.html">DVMulBarChart</a></li><li><a href="DVMulLineChart.html">DVMulLineChart</a></li><li><a href="DVPieChart.html">DVPieChart</a></li><li><a href="DVPolygon.html">DVPolygon</a></li><li><a href="DVRadarChart.html">DVRadarChart</a></li><li><a href="DVRect.html">DVRect</a></li><li><a href="DVSector.html">DVSector</a></li><li><a href="DVText.html">DVText</a></li></ul><h3>Global</h3><ul><li><a href="global.html#DV2dArrMinMax">DV2dArrMinMax</a></li><li><a href="global.html#DVgetRandomColor">DVgetRandomColor</a></li><li><a href="global.html#DVgetRightTextStyle">DVgetRightTextStyle</a></li><li><a href="global.html#DVgetRightTextStyleByStrLenght">DVgetRightTextStyleByStrLenght</a></li><li><a href="global.html#DVGetSpan">DVGetSpan</a></li><li><a href="global.html#DVMedian">DVMedian</a></li><li><a href="global.html#getEventPosition">getEventPosition</a></li><li><a href="global.html#getrandom">getrandom</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="DVAreaPieChart.html">DVAreaPieChart</a></li><li><a href="DVBarChart.html">DVBarChart</a></li><li><a href="DVBoxChart.html">DVBoxChart</a></li><li><a href="DVCircleConnectChart.html">DVCircleConnectChart</a></li><li><a href="DVColor.html">DVColor</a></li><li><a href="DVCoordinate.html">DVCoordinate</a></li><li><a href="DVCurve.html">DVCurve</a></li><li><a href="DVDendrogram.html">DVDendrogram</a></li><li><a href="DVDot.html">DVDot</a></li><li><a href="DVGraph.html">DVGraph</a></li><li><a href="DVHistChart.html">DVHistChart</a></li><li><a href="DVisual.html">DVisual</a></li><li><a href="DVLegend.html">DVLegend</a></li><li><a href="DVLine.html">DVLine</a></li><li><a href="DVLineChart.html">DVLineChart</a></li><li><a href="DVMulBarChart.html">DVMulBarChart</a></li><li><a href="DVMulLineChart.html">DVMulLineChart</a></li><li><a href="DVParallelCoordinate.html">DVParallelCoordinate</a></li><li><a href="DVPieChart.html">DVPieChart</a></li><li><a href="DVPolygon.html">DVPolygon</a></li><li><a href="DVRadarChart.html">DVRadarChart</a></li><li><a href="DVRect.html">DVRect</a></li><li><a href="DVSector.html">DVSector</a></li><li><a href="DVText.html">DVText</a></li></ul><h3>Global</h3><ul><li><a href="global.html#DV2dArrMinMax">DV2dArrMinMax</a></li><li><a href="global.html#DVgetRandomColor">DVgetRandomColor</a></li><li><a href="global.html#DVgetRightTextStyle">DVgetRightTextStyle</a></li><li><a href="global.html#DVgetRightTextStyleByStrLenght">DVgetRightTextStyleByStrLenght</a></li><li><a href="global.html#DVGetSpan">DVGetSpan</a></li><li><a href="global.html#DVMedian">DVMedian</a></li><li><a href="global.html#getEventPosition">getEventPosition</a></li><li><a href="global.html#getrandom">getrandom</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0-dev</a> on Tue Mar 10 2015 15:13:01 GMT+0800 (CST)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0-dev</a> on Fri Mar 20 2015 19:11:21 GMT+0800 (CST)
 </footer>
 
 <script> prettyPrint(); </script>
