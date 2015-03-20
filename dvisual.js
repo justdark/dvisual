@@ -2819,74 +2819,58 @@ DVGraph.prototype.distance = function(i,j)
 	return Math.sqrt(Math.pow((this.eles[i].args.x - this.eles[j].args.x),2)+Math.pow((this.eles[i].args.y - this.eles[j].args.y),2))
 }
 
-DVGraph.prototype.rerange = function(label)
+DVGraph.prototype.rerange = function(dv,V,E)
 {
-	force = []
-	degree = []
-	for (var i=0;i<this.args.nodes.length;i++)
+	var area = (dv.oldWidth-40)*(dv.oldHeight-40)*0.5;
+	var k = Math.sqrt(area/V.length);
+	fa = function(x)
 	{
-		force.push([0,0]);
-		degree.push(0);
+		return x*x*1.0/k;
 	}
-	for (var k =0;k<this.args.edges.length;k++)
+	fr = function(x)
 	{
-		degree[this.args.edges[k][0]]++;
-		degree[this.args.edges[k][1]]++;
+		return k*k*1.0/x;
 	}
-	edgeLength = 50;
-	for (var step=0;step<100;step++)
+	var t = 10;
+	for (var step=0;step<200;step++)
 	{
-		for (var k =0;k<this.args.edges.length;k++)
+		for (var i=0;i<V.length;i++)
 		{
-			vi = this.args.edges[k][0];
-			vj = this.args.edges[k][1];
-			tension = 0;
-			if (this.distance(vi,vj)>edgeLength)
-				tension =- 1*(edgeLength-this.distance(vi,vj));
-			flagx = 1;
-			flagy = 1;
-			if (this.eles[vi].args['x']>this.eles[vj].args['x'])
-				flagx = -1;
-			if (this.eles[vi].args['y']>this.eles[vj].args['y'])
-				flagy = -1;
-			//alert(tension)
-			force[vi][0]+=flagx*tension*0.7
-			force[vi][1]+=flagy*tension*0.7
-			force[vj][0]-=flagx*tension*0.7
-			force[vj][1]-=flagy*tension*0.7
-		}
-		for (var i=0;i<this.eles.length;i++)
-			for (var j=0;j<this.eles.length;j++)
+			V[i].dispx = 0;
+			V[i].dispy = 0;
+			for (var j=0;j<V.length;j++)
 				if (i!=j)
 				{
-					repulsion = getrandom(50)-25;
-
-					
-					flagx = 1;
-					flagy = 1;
-					if (this.distance(i,j)>1)
-					{
-						repulsion = edgeLength*edgeLength/3*degree[i]*degree[j]/(this.distance(i,j)*this.distance(i,j));
-						if (this.eles[i].args['x']<this.eles[j].args['x'])
-						flagx = -1;
-						if (this.eles[i].args['y']<this.eles[j].args['y'])
-						flagy = -1;
-					}
-					
-					force[i][0] += flagx*repulsion*0.7;
-					force[i][1] += flagy*repulsion*0.7;
+					tmpx = V[i].x - V[j].x;
+					tmpy = V[i].y - V[j].y;
+					tmp = Math.sqrt(tmpx*tmpx+tmpy*tmpy);
+					V[i].dispx+=tmpx*1.0/tmp*fr(tmp)
+					V[i].dispy+=tmpy*1.0/tmp*fr(tmp)
 				}
-		for (var i=0;i<this.eles.length;i++)
-		{
-			this.eles[i].args['x']+=0.001*force[i][0]*1.0/degree[i]
-			this.eles[i].args['x'] = Math.max(this.eles[i].args['x'],20);
-			this.eles[i].args['x'] = Math.min(this.eles[i].args['x'],380);
-
-			this.eles[i].args['y']+=0.001*force[i][1]*1.0/degree[i]
-			this.eles[i].args['y'] = Math.max(this.eles[i].args['y'],20);
-			this.eles[i].args['y'] = Math.min(this.eles[i].args['y'],380);
 		}
+		for (var e=0;e<E.length;e++)
+		{
+			tmpx = V[E[e][0]].x - V[E[e][1]].x;
+			tmpy = V[E[e][0]].y - V[E[e][1]].y;
+			tmp = Math.sqrt(tmpx*tmpx+tmpy*tmpy);
+			V[E[e][0]].dispx-=tmpx*1.0/tmp*fa(tmp);
+			V[E[e][0]].dispy-=tmpy*1.0/tmp*fa(tmp);
+			V[E[e][1]].dispx+=tmpx*1.0/tmp*fa(tmp);
+			V[E[e][1]].dispy+=tmpy*1.0/tmp*fa(tmp);
+		}
+
+		for (var i=0;i<V.length;i++)
+		{
+			vdisp = Math.sqrt(V[i].dispy*V[i].dispy+V[i].dispx*V[i].dispx);
+
+			V[i].x += V[i].dispx*1.0/vdisp*Math.min(vdisp,t);
+			V[i].y += V[i].dispy*1.0/vdisp*Math.min(vdisp,t);
+			V[i].x = Math.min(dv.oldWidth-20,Math.max(20,V[i].x));
+			V[i].y = Math.min(dv.oldHeight-20,Math.max(20,V[i].y));
+		}
+		t = t*0.99;
 	}
+	return V;
 	//alert(this.eles[0].args['x']+" "+this.eles[0].args['y'])
 }
 /**
@@ -2896,15 +2880,48 @@ DVGraph.prototype.rerange = function(label)
  */
 DVGraph.prototype.prepare = function(dv)
 {
+	var V = []
 	for (var i=0;i<this.args.nodes.length;i++)
 	{
-		this.eles.push(new DVDot({'color':this.args.color,'x':getrandom(dv.oldWidth-40)+20,'y':getrandom(dv.oldHeight-40)+20,'style':'bubble','radius':10,'bubbleText':this.args.nodes[i]}))
+		V.push({'x':getrandom(dv.oldWidth-40)+20
+				,'y':getrandom(dv.oldHeight-40)+20
+				,'dispx':0
+				,'dispy':0})
+		//this.eles.push(new DVDot({'color':this.args.color,'x':getrandom(dv.oldWidth-40)+20,'y':getrandom(dv.oldHeight-40)+20,'style':'bubble','radius':10,'bubbleText':this.args.nodes[i]}))
 	}
-	this.rerange('x');
+	V = this.rerange(dv,V,this.args.edges);
+	for (var i=0;i<this.args.nodes.length;i++)
+	{
+		this.eles.push(new DVDot({'color':this.args.color,'x':V[i].x,'y':V[i].y,'style':'bubble','radius':10,'bubbleText':this.args.nodes[i]}))
+	}
 	for (var i=0;i<this.args.edges.length;i++)
 	{
-		this.eles.push(new DVLine({'beginX':this.eles[this.args.edges[i][0]].args.x,'beginY':this.eles[this.args.edges[i][0]].args.y,
-						'endX':this.eles[this.args.edges[i][1]].args.x,'endY':this.eles[this.args.edges[i][1]].args.y}))
+		bx = this.eles[this.args.edges[i][0]].args.x;
+		by = this.eles[this.args.edges[i][0]].args.y;
+		ex = this.eles[this.args.edges[i][1]].args.x;
+		ey = this.eles[this.args.edges[i][1]].args.y;
+		tmp = 10/Math.sqrt((bx-ex)*(bx-ex)+(by-ey)*(by-ey));
+		eex = tmp*bx + (1-tmp)*ex;
+		eey = tmp*by + (1-tmp)*ey;
+		bbx = tmp*ex + (1-tmp)*bx;
+		bby = tmp*ey + (1-tmp)*by;
+		this.eles.push(new DVLine({'beginX':bbx,'beginY':bby,
+						'endX':eex,'endY':eey}))
+		if (this.args.style=='directed')
+		{
+			theta = 30.0/180*Math.PI;
+			r = 5;
+			basic = 0;
+			if (eex>=bbx)
+				basic = Math.PI;
+			basic = basic + Math.atan((bby-eey)/(bbx-eex));
+			this.eles.push(new DVLine({'beginX':eex+Math.cos(basic+theta)*r,'beginY':eey+Math.sin(basic+theta)*r,
+						'endX':eex,'endY':eey}))
+			this.eles.push(new DVLine({'beginX':eex+Math.cos(basic-theta)*r,'beginY':eey+Math.sin(basic-theta)*r,
+						'endX':eex,'endY':eey}))
+			
+		}
+
 	}
 	//this.rerange('y');
 }

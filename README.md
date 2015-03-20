@@ -203,6 +203,18 @@ Examples
 	s19.draw();
 <img src="https://raw.githubusercontent.com/justdark/dvisual/master/image/29.png" alt="Drawing" width="600px" />
 
+
+
+----------------------------------------------
+
+	s15 = new DVisual("myCanvas16");
+	s15.addElement(new DVGraph({'nodes':["A","B","C","D","E","F","G","H","I","J","K","L","M","Ns","O","P","Q"],
+							'edges':[[0,1],[1,3],[2,1],[1,4],[1,5],[1,6],[1,7],[1,8],[1,9],[1,10],[1,11],[1,12],[7,13],[3,5],[4,7],[7,2],[7,14],[7,15],[7,16]],
+							'style':'directed',
+							'distance':'median'}))
+	s15.draw();
+<img src="https://raw.githubusercontent.com/justdark/dvisual/master/image/30.png" alt="Drawing" width="600px" />
+
 ----------------------------------------------
 Warning
 ===
