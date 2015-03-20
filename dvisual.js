@@ -2825,7 +2825,7 @@ DVGraph.prototype.distance = function(i,j)
 DVGraph.prototype.rerange = function(dv,V,E)
 {
 	var area = (dv.oldWidth-40)*(dv.oldHeight-40)*0.5;
-	var k = Math.sqrt(area/(E.length+V.length));
+	var k = Math.sqrt(area/(E.length+V.length)*1.2);
 	fa = function(x)
 	{
 		return x*x*1.0/k;
