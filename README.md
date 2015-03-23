@@ -3,7 +3,7 @@ dvisual
 
 dvisual is a visualization toolkit based on html's canvas and Javascript
 
-<img src="https://raw.githubusercontent.com/justdark/dvisual/master/example.png" alt="Drawing"  />
+<img src="https://raw.githubusercontent.com/justdark/dvisual/master/example.png" alt="Drawing" width="700px" />
 
 ----------------------------------------------
 Code Files
