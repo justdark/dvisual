@@ -192,9 +192,11 @@ the Parallel Coordinate plot is also a very important chart to show high-dimensi
 ##DVGraph()
 You may have used Gephi which is used to visualize Complex Network,the network actually is a graph,which become more and more useful nowadays,the social network,the finance network and so on.the most important arguments for a graph is node and edges,so you need pass through the `'nodes'` (an array of strings indicate the nodes' name)and `'edges'`(an array of tuple，which is in [start_node_index,end_node_index] format),`'color'` is also useful for the nodes and `'style'` is 'directed' or 'undirected'.finally the DVGraph() will ignore the self-connecting edges.the layout algorithm is Fruchterman and Reingold Algorithm.
 
-	dvisual.addElement(new DVGraph({'nodes':["A","B","C","D","E","F","G","H","I","J","K","L","M","Ns","O","P","Q"],
-							'edges':[[0,1],[1,3],[2,1],[1,4],[1,5],[1,6],[1,7],[1,8],[1,9],[1,10],[1,11],[1,12],[7,13],[3,5],[4,7],[7,2],[7,14],[7,15],[7,16],[1,1]],
+	dvisual.addElement(new DVGraph({'nodes':["A","B","C","D","E","F","G","H","I","J","K","L","M","Ns","O","P","Q","R","S","T","U","V","W","X","Y","Z"],
+							'edges':[[0,1],[1,3],[2,1],[1,4],[1,5],[1,6],[1,7],[1,8],[1,9],[1,10],[1,11],[1,12],[7,13],[3,5],[4,7],[7,2],[7,14],[7,15],[7,16],[1,1],[1,25],[16,17],[16,18],[16,19],[16,20],[20,21],[16,22],[16,23],[16,24],[16,25]],
 							'style':'directed',
-							'distance':'median'}))
+							'distance':'median',
+							'color':new DVColor(111,111,111),
+							'ColorPattern':[[new DVColor(255,0,0,1),1,16,7]]}))
 							
 <img src="https://raw.githubusercontent.com/justdark/dvisual/master/image/30.png" alt="Drawing" width="600px" />

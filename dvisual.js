@@ -583,6 +583,7 @@ DVText.prototype.draw = function(dv)
 	dv.ctx.font = this.args['font'];
 	dv.ctx.lineWidth = this.args['lineWidth'];
 	dv.ctx.textAlign = this.args['textAlign'];
+	dv.ctx.beginPath();
 	shadow = new DVColor(100,100,100,0.3);
 	if (this.args['shadow'])
 	{
@@ -637,6 +638,8 @@ DVText.prototype.draw = function(dv)
 		dv.ctx.rotate(-this.args.rotate);
 		dv.ctx.translate(-this.args.x,-this.args.y);
 	}
+	dv.ctx.fill();
+	dv.ctx.closePath();
 	dv.ctx.restore();
 }
 
@@ -928,7 +931,7 @@ DVPolygon.prototype.draw = function(dv)
 		dv.ctx.closePath();
 		dv.ctx.stroke();
 
-		dv.ctx.fillStyle = (new DVColor(this.args.color.r,this.args.color.g,this.args.color.b,0.5)).tostring();
+		dv.ctx.fillStyle = (new DVColor(this.args.color.r,this.args.color.g,this.args.color.b,0.7)).tostring();
 		dv.ctx.beginPath();
 		dv.ctx.moveTo(this.args.X[0],this.args.Y[0]);
 		for (var i=0;i<this.args.X.length;i++)
@@ -1156,7 +1159,6 @@ DVCoordinate.prototype.draw = function(dv)
 /**
  * A DVisual graph element indicate a Legend,an important structure of most chart
  * @constructor
- * @example new DVLegend({'xDescript':"time",'yDescript':"value",'xSpan':20,'ySpan'});
  * @param {Object[]} args - a array contain arguments below
  * @param {Array(string)} args.classes - the classes's texts for the legend
  * @param {Array(DVColor)=} [args.colors=DVgetRandomColor(this.args.classes.length,0.7);] - the classes's colors for the legend
@@ -1244,11 +1246,7 @@ DVLegend.prototype.prepare = function(dv)
 
 	font = DVgetRightTextStyle(dv,TextHeight*0.5);
 	boxtopy = this.args.y-this.args.height;
-	if (this.args.outerbox)
-	{
-		this.eles.push(new DVRect({'x':this.args.x,'y':boxtopy,'width':this.args.width,'height':this.args.height,'style':'fill',
-									'color':new DVColor(30,144,255,0.3)}))
-	}
+
 	dv.ctx.save();
 	dv.ctx.font = font;
 	maxlength = 0;
@@ -1256,16 +1254,17 @@ DVLegend.prototype.prepare = function(dv)
 	{
 		maxlength = Math.max(maxlength,dv.ctx.measureText(this.args.classes[i]).width);
 	}
+	var ratio = 0;
 	for (var i=0;i<this.args.classes.length;i++)
 	{
 		paintX = drawLength/10 + drawXinc*i +this.args.x;
 		paintY = TextHeight/6 +drawYinc*i +boxtopy;
-		ratio = 2.0/4;
+		ratio = 2/4;
 		// this.eles.push(new DVRect({'x':paintX,'y':paintY,'width':drawLength,'height':TextHeight,'style':'fill',
 		// 							'color':new DVColor(0,0,0,0.7)}))
-		if (maxlength<drawLength*(1-ratio)*1.0)
+		if (maxlength>drawLength*(1-ratio)*1.0)
 		{
-			ratio = 1 - maxlength*1.0/drawLength;
+			ratio = (1 - maxlength*1.0/drawLength)*0.6+ratio*0.4;
 		}
 		if (this.args.style=='rect')
 			this.eles.push(new DVRect({'x':paintX,'y':paintY,'width':drawLength*ratio,'height':TextHeight,'style':'fill',
@@ -1277,12 +1276,21 @@ DVLegend.prototype.prepare = function(dv)
 		else if (this.args.style=='bubble')
 		{ 
 			this.eles.push(new DVDot({'x':paintX+drawLength*ratio/3,'y':paintY+TextHeight*1.0/2,'radius':TextHeight*1.0/2,'style':'bubble','color':this.args.colors[i]}));
-			ratio*=3.0/4;
+			//ratio*=3.0/4;
 		}
 		this.eles.push(new DVText({'text':this.args.classes[i],'x':paintX + drawLength*ratio+drawLength*(1-ratio)*1.0*0+2,'y':paintY+TextHeight*1.0/1.3,'textAlign':'left',
 									'maxwidth':drawLength*(1-ratio)*1.0,'font':font}))
 	}
 	dv.ctx.restore();
+	if (this.args.outerbox)
+	{
+		if (ratio==0.5 && this.args.direction=='vertical')
+			width = this.args.width*ratio+maxlength+8
+		else
+			width = this.args.width;
+		this.eles.push(new DVRect({'x':this.args.x,'y':boxtopy,'width':width,'height':this.args.height,'style':'fill',
+									'color':new DVColor(30,144,255,0.3)}))
+	}
 }
 /**
  * draw the Coordinate on dv's canvas
@@ -1295,8 +1303,9 @@ DVLegend.prototype.draw = function(dv)
 	{
 		this.prepare(dv);
 	}
-	for (var i=0;i<this.eles.length;i++)
+	for (var i=this.eles.length-1;i>-1;i--)
 		this.eles[i].draw(dv);
+
 }
 
 /**
@@ -1740,7 +1749,7 @@ function DVBarChart(args)
 		this.args['yGrid'] = true;
 
 	if (args['legendOuterBox']==null)
-		this.args['legendOuterBox'] = true;
+		this.args['legendOuterBox'] = false;
 
 	this.eles = new Array();
 }
@@ -2281,7 +2290,7 @@ function DVPieChart(args)
 		this.args['Y'] = [];
 
 	if (args['legendOuterBox']==null)
-		this.args['legendOuterBox'] = true;
+		this.args['legendOuterBox'] = false;
 
 	if (args['ring_ratio']==null || args['ring_ratio']>1 || args['ring_ratio']<0)
 		this.args['ring_ratio'] = 0;
@@ -2390,7 +2399,7 @@ function DVRadarChart(args)
 		this.args['argumin'] = 0;
 
 	if (args['legendOuterBox']==null)
-		this.args['legendOuterBox'] = true;
+		this.args['legendOuterBox'] = false;
 
 	if (args['colors']==null)
 		this.args['colors'] = DVgetRandomColor(this.args.X.length,0.4);
@@ -2461,8 +2470,8 @@ DVRadarChart.prototype.prepare = function(dv)
 		this.eles.push(new DVPolygon({'X':tmpX,'Y':tmpY,'style':'fill','color':this.args.colors[i],'shadow':true,'lineWidth':2}));
 	}
 	xs = 0.82;
-	this.eles.push(new DVLegend({'classes':this.args.X,'colors':this.args.colors,'x':xs*D,'y':dv.oldHeight,
-						'height':(1-xs)*D,'width':(1-xs)*D,'outerbox':this.args.legendOuterBox}))
+	this.eles.push(new DVLegend({'classes':this.args.X,'colors':this.args.colors,'x':(xs-0.1)*D,'y':dv.oldHeight,
+						'height':(1-xs)*D,'width':(1-xs)*D*1.2,'outerbox':this.args.legendOuterBox}))
 
 }
 /**
@@ -2508,7 +2517,7 @@ function DVAreaPieChart(args)
 		this.args['Y'] = [];
 
 	if (args['legendOuterBox']==null)
-		this.args['legendOuterBox'] = true;
+		this.args['legendOuterBox'] = false;
 
 	if (args['colors']==null)
 		this.args['colors'] = DVgetRandomColor(this.args.X.length);
@@ -2557,7 +2566,7 @@ DVAreaPieChart.prototype.prepare = function(dv)
 		acumDeg = eDeg;
 	}
 	xs = (7.0/24/1.41+5.0/12+1.0/9);
-	this.eles.push(new DVLegend({'classes':this.args.X,'colors':this.args.colors,'x':xs*D,'y':dv.oldHeight,
+	this.eles.push(new DVLegend({'classes':this.args.X,'colors':this.args.colors,'x':xs*D,'y':dv.oldHeight*0.95,
 						'height':(1-xs)*D,'width':(1-xs)*D,'outerbox':this.args.legendOuterBox}))
 }
 /**
@@ -2776,6 +2785,7 @@ DVBoxChart.prototype.draw = function(dv)
  * @param {Array(Array())} args.edges - a series of tuple,which contain two index number for the edge.example[[0,1],[1,2]]
  * @param {Array(DVColor)=} [args.color = random] - the color of the node
  * @param {string=} [args.style='undirected'] - the graph style.'undirected' or 'directed'
+ * @param {Object[]} [args.ColorPattern = empty] - the color pattern of lines,the element is [[DVColor1,indexs1,indexs2...],[DVColor2,indexs11,indexs12...]]
  */
 function DVGraph(args)
 {
@@ -2789,6 +2799,8 @@ function DVGraph(args)
 	if (args['edges']==null)
 		this.args['edges'] = [];
 
+	if (args['ColorPattern']==null)
+		this.args['ColorPattern'] = {};
 
 	if (args['color']==null)
 		this.args['color'] = DVgetRandomColor(1)[0];
@@ -2885,14 +2897,25 @@ DVGraph.prototype.rerange = function(dv,V,E)
 DVGraph.prototype.prepare = function(dv)
 {
 	var V = []
+	var colors = []
 	for (var i=0;i<this.args.nodes.length;i++)
 	{
+		colors.push(this.args.color);
 		V.push({'x':getrandom(dv.oldWidth-40)+20
 				,'y':getrandom(dv.oldHeight-40)+20
 				,'dispx':0
 				,'dispy':0})
 		//this.eles.push(new DVDot({'color':this.args.color,'x':getrandom(dv.oldWidth-40)+20,'y':getrandom(dv.oldHeight-40)+20,'style':'bubble','radius':10,'bubbleText':this.args.nodes[i]}))
 	}
+	for (var j=0;j<this.args.ColorPattern.length;j++)
+	{
+		s = this.args.ColorPattern[j]
+		for (var i=1;i<s.length;i++)
+		{
+			colors[s[i]] = s[0];
+		}
+	}
+
 	var E = []
 	for (var i=0;i<this.args.edges.length;i++)
 		if (this.args.edges[i][0]!=this.args.edges[i][1])
@@ -2900,7 +2923,7 @@ DVGraph.prototype.prepare = function(dv)
 	V = this.rerange(dv,V,E);
 	for (var i=0;i<this.args.nodes.length;i++)
 	{
-		this.eles.push(new DVDot({'color':this.args.color,'x':V[i].x,'y':V[i].y,'style':'bubble','radius':10,'bubbleText':this.args.nodes[i]}))
+		this.eles.push(new DVDot({'color':colors[i],'x':V[i].x,'y':V[i].y,'style':'bubble','radius':10,'bubbleText':this.args.nodes[i]}))
 	}
 	for (var i=0;i<this.args.edges.length;i++)
 	{
