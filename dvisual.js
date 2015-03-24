@@ -2924,7 +2924,7 @@ DVGraph.prototype.prepare = function(dv)
 	for (var i=0;i<this.args.nodes.length;i++)
 	{
 		this.eles.push(new DVDot({'color':colors[i],'x':V[i].x,'y':V[i].y,'style':'bubble','radius':10,'bubbleText':this.args.nodes[i]}))
-	}
+	} 
 	for (var i=0;i<this.args.edges.length;i++)
 	{
 		bx = this.eles[this.args.edges[i][0]].args.x;
