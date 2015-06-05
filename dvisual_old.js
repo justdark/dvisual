@@ -38,18 +38,17 @@ CanvasRenderingContext2D.prototype.clearArc = function(x, y, radius, startAngle,
 DVChartList = [DVBarChart,DVPieChart,DVLineChart,DVHistChart,DVRadarChart,DVMulLineChart,DVMulBarChart];
 DVCanvasList = [];
 
-
-
-function DVClone(obj){
-  if(!obj||"object" != typeof obj){
-    return null;
-  }
-  var result = (obj instanceof Array)?[]:{};
-  for(var i in obj){
-    result[i] = ("object" != typeof obj[i])?obj[i]:DVClone(obj[i]);
-  }
-  return result;
+Object.prototype.cloneAll=function(){
+	function clonePrototype(){};
+	clonePrototype.prototype = this;
+	var obj = new clonePrototype();
+	for(var ele in obj){
+		if(typeof(obj[ele])=='object')
+			obj[ele] = obj[ele].cloneAll();
+	}
+	return obj;
 }
+
 
 Array.prototype.max = function()
 { 
@@ -421,7 +420,7 @@ function DVDot(args)
 
 	if (arguments.length==0)
 		args = {};
-	this.args = DVClone(args);
+	this.args = args.cloneAll();
 	if (args['x']==null)
 		this.args['x'] = 0;
 
@@ -464,7 +463,7 @@ DVDot.prototype.draw = function(dv)
 	{
 		if (this.shadowDot == null)
 		{
-			shadowArgs = DVClone(this.args);
+			shadowArgs = this.args.cloneAll();
 			shadowArgs['color'] = new DVColor(100,100,100,0.3);
 			shadowArgs['shadow'] = false;
 			shadowArgs['x']+=1;
@@ -533,7 +532,7 @@ function DVText(args)
 {
 	if (arguments.length==0)
 		args = {};
-	this.args = DVClone(args);
+	this.args = args.cloneAll();
 	if (args['x']==null)
 		this.args['x'] = 0;
 
@@ -590,7 +589,7 @@ DVText.prototype.draw = function(dv)
 	{
 		if (this.shadowText == null)
 		{
-			shadowArgs = DVClone(this.args);
+			shadowArgs = this.args.cloneAll();
 			shadowArgs['color'] = new DVColor(100,100,100,0.3);
 			shadowArgs['shadow'] = false;
 			shadowArgs['x']+=1;
@@ -662,7 +661,7 @@ function DVLine(args)
 {
 	if (arguments.length==0)
 		args = {};
-	this.args = DVClone(args);
+	this.args = args.cloneAll();
 	if (args['beginX']==null)
 		this.args['beginX'] = 0;
 
@@ -728,7 +727,7 @@ DVLine.prototype.draw = function(dv)
 	{
 		if (this.shadowLine==null)
 		{
-			shadowArgs = DVClone(this.args);
+			shadowArgs = this.args.cloneAll();
 			shadowArgs['color'] = new DVColor(100,100,100,0.3);
 			shadowArgs['shadow'] = false;
 			shadow = this.getShadow();
@@ -798,7 +797,7 @@ function DVCurve(args)
 {
 	if (arguments.length==0)
 		args = {};
-	this.args = DVClone(args);
+	this.args = args.cloneAll();
 	if (args['beginX']==null)
 		this.args['beginX'] = 0;
 
@@ -855,7 +854,7 @@ DVCurve.prototype.draw = function(dv)
 {
 	if (arguments.length==0)
 		args = {};
-	this.args = DVClone(args);
+	this.args = args.cloneAll();
 	if (args['X']==null)
 		this.args['X'] = [];
 
@@ -894,7 +893,7 @@ DVPolygon.prototype.draw = function(dv)
 	{
 		if (this.shadowPoly==null)
 		{
-			shadowArgs = DVClone(this.args);
+			shadowArgs = this.args.cloneAll();
 			shadowArgs['color'] = new DVColor(200,200,200,0.3);
 			shadowArgs['shadow'] = false;
 			for (var i=0;i<shadowArgs.X.length;i++ )
@@ -960,7 +959,7 @@ function DVRect(args)
 {
 	if (arguments.length==0)
 		args = {};
-	this.args = DVClone(args);
+	this.args = args.cloneAll();
 	if (args['x']==null)
 		this.args['x'] = 0;
 
@@ -1010,7 +1009,7 @@ function DVCoordinate(args)
 {
 	if (arguments.length==0)
 		args = {};
-	this.args = DVClone(args);
+	this.args = args.cloneAll();
 	if (args['xGrid']==null)
 		this.args['xGrid'] = true;
 
@@ -1175,7 +1174,7 @@ function DVLegend(args)
 {
 	if (arguments.length==0)
 		args = {};
-	this.args = DVClone(args);
+	this.args = args.cloneAll();
 
 	if (args['classes']==null)
 		this.args['classes'] = ["A",'B','C'];
@@ -1385,7 +1384,7 @@ function DVLineChart(args)
 	if (arguments.length==0)
 		args = {};
 
-	this.args = DVClone(args);
+	this.args = args.cloneAll();
 	if (args['X']==null)
 		this.args['X'] = [];
 
@@ -1561,7 +1560,7 @@ function DVMulLineChart(args)
 {
 	if (arguments.length==0)
 		args = {};
-	this.args = DVClone(args);
+	this.args = args.cloneAll();
 
 	if (args['Xs']==null)
 		this.args['Xs'] = [];
@@ -1632,7 +1631,7 @@ DVMulLineChart.prototype.prepare = function(dv)
 	}
 	for (var i=0;i<this.args.classes.length;i++)
 	{
-		line_arg = DVClone(this.args);
+		line_arg = this.args.cloneAll();
 		line_arg.Xs = null;
 		line_arg.Ys = null;
 		line_arg['X'] = this.args.Xs[i];
@@ -1706,7 +1705,7 @@ function DVBarChart(args)
 	if (arguments.length==0)
 		args = {};
 
-	this.args = DVClone(args);
+	this.args = args.cloneAll();
 	if (args['X']==null)
 		this.args['X'] = [];
 
@@ -1872,7 +1871,7 @@ function DVMulBarChart(args)
 	if (arguments.length==0)
 		args = {};
 
-	this.args = DVClone(args);
+	this.args = args.cloneAll();
 	if (args['X']==null)
 		this.args['X'] = [];
 
@@ -1969,7 +1968,7 @@ function DVHistChart(args)
 	if (arguments.length==0)
 		args = {};
 	this.incX = 0.0;
-	this.args = DVClone(args);
+	this.args = args.cloneAll();
 	if (args['X']==null)
 		this.args['X'] = [];
 
@@ -2147,7 +2146,7 @@ function DVSector(args)
 	if (arguments.length==0)
 		args = {};
 
-	this.args = DVClone(args);
+	this.args = args.cloneAll();
 	if (args['x']==null)
 		this.args['x'] = 100;
 
@@ -2204,7 +2203,7 @@ DVSector.prototype.draw = function(dv)
 	{
 		if (this.shadowSector == null)
 		{
-			shadowArgs = DVClone(this.args);
+			shadowArgs = this.args.cloneAll();
 			shadowArgs['color'] = new DVColor(100,100,100,0.3);
 			shadowArgs['shadow'] = false;
 			shadowArgs['pop'] = false;
@@ -2283,7 +2282,7 @@ function DVPieChart(args)
 	if (arguments.length==0)
 		args = {};
 
-	this.args = DVClone(args);
+	this.args = args.cloneAll();
 	if (args['X']==null)
 		this.args['X'] = [];
 
@@ -2383,7 +2382,7 @@ function DVRadarChart(args)
 	if (arguments.length==0)
 		args = {};
 
-	this.args = DVClone(args);
+	this.args = args.cloneAll();
 	if (args['X']==null)
 		this.args['X'] = [];
 
@@ -2510,7 +2509,7 @@ function DVAreaPieChart(args)
 	if (arguments.length==0)
 		args = {};
 
-	this.args = DVClone(args);
+	this.args = args.cloneAll();
 	if (args['X']==null)
 		this.args['X'] = [];
 
@@ -2606,7 +2605,7 @@ function DVBoxChart(args)
 	if (arguments.length==0)
 		args = {};
 
-	this.args = DVClone(args);
+	this.args = args.cloneAll();
 	if (args['X']==null)
 		this.args['X'] = [];
 
@@ -2793,7 +2792,7 @@ function DVGraph(args)
 	if (arguments.length==0)
 		args = {};
 
-	this.args = DVClone(args);
+	this.args = args.cloneAll();
 	if (args['nodes']==null)
 		this.args['nodes'] = [];
 
@@ -2986,7 +2985,7 @@ function DVDendrogram(args)
 	if (arguments.length==0)
 		args = {};
 
-	this.args = DVClone(args);
+	this.args = args.cloneAll();
 	if (args['tree']==null)
 		this.args['tree'] = [];
 
@@ -3156,7 +3155,7 @@ function DVCircleConnectChart(args)
 	if (arguments.length==0)
 		args = {};
 
-	this.args = DVClone(args);
+	this.args = args.cloneAll();
 	if (args['nodes']==null)
 		this.args['nodes'] = [];
 
@@ -3274,7 +3273,7 @@ function DVParallelCoordinate(args)
 {
 	if (arguments.length==0)
 		args = {};
-	this.args = DVClone(args);
+	this.args = args.cloneAll();
 
 	if (args['Xs']==null)
 		this.args['Xs'] = [];
